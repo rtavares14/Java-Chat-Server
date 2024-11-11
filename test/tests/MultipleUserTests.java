@@ -1,6 +1,7 @@
-package tests.tests;
+package tests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import messages.*;
 import org.junit.jupiter.api.*;
 import tests.messages.*;
 import tests.utils.Utils;
@@ -24,7 +25,7 @@ class MultipleUserTests {
 
     @BeforeAll
     static void setupAll() throws IOException {
-        InputStream in = MultipleUserTests.class.getResourceAsStream("tests/tests/testconfig.properties");
+        InputStream in = MultipleUserTests.class.getResourceAsStream("tests/testconfig.properties");
         PROPS.load(in);
         in.close();
     }

@@ -1,0 +1,24 @@
+package client;
+
+import java.io.*;
+import java.net.Socket;
+
+public class Client {
+    public static final String SERVER_ADDRESS = "127.0.0.1";
+    public static final int SERVER_PORT = 1337;
+
+    public static void main(String[] args) {
+        try {
+            //connection to the server
+            Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
+            System.out.println("Connected to the server");
+
+            // start a new thread to handle user input and server messages
+            new Thread(new UserInputHandler(socket)).start();
+            new Thread(new ServerInput(socket)).start();
+
+        } catch (IOException e) {
+            System.err.println("Could not connect to server: " + e.getMessage());
+        }
+    }
+}

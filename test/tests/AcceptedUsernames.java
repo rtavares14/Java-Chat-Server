@@ -1,9 +1,9 @@
-package tests.tests;
+package tests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.*;
-import tests.messages.Enter;
-import tests.messages.EnterResp;
+import messages.Enter;
+import messages.EnterResp;
 import tests.utils.Utils;
 
 import java.io.*;
@@ -24,7 +24,7 @@ class AcceptedUsernames {
 
     @BeforeAll
     static void setupAll() throws IOException {
-        InputStream in = AcceptedUsernames.class.getResourceAsStream("tests/tests/testconfig.properties");
+        InputStream in = AcceptedUsernames.class.getResourceAsStream("tests/testconfig.properties");
         PROPS.load(in);
         in.close();
     }

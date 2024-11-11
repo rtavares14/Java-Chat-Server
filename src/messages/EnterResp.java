@@ -1,3 +1,3 @@
-package tests.messages;
+package messages;
 
 public record EnterResp(String status, int code) {}

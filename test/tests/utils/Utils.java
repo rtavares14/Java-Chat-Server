@@ -2,6 +2,7 @@ package tests.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import messages.*;
 import tests.messages.*;
 
 import java.util.HashMap;
