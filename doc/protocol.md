@@ -1,6 +1,6 @@
 # Protocol description
 
-This client-server protocol describes the following scenarios:
+This client-server tests describes the following scenarios:
 - Setting up a connection between client and server.
 - Broadcasting a message to all connected clients.
 - Periodically sending heartbeat to connected clients.
@@ -9,7 +9,7 @@ This client-server protocol describes the following scenarios:
 
 In the description below, `C -> S` represents a message from the client `C` is send to server `S`. When applicable, `C` is extended with a number to indicate a specific client, e.g., `C1`, `C2`, etc. The keyword `others` is used to indicate all other clients except for the client who made the request. Messages can contain a JSON body. Text shown between `<` and `>` are placeholders.
 
-The protocol follows the formal JSON specification, RFC 8259, available on https://www.rfc-editor.org/rfc/rfc8259.html
+The tests follows the formal JSON specification, RFC 8259, available on https://www.rfc-editor.org/rfc/rfc8259.html
 
 # 1. Establishing a connection
 
