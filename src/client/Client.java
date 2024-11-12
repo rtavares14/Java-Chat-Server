@@ -1,6 +1,6 @@
 package client;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.Socket;
 
 public class Client {
@@ -8,17 +8,26 @@ public class Client {
     public static final int SERVER_PORT = 1337;
 
     public static void main(String[] args) {
-        try {
-            //connection to the server
-            Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
-            System.out.println("Connected to the server");
+        while (true) {
+            try {
+                //connection to the server
+                Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
+                System.out.println("Connected to the server");
 
-            // start a new thread to handle user input and server messages
-            new Thread(new UserInputHandler(socket)).start();
-            new Thread(new ServerInput(socket)).start();
+                // start a new thread to handle user input and server messages
+                new Thread(new UserInputHandler(socket)).start();
+                new Thread(new ServerInput(socket)).start();
+                break;
 
-        } catch (IOException e) {
-            System.err.println("Could not connect to server: " + e.getMessage());
+            } catch (IOException e) {
+                System.err.println("Could not connect to server: HAHAHA AGAIN" );
+                try {
+                    // stops for 5 seconds before trying again
+                    Thread.sleep(5000);
+                } catch (InterruptedException ie) {
+                    System.err.println("Sleep interrupted: " + ie.getMessage());
+                }
+            }
         }
     }
 }
