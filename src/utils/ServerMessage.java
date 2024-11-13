@@ -1,5 +1,7 @@
 package utils;
 
+import utils.enumerations.ServerCommands;
+
 public class ServerMessage {
     private ServerCommands type;
     private int code;

@@ -1,5 +1,7 @@
 package client;
 
+import utils.enumerations.CmdColors;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -7,11 +9,6 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class UserInputHandler implements Runnable {
-
-    //ANSI codes for colored text
-    private static final String RESET = "\u001B[0m";
-    private static final String RED = "\u001B[31m";
-    private static final String GREEN = "\u001B[32m";
 
     private Socket socket;
     private String username;
@@ -48,10 +45,11 @@ public class UserInputHandler implements Runnable {
             // Paka Paka condition
             else if (message.equalsIgnoreCase("bye")) {
                 logout();
+                break;
             }
 
             else {
-                System.out.println(RED + "Invalid command. Please try again." + RESET);
+                System.out.println(CmdColors.RED + "Invalid command. Please try again." + CmdColors.RESET);
             }
         }
     }
@@ -117,7 +115,7 @@ public class UserInputHandler implements Runnable {
 
         // sends the logout to the server
         writer.println("BYE");
-        System.out.println(RED + "Goodbye " + username + "!" + RESET);
+        System.out.println(CmdColors.RED + "Goodbye " + username + "!" + CmdColors.RESET);
         username = null;
     }
 }
