@@ -1,5 +1,7 @@
 package client;
 
+import utils.enumerations.CmdColors;
+
 import java.io.IOException;
 import java.net.Socket;
 
@@ -12,7 +14,7 @@ public class Client {
             try {
                 //connection to the server
                 Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
-                System.out.println("Connected to the server");
+                System.out.println(CmdColors.PURPLE + "Connected to server." + CmdColors.RESET);
 
                 // start a new thread to handle user input and server messages
                 new Thread(new UserInputHandler(socket)).start();
