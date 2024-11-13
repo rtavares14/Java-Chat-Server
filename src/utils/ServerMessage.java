@@ -1,36 +1,35 @@
 package utils;
 
-import utils.enumerations.ServerCommands;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class ServerMessage {
-    private ServerCommands type;
-    private int code;
-    private String body;
 
-    public ServerMessage(ServerCommands type,int code, String body) {
+    private String type;
+    private JsonNode data;
+
+    /**
+     * Constructs a new ServerMessage object.
+     * @param type the type of the message.
+     * @param data the data of the message.
+     */
+    public ServerMessage(String type, JsonNode data) {
         this.type = type;
-        this.code = code;
-        this.body = body;
+        this.data = data;
     }
 
-    public ServerCommands getType() {
+    /**
+     * Returns the type of the message.
+     * @return the type of the message.
+     */
+    public String getType() {
         return type;
     }
 
-    public int getCode() {
-        return code;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    @Override
-    public String toString() {
-        return "ServerMessage{" +
-                "type=" + type +
-                ", code=" + code +
-                ", body='" + body + '\'' +
-                '}';
+    /**
+     * Returns the data of the message.
+     * @return the data of the message.
+     */
+    public JsonNode getData() {
+        return data;
     }
 }

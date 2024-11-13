@@ -14,6 +14,11 @@ public class UserInputHandler implements Runnable {
     private String username;
     private PrintWriter writer;
 
+    /**
+     * Constructs a new UserInputHandler object.
+     * @param socket the socket to communicate with the server.
+     * @throws IOException if an I/O error occurs.
+     */
     public UserInputHandler(Socket socket) throws IOException {
         this.socket = socket;
         this.username = null;
@@ -21,6 +26,14 @@ public class UserInputHandler implements Runnable {
         this.writer = new PrintWriter(out, true);
     }
 
+    /**
+     * Receives user input and sends it to the server.
+     * The user can enter the following commands:
+     * - login "username" - Login to the server
+     * - msg "message" - Send a global broadcast message
+     * - help - Display the help menu
+     * - bye - Disconnect from the server
+     */
     @Override
     public void run() {
         Scanner scanner = new Scanner(System.in);
@@ -97,25 +110,19 @@ public class UserInputHandler implements Runnable {
      * Helper menu for the user
      */
     private void helperMenu() {
-        System.out.println("Commands:");
+        System.out.println(CmdColors.PURPLE + "Commands:");
         System.out.println("login \"username\" - Login to the server");
         System.out.println("msg \"message\" - Send a global broadcast message");
         System.out.println("help - Display this help menu");
-        System.out.println("bye - Disconnect from the server");
+        System.out.println("bye - Disconnect from the server" + CmdColors.RESET);
     }
 
     /**
      * Method to handle the logout command
      */
     private void logout() {
-        if (username == null) {
-            System.out.println("You are not logged in.");
-            return;
-        }
-
         // sends the logout to the server
         writer.println("BYE");
-        System.out.println(CmdColors.RED + "Goodbye " + username + "!" + CmdColors.RESET);
         username = null;
     }
 }
