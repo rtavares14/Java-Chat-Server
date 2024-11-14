@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class ServerMessage {
 
-    private String type;
-    private JsonNode data;
+    private final String type;
+    private final JsonNode data;
 
     /**
      * Constructs a new ServerMessage object.
