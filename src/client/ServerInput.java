@@ -5,18 +5,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import utils.ServerMessage;
 import utils.MessageHandler;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.Socket;
 
 public class ServerInput implements Runnable {
 
     private Socket socket;
+    private PrintWriter writer;
 
-    public ServerInput(Socket socket) {
+
+    public ServerInput(Socket socket) throws IOException {
         this.socket = socket;
+        OutputStream out = socket.getOutputStream();
+        this.writer = new PrintWriter(out, true);
     }
 
     /**
@@ -31,7 +32,7 @@ public class ServerInput implements Runnable {
             String serverMessage;
             while ((serverMessage = reader.readLine()) != null) {
                 ServerMessage message = parseServerMessage(serverMessage);
-                handleServerMessage(message);
+                handleServerMessage(message , writer);
             }
 
         } catch (IOException e) {
@@ -45,6 +46,10 @@ public class ServerInput implements Runnable {
      * @return the ServerMessage object.
      */
     private ServerMessage parseServerMessage(String message) {
+        if ("PING".equals(message)) {
+            return new ServerMessage("PING", null);
+        }
+
         String[] parts = message.split(" ", 2);
         String type = parts[0];
         String body = parts.length > 1 ? parts[1] : "";
@@ -63,8 +68,8 @@ public class ServerInput implements Runnable {
      * Handles a message from the server.
      * @param message the message from the server.
      */
-    private void handleServerMessage(ServerMessage message) {
-        String response = MessageHandler.determineMessage(message);
+    private void handleServerMessage(ServerMessage message, PrintWriter writer) {
+        String response = MessageHandler.determineMessage(message, writer);
         System.out.println(response);
     }
 }

@@ -3,6 +3,8 @@ package utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import utils.enumerations.CmdColors;
 
+import java.io.PrintWriter;
+
 public class MessageHandler {
 
     /**
@@ -10,8 +12,14 @@ public class MessageHandler {
      * @param serverMessage the server message
      * @return the message
      */
-    public static String determineMessage(ServerMessage serverMessage) {
+    public static String determineMessage(ServerMessage serverMessage, PrintWriter writer) {
         JsonNode data = serverMessage.getData();
+        if (data == null && "PING".equals(serverMessage.getType())) {
+            //here i need to send pong back to server to keep connection alive
+            //not sending pong as an output but as a response to server
+            writer.println("PONG");
+            return CmdColors.PURPLE + "PONG send" + CmdColors.RESET;
+        } else
         if (data != null && "READY".equals(serverMessage.getType())) {
             return CmdColors.PURPLE + "Ready to chat" + CmdColors.RESET;
         }
@@ -42,7 +50,12 @@ public class MessageHandler {
     private static String handleLeftMessage(JsonNode data) {
         if (data.has("username")) {
             String username = data.get("username").asText();
+            if (username.isEmpty()) {
+                return CmdColors.RED + "Someone left the chat" + CmdColors.RESET;
+            }
+            else{
             return CmdColors.RED + username + " left the chat" + CmdColors.RESET;
+            }
         } else {
             return "Invalid left message format";
         }
@@ -57,12 +70,7 @@ public class MessageHandler {
         if (data.has("username") && data.has("message")) {
             String username = data.get("username").asText();
             String message = data.get("message").asText();
-
-            if (username.isEmpty()){
-                return CmdColors.ORANGE +  "Someone : " + message + CmdColors.RESET;
-            }else {
-                return CmdColors.ORANGE + username + ": " + message + CmdColors.RESET;
-            }
+            return CmdColors.ORANGE + username + ": " + message + CmdColors.RESET;
         } else {
             return "Invalid broadcast message format";
         }
