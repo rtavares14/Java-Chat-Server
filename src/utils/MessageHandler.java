@@ -12,6 +12,7 @@ public class MessageHandler {
 
     /**
      * Determine the message
+     *
      * @param serverMessage the server message
      * @param writer the writer
      */
@@ -42,6 +43,7 @@ public class MessageHandler {
 
     /**
      * Handle the left message
+     *
      * @param data the data
      */
     private static void handleLeftMessage(JsonNode data) {
@@ -59,6 +61,7 @@ public class MessageHandler {
 
     /**
      * Handle the broadcast message
+     *
      * @param data the data
      */
     private static void handleBroadcastMessage(JsonNode data) {
@@ -73,6 +76,7 @@ public class MessageHandler {
 
     /**
      * Determine the error message
+     *
      * @param serverMessage the server message
      */
     private static void determineErrorMessage(ServerMessage serverMessage) {

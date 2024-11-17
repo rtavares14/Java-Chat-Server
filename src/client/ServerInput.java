@@ -42,6 +42,7 @@ public class ServerInput implements Runnable {
 
     /**
      * Parses a message from the server into a ServerMessage object.
+     *
      * @param message the message from the server.
      * @return the ServerMessage object.
      */
@@ -66,6 +67,7 @@ public class ServerInput implements Runnable {
 
     /**
      * Handles a message from the server.
+     *
      * @param message the message from the server.
      */
     private void handleServerMessage(ServerMessage message, PrintWriter writer) {

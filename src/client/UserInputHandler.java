@@ -10,13 +10,15 @@ import java.util.Scanner;
 
 public class UserInputHandler implements Runnable {
 
-    private Socket socket;
     private String username;
+    private Socket socket;
     private PrintWriter writer;
+    private Scanner scanner;
 
     /**
      * Constructs a new UserInputHandler object.
-     * @param socket the socket to communicate with the server.
+     *
+     * @param socket the socket.
      * @throws IOException if an I/O error occurs.
      */
     public UserInputHandler(Socket socket) throws IOException {
@@ -36,16 +38,12 @@ public class UserInputHandler implements Runnable {
      */
     @Override
     public void run() {
-        Scanner scanner = new Scanner(System.in);
-
         while (true) {
             String message = scanner.nextLine();
 
             if (message.toLowerCase().startsWith("login ")) {
                 userLogin(message);
-            }
-
-            else if (message.toLowerCase().startsWith("msg ")) {
+            } else if (message.toLowerCase().startsWith("msg ")) {
                 sendGlobalMessage(message);
             }
 
@@ -59,9 +57,7 @@ public class UserInputHandler implements Runnable {
             else if (message.equalsIgnoreCase("bye")) {
                 logout();
                 break;
-            }
-
-            else {
+            } else {
                 System.out.println(CmdColors.RED + "Invalid command. Please try again." + CmdColors.RESET);
             }
         }
@@ -124,5 +120,15 @@ public class UserInputHandler implements Runnable {
         // sends the logout to the server
         writer.println("BYE");
         username = null;
+    }
+
+    private void closeResources() {
+        try {
+            if (scanner != null) scanner.close();
+            if (writer != null) writer.close();
+            if (socket != null) socket.close();
+        } catch (IOException e) {
+            System.err.println("Error closing resources: " + e.getMessage());
+        }
     }
 }

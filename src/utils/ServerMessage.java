@@ -10,6 +10,7 @@ public class ServerMessage {
 
     /**
      * Constructs a new ServerMessage object.
+     *
      * @param type the type of the message.
      * @param data the data of the message.
      */
@@ -20,6 +21,7 @@ public class ServerMessage {
 
     /**
      * Returns the type of the message.
+     *
      * @return the type of the message.
      */
     public ServerCommands getType() {
@@ -28,6 +30,7 @@ public class ServerMessage {
 
     /**
      * Returns the data of the message.
+     *
      * @return the data of the message.
      */
     public JsonNode getData() {
