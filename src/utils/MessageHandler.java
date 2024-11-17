@@ -2,100 +2,93 @@ package utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import utils.enumerations.CmdColors;
+import utils.enumerations.ServerCommands;
 
 import java.io.PrintWriter;
+
+import static utils.enumerations.ServerCommands.*;
 
 public class MessageHandler {
 
     /**
-     * Determine the message based on the server message
+     * Determine the message
      * @param serverMessage the server message
-     * @return the message
+     * @param writer the writer
      */
-    public static String determineMessage(ServerMessage serverMessage, PrintWriter writer) {
+    public static void determineMessage(ServerMessage serverMessage, PrintWriter writer) {
         JsonNode data = serverMessage.getData();
-        if (data == null && "PING".equals(serverMessage.getType())) {
-            //here i need to send pong back to server to keep connection alive
-            //not sending pong as an output but as a response to server
+        if (serverMessage.getType() == ServerCommands.PING) {
             writer.println("PONG");
-            return CmdColors.PURPLE + "PONG send" + CmdColors.RESET;
-        } else
-        if (data != null && "READY".equals(serverMessage.getType())) {
-            return CmdColors.PURPLE + "Ready to chat" + CmdColors.RESET;
-        }
-        else if (data != null && "BROADCAST".equals(serverMessage.getType())) {
-            return handleBroadcastMessage(data);
-        } else if (data != null && "LEFT".equals(serverMessage.getType())) {
-            return handleLeftMessage(data);
-        }
-        else if (data != null && data.has("status") && "OK".equals(data.get("status").asText())) {
-            return switch (serverMessage.getType()) {
-                case "ENTER_RESP" -> CmdColors.GREEN + "Chat entered" + CmdColors.RESET;
-                case "BROADCAST_RESP" -> CmdColors.ORANGE + "Message sent" + CmdColors.RESET;
-                case "PING" -> "Ping";
-                case "HANGUP" -> "Hangup";
-                case "BYE_RESP" -> CmdColors.PURPLE + "Bye see you later" + CmdColors.RESET;
-                default -> "Unknown command";
-            };
+            //System.out.println(CmdColors.PURPLE + "PONG sent" + CmdColors.RESET);
+        } else if (serverMessage.getType() == ServerCommands.READY) {
+            System.out.println(CmdColors.PURPLE + "Ready to chat" + CmdColors.RESET);
+        } else if (serverMessage.getType() == ServerCommands.BROADCAST) {
+            handleBroadcastMessage(data);
+        } else if (serverMessage.getType() == LEFT) {
+            handleLeftMessage(data);
+        } else if (data.has("status") && "OK".equals(data.get("status").asText())) {
+            switch (serverMessage.getType()) {
+                case ENTER_RESP -> System.out.println(CmdColors.GREEN + "Chat entered" + CmdColors.RESET);
+                case BROADCAST_RESP -> System.out.println(CmdColors.ORANGE + "Message sent" + CmdColors.RESET);
+                case PING -> System.out.println("Ping");
+                case HANGUP -> System.out.println("Hangup");
+                case BYE_RESP -> System.out.println(CmdColors.PURPLE + "Bye see you later" + CmdColors.RESET);
+                default -> System.out.println("Unknown command");
+            }
         } else {
-            return determineErrorMessage(serverMessage);
+            determineErrorMessage(serverMessage);
         }
     }
 
     /**
      * Handle the left message
      * @param data the data
-     * @return the message
      */
-    private static String handleLeftMessage(JsonNode data) {
+    private static void handleLeftMessage(JsonNode data) {
         if (data.has("username")) {
             String username = data.get("username").asText();
             if (username.isEmpty()) {
-                return CmdColors.RED + "Someone left the chat" + CmdColors.RESET;
-            }
-            else{
-            return CmdColors.RED + username + " left the chat" + CmdColors.RESET;
+                System.out.println(CmdColors.RED + "Someone left the chat" + CmdColors.RESET);
+            } else {
+                System.out.println(CmdColors.RED + username + " left the chat" + CmdColors.RESET);
             }
         } else {
-            return "Invalid left message format";
+            System.out.println("Invalid left message format");
         }
     }
 
     /**
      * Handle the broadcast message
      * @param data the data
-     * @return the message
      */
-    private static String handleBroadcastMessage(JsonNode data) {
+    private static void handleBroadcastMessage(JsonNode data) {
         if (data.has("username") && data.has("message")) {
             String username = data.get("username").asText();
             String message = data.get("message").asText();
-            return CmdColors.ORANGE + username + ": " + message + CmdColors.RESET;
+            System.out.println(CmdColors.ORANGE + username + ": " + message + CmdColors.RESET);
         } else {
-            return "Invalid broadcast message format";
+            System.out.println("Invalid broadcast message format");
         }
     }
 
-
     /**
-     * Determine the error message based on the server message
+     * Determine the error message
      * @param serverMessage the server message
-     * @return the error message
      */
-    private static String determineErrorMessage(ServerMessage serverMessage) {
+    private static void determineErrorMessage(ServerMessage serverMessage) {
         JsonNode data = serverMessage.getData();
         if (data != null && data.has("code")) {
-            return switch (data.get("code").asText()) {
-                case "5000" -> CmdColors.RED + "User with this name already exists" + CmdColors.RESET;
-                case "5001" -> CmdColors.RED + "Username has an invalid format or length" + CmdColors.RESET;
-                case "5002" -> CmdColors.RED + "Already logged in" + CmdColors.RESET;
-                case "6000" -> CmdColors.RED + "User is not logged in" + CmdColors.RESET;
-                case "7000" -> CmdColors.RED + "No pong received" + CmdColors.RESET;
-                case "8000" -> CmdColors.RED + "Server error" + CmdColors.RESET;
-                default -> "Unknown error " + data.get("code").asText() + " occurred - " + serverMessage.getType();
-            };
+            switch (data.get("code").asText()) {
+                case "5000" -> System.out.println(CmdColors.RED + "User with this name already exists" + CmdColors.RESET);
+                case "5001" -> System.out.println(CmdColors.RED + "Username has an invalid format or length" + CmdColors.RESET);
+                case "5002" -> System.out.println(CmdColors.RED + "Already logged in" + CmdColors.RESET);
+                case "6000" -> System.out.println(CmdColors.RED + "User is not logged in" + CmdColors.RESET);
+                case "7000" -> System.out.println(CmdColors.RED + "No pong received" + CmdColors.RESET);
+                case "8000" -> System.out.println(CmdColors.RED + "Server error" + CmdColors.RESET);
+                default -> System.out.println("Unknown error " + data.get("code").asText() + " occurred - " + serverMessage.getType());
+            }
         } else {
-            return "Unknown error occurred - " + serverMessage.getType();
+            System.out.println("Unknown error occurred - " + serverMessage.getType());
         }
     }
 }

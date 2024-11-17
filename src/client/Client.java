@@ -26,7 +26,7 @@ public class Client {
                 break;
 
             } catch (IOException e) {
-                System.err.println("Could not connect to server: HAHAHA AGAIN" );
+                System.err.println("Could not connect to server: HAHAHA AGAIN");
                 try {
                     // stops for 5 seconds before trying again
                     Thread.sleep(5000);

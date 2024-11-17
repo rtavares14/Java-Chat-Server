@@ -1,10 +1,11 @@
 package utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import utils.enumerations.ServerCommands;
 
 public class ServerMessage {
 
-    private final String type;
+    private final ServerCommands type;
     private final JsonNode data;
 
     /**
@@ -12,7 +13,7 @@ public class ServerMessage {
      * @param type the type of the message.
      * @param data the data of the message.
      */
-    public ServerMessage(String type, JsonNode data) {
+    public ServerMessage(ServerCommands type, JsonNode data) {
         this.type = type;
         this.data = data;
     }
@@ -21,7 +22,7 @@ public class ServerMessage {
      * Returns the type of the message.
      * @return the type of the message.
      */
-    public String getType() {
+    public ServerCommands getType() {
         return type;
     }
 

@@ -3,6 +3,7 @@ package client;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import utils.ServerMessage;
+import utils.enumerations.ServerCommands;
 import utils.MessageHandler;
 
 import java.io.*;
@@ -12,7 +13,6 @@ public class ServerInput implements Runnable {
 
     private Socket socket;
     private PrintWriter writer;
-
 
     public ServerInput(Socket socket) throws IOException {
         this.socket = socket;
@@ -32,7 +32,7 @@ public class ServerInput implements Runnable {
             String serverMessage;
             while ((serverMessage = reader.readLine()) != null) {
                 ServerMessage message = parseServerMessage(serverMessage);
-                handleServerMessage(message , writer);
+                handleServerMessage(message, writer);
             }
 
         } catch (IOException e) {
@@ -47,11 +47,11 @@ public class ServerInput implements Runnable {
      */
     private ServerMessage parseServerMessage(String message) {
         if ("PING".equals(message)) {
-            return new ServerMessage("PING", null);
+            return new ServerMessage(ServerCommands.PING, null);
         }
 
         String[] parts = message.split(" ", 2);
-        String type = parts[0];
+        ServerCommands type = ServerCommands.valueOf(parts[0]);
         String body = parts.length > 1 ? parts[1] : "";
 
         JsonNode data = null;
@@ -69,7 +69,6 @@ public class ServerInput implements Runnable {
      * @param message the message from the server.
      */
     private void handleServerMessage(ServerMessage message, PrintWriter writer) {
-        String response = MessageHandler.determineMessage(message, writer);
-        System.out.println(response);
+        MessageHandler.determineMessage(message, writer);
     }
 }
