@@ -1,5 +1,9 @@
 package client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import messages.Broadcast;
+import messages.Enter;
+import utils.JsonUtils;
 import utils.enumerations.CmdColors;
 
 import java.io.IOException;
@@ -7,6 +11,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
+
+import static java.lang.Thread.sleep;
 
 public class UserInput implements Runnable {
 
@@ -38,30 +44,39 @@ public class UserInput implements Runnable {
      */
     @Override
     public void run() {
-        while (true) {
-            String message = scanner.nextLine();
+        try {
+            sleep(180);
+            System.out.println(CmdColors.PURPLE + "Type 'help' to see available commands." + CmdColors.RESET);
 
-            if (message.toLowerCase().startsWith("login ")) {
-                userLogin(message);
-            } else if (message.toLowerCase().startsWith("msg ")) {
-                sendGlobalMessage(message);
-            }
+            while (true) {
+                String message = scanner.nextLine();
 
-            // Helper menu for acoustic people who do not know the commands
-            // I am the acoustic person, so I need this :(
-            else if (message.equalsIgnoreCase("help")) {
-                helperMenu();
-            }
+                if (message.toLowerCase().startsWith("login ")) {
+                    userLogin(message);
+                    sleep(150);
+                    System.out.print(CmdColors.PURPLE + "Here is the list of commands you can use:" + CmdColors.RESET);
+                    helperMenu();
+                } else if (message.toLowerCase().startsWith("msg ")) {
+                    sendGlobalMessage(message);
+                }
 
-            // Paka Paka condition
-            else if (message.equalsIgnoreCase("bye")) {
-                logout();
-                break;
-            } else {
-                System.out.println(CmdColors.RED + "Invalid command. Please try again." + CmdColors.RESET);
+                // Helper menu for acoustic people who do not know the commands
+                // I am the acoustic person, so I need this :(
+                else if (message.equalsIgnoreCase("help")) {
+                    helperMenu();
+                }
+
+                // Paka Paka condition
+                else if (message.equalsIgnoreCase("bye")) {
+                    logout();
+                    break;
+                } else {
+                    System.out.println(CmdColors.RED + "Invalid command. Please try again." + CmdColors.RESET);
+                }
             }
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
         }
-        closeResources();
     }
 
 
@@ -72,17 +87,15 @@ public class UserInput implements Runnable {
      * @param message the message to be sent to the server
      */
     private void userLogin(String message) {
-        String[] parts = message.split(" ");
-        if (parts.length != 2) {
-            System.out.println("Invalid login command. Please try again.");
-            return;
+        //need to do the same style as i did in the sendGlobalMessage
+        String userUsername = message.substring("login ".length());
+        Enter enter = new Enter(userUsername);
+        try {
+            String json = JsonUtils.toJson(enter);
+            writer.println("ENTER " + json);
+        } catch (JsonProcessingException e) {
+            System.err.println("Error creating JSON: " + e.getMessage());
         }
-
-        String username = parts[1];
-        this.username = username;
-        // sends the login to the server
-        writer.println("ENTER {\"username\":\"" + username + "\"}");
-        helperMenu();
     }
 
     /**
@@ -92,16 +105,14 @@ public class UserInput implements Runnable {
      * @param message the message to be sent to the server
      */
     private void sendGlobalMessage(String message) {
-        String[] parts = message.split(" ");
-        if (parts.length < 1) {
-            System.out.println("Invalid message command. Please try again.");
-            return;
+        String content = message.substring("msg ".length());
+        Broadcast broadcast = new Broadcast(getUsername(), content);
+        try {
+            String json = JsonUtils.toJson(broadcast);
+            writer.println("BROADCAST_REQ " + json);
+        } catch (JsonProcessingException e) {
+            System.err.println("Error creating JSON: " + e.getMessage());
         }
-
-        //get all parts from the message except the 1 part
-        message = message.substring(parts[0].length() + 1);
-        // sends the message to the server
-        writer.println("BROADCAST_REQ {\"message\":\"" + message + "\"}");
     }
 
     /**
@@ -126,6 +137,10 @@ public class UserInput implements Runnable {
 
     public String getUsername() {
         return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public boolean isLoggedIn() {
