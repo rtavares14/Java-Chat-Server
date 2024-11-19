@@ -3,7 +3,6 @@ package tests;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import messages.*;
 import org.junit.jupiter.api.*;
-import tests.messages.*;
 import tests.utils.Utils;
 
 import java.io.*;

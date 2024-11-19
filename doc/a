@@ -1,0 +1,3 @@
+object mapper class to read the user/ server message from and to
+and parse to and fom objects
+folder for both classes

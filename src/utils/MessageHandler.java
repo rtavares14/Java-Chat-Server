@@ -82,13 +82,13 @@ public class MessageHandler {
     private static void determineErrorMessage(ServerMessage serverMessage) {
         JsonNode data = serverMessage.getData();
         if (data != null && data.has("code")) {
-            switch (data.get("code").asText()) {
-                case "5000" -> System.out.println(CmdColors.RED + "User with this name already exists" + CmdColors.RESET);
-                case "5001" -> System.out.println(CmdColors.RED + "Username has an invalid format or length" + CmdColors.RESET);
-                case "5002" -> System.out.println(CmdColors.RED + "Already logged in" + CmdColors.RESET);
-                case "6000" -> System.out.println(CmdColors.RED + "User is not logged in" + CmdColors.RESET);
-                case "7000" -> System.out.println(CmdColors.RED + "No pong received" + CmdColors.RESET);
-                case "8000" -> System.out.println(CmdColors.RED + "Server error" + CmdColors.RESET);
+            switch (data.get("code").intValue()) {
+                case 5000 -> System.out.println(CmdColors.RED + "User with this name already exists" + CmdColors.RESET);
+                case 5001 -> System.out.println(CmdColors.RED + "Username has an invalid format or length" + CmdColors.RESET);
+                case 5002 -> System.out.println(CmdColors.RED + "Already logged in" + CmdColors.RESET);
+                case 6000 -> System.out.println(CmdColors.RED + "User is not logged in" + CmdColors.RESET);
+                case 7000 -> System.out.println(CmdColors.RED + "No pong received" + CmdColors.RESET);
+                case 8000 -> System.out.println(CmdColors.RED + "Server error" + CmdColors.RESET);
                 default -> System.out.println("Unknown error " + data.get("code").asText() + " occurred - " + serverMessage.getType());
             }
         } else {
