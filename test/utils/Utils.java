@@ -1,8 +1,9 @@
-package tests.utils;
+package utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import messages.*;
+import shared.messages.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +33,7 @@ public class Utils {
             throw new RuntimeException("Cannot convert this class to a message");
         }
         String body = mapper.writeValueAsString(object);
-        return header + " " + body;
+        return header+ " " + body;
     }
 
     public static <T> T messageToObject(String message) throws JsonProcessingException {

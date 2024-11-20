@@ -1,4 +1,4 @@
-package utils.enumerations;
+package shared.enumerations;
 
 public enum CmdColors {
     RESET("\u001B[0m"),

@@ -1,10 +1,8 @@
-package tests;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.*;
-import messages.Enter;
-import messages.EnterResp;
-import tests.utils.Utils;
+import shared.messages.Enter;
+import shared.messages.EnterResp;
+import utils.Utils;
 
 import java.io.*;
 import java.net.Socket;
@@ -13,7 +11,7 @@ import java.util.Properties;
 import static java.time.Duration.ofMillis;
 import static org.junit.jupiter.api.Assertions.*;
 
-class AcceptedUsernames {
+class AcceptedUsernamesTests {
 
     private final static Properties PROPS = new Properties();
 
@@ -24,7 +22,7 @@ class AcceptedUsernames {
 
     @BeforeAll
     static void setupAll() throws IOException {
-        InputStream in = AcceptedUsernames.class.getResourceAsStream("tests/testconfig.properties");
+        InputStream in = AcceptedUsernamesTests.class.getResourceAsStream("testconfig.properties");
         PROPS.load(in);
         in.close();
     }

@@ -2,9 +2,9 @@ package client;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import utils.ServerMessage;
-import utils.enumerations.ServerCommands;
-import utils.MessageHandler;
+import shared.utils.ServerMessage;
+import shared.enumerations.ServerCommands;
+import shared.utils.MessageHandler;
 
 import java.io.*;
 import java.net.Socket;
@@ -46,6 +46,7 @@ public class ServerInput implements Runnable {
      * @param message the message from the server.
      * @return the ServerMessage object.
      */
+    //he here i need to use my class JsonUtils to parse the message
     private ServerMessage parseServerMessage(String message) {
         if ("PING".equals(message)) {
             return new ServerMessage(ServerCommands.PING, null);

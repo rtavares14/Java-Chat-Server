@@ -1,10 +1,11 @@
 package client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import messages.Broadcast;
-import messages.Enter;
-import utils.JsonUtils;
-import utils.enumerations.CmdColors;
+import shared.messages.Broadcast;
+import shared.messages.Enter;
+import shared.utils.JsonUtils;
+import shared.enumerations.CmdColors;
+import shared.enumerations.ServerCommands;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -45,7 +46,7 @@ public class UserInput implements Runnable {
     @Override
     public void run() {
         try {
-            sleep(180);
+            sleep(500);
             System.out.println(CmdColors.PURPLE + "Type 'help' to see available commands." + CmdColors.RESET);
 
             while (true) {
@@ -92,7 +93,7 @@ public class UserInput implements Runnable {
         Enter enter = new Enter(userUsername);
         try {
             String json = JsonUtils.toJson(enter);
-            writer.println("ENTER " + json);
+            writer.println(ServerCommands.LOGIN + " " + json);
         } catch (JsonProcessingException e) {
             System.err.println("Error creating JSON: " + e.getMessage());
         }
@@ -109,7 +110,7 @@ public class UserInput implements Runnable {
         Broadcast broadcast = new Broadcast(getUsername(), content);
         try {
             String json = JsonUtils.toJson(broadcast);
-            writer.println("BROADCAST_REQ " + json);
+            writer.println(ServerCommands.BROADCAST.toString() + json);
         } catch (JsonProcessingException e) {
             System.err.println("Error creating JSON: " + e.getMessage());
         }
@@ -131,32 +132,11 @@ public class UserInput implements Runnable {
      */
     public void logout() {
         // sends the logout to the server
-        writer.println("BYE");
+        writer.println(ServerCommands.BYE.toString());
         username = null;
     }
 
     public String getUsername() {
         return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public boolean isLoggedIn() {
-        return username != null;
-    }
-
-    /**
-     * Closes the resources.
-     */
-    private void closeResources() {
-        try {
-            if (scanner != null) scanner.close();
-            if (writer != null) writer.close();
-            if (socket != null) socket.close();
-        } catch (IOException e) {
-            System.err.println("Error closing resources: " + e.getMessage());
-        }
     }
 }

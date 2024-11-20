@@ -1,9 +1,8 @@
-package tests;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import messages.*;
 import org.junit.jupiter.api.*;
-import tests.utils.Utils;
+import shared.messages.*;
+import utils.Utils;
 
 import java.io.*;
 import java.net.Socket;
@@ -27,7 +26,7 @@ class SingleUserTests {
 
     @BeforeAll
     static void setupAll() throws IOException {
-        InputStream in = SingleUserTests.class.getResourceAsStream("tests/testconfig.properties");
+        InputStream in = SingleUserTests.class.getResourceAsStream("testconfig.properties");
         PROPS.load(in);
         in.close();
 

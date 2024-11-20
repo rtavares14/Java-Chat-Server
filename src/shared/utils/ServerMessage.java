@@ -1,7 +1,7 @@
-package utils;
+package shared.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import utils.enumerations.ServerCommands;
+import shared.enumerations.ServerCommands;
 
 public class ServerMessage {
 

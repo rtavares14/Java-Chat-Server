@@ -1,6 +1,6 @@
 package client;
 
-import utils.enumerations.CmdColors;
+import shared.enumerations.CmdColors;
 
 import java.io.IOException;
 import java.net.Socket;

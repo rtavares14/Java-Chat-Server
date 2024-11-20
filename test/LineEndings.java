@@ -1,10 +1,10 @@
-package tests;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.*;
-import messages.BroadcastResp;
-import messages.EnterResp;
-import tests.utils.Utils;
+import shared.messages.BroadcastReq;
+import shared.messages.BroadcastResp;
+import shared.messages.Enter;
+import shared.messages.EnterResp;
+import utils.Utils;
 
 import java.io.*;
 import java.net.Socket;
@@ -13,7 +13,7 @@ import java.util.Properties;
 import static java.time.Duration.ofMillis;
 import static org.junit.jupiter.api.Assertions.*;
 
-class PacketBreakup {
+class LineEndings {
 
     private final static Properties PROPS = new Properties();
 
@@ -25,7 +25,7 @@ class PacketBreakup {
 
     @BeforeAll
     static void setupAll() throws IOException {
-        InputStream in = PacketBreakup.class.getResourceAsStream("tests/testconfig.properties");
+        InputStream in = LineEndings.class.getResourceAsStream("testconfig.properties");
         PROPS.load(in);
         in.close();
     }
@@ -43,23 +43,38 @@ class PacketBreakup {
     }
 
     @Test
-    void tc41IdentFollowedByBroadcastWithMultipleFlushReturnsOk() throws JsonProcessingException {
+    void tc21EnterFollowedByBROADCASTWithWindowsLineEndingsReturnsOk() throws JsonProcessingException {
         receiveLineWithTimeout(in); //ready message
-        out.print("ENTER {\"username\":\"m");
-        out.flush();
-        out.print("yname\"}\r\nBROAD");
-        out.flush();
-        out.print("CAST_REQ {\"message\":\"a\"}\r\n");
+        String message = Utils.objectToMessage(new Enter("myname")) + "\r\n" +
+                Utils.objectToMessage(new BroadcastReq("a")) + "\r\n";
+        out.print(message);
         out.flush();
         String serverResponse = receiveLineWithTimeout(in);
         EnterResp enterResp = Utils.messageToObject(serverResponse);
         assertEquals("OK", enterResp.status());
+
         serverResponse = receiveLineWithTimeout(in);
         BroadcastResp broadcastResp = Utils.messageToObject(serverResponse);
         assertEquals("OK", broadcastResp.status());
     }
 
-    private String receiveLineWithTimeout(BufferedReader reader){
+    @Test
+    void tc22EnterFollowedByBROADCASTWithLinuxLineEndingsReturnsOk() throws JsonProcessingException {
+        receiveLineWithTimeout(in); //ready message
+        String message = Utils.objectToMessage(new Enter("myname")) + "\n" +
+                Utils.objectToMessage(new BroadcastReq("a")) + "\n";
+        out.print(message);
+        out.flush();
+        String serverResponse = receiveLineWithTimeout(in);
+        EnterResp enterResp = Utils.messageToObject(serverResponse);
+        assertEquals("OK", enterResp.status());
+
+        serverResponse = receiveLineWithTimeout(in);
+        BroadcastResp broadcastResp = Utils.messageToObject(serverResponse);
+        assertEquals("OK", broadcastResp.status());
+    }
+
+    private String receiveLineWithTimeout(BufferedReader reader) {
         return assertTimeoutPreemptively(ofMillis(MAX_DELTA_ALLOWED_MS), reader::readLine);
     }
 

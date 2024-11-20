@@ -1,12 +1,10 @@
-package utils;
+package shared.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import utils.enumerations.CmdColors;
-import utils.enumerations.ServerCommands;
+import shared.enumerations.CmdColors;
+import shared.enumerations.ServerCommands;
 
 import java.io.PrintWriter;
-
-import static utils.enumerations.ServerCommands.*;
 
 public class MessageHandler {
 
@@ -25,15 +23,15 @@ public class MessageHandler {
             System.out.println(CmdColors.PURPLE + "Ready to chat" + CmdColors.RESET);
         } else if (serverMessage.getType() == ServerCommands.BROADCAST) {
             handleBroadcastMessage(data);
-        } else if (serverMessage.getType() == LEFT) {
+        } else if (serverMessage.getType() == ServerCommands.LEFT) {
             handleLeftMessage(data);
         } else if (data.has("status") && "OK".equals(data.get("status").asText())) {
             switch (serverMessage.getType()) {
-                case ENTER_RESP -> System.out.println(CmdColors.GREEN + "Chat entered" + CmdColors.RESET);
-                case BROADCAST_RESP -> System.out.println(CmdColors.ORANGE + "Message sent" + CmdColors.RESET);
-                case PING -> System.out.println("Ping");
-                case HANGUP -> System.out.println("Hangup");
-                case BYE_RESP -> System.out.println(CmdColors.PURPLE + "Bye see you later" + CmdColors.RESET);
+                case ServerCommands.ENTER_RESP -> System.out.println(CmdColors.GREEN + "Chat entered" + CmdColors.RESET);
+                case ServerCommands.BROADCAST_RESP -> System.out.println(CmdColors.ORANGE + "Message sent" + CmdColors.RESET);
+                case ServerCommands.PING -> System.out.println("Ping");
+                case ServerCommands.HANGUP -> System.out.println("Hangup");
+                case ServerCommands.BYE_RESP -> System.out.println(CmdColors.PURPLE + "Bye see you later" + CmdColors.RESET);
                 default -> System.out.println("Unknown command");
             }
         } else {

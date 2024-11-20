@@ -1,7 +1,7 @@
-package messages;
+package shared.messages;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import utils.enumerations.ServerCommands;
+import shared.enumerations.ServerCommands;
 
 public record Message<T>(ServerCommands type, T data) {
 
