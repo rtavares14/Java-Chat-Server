@@ -11,6 +11,7 @@ public class Client {
 
     /**
      * Main method to start the client.
+     *
      * @param args command line arguments.
      */
     public static void main(String[] args) {
@@ -39,9 +40,13 @@ public class Client {
                 serverThread.start();
                 clientThread.start();
 
-                // add a shutdown hook to log out the user when the client is shutting down
+
+                //The shutdown hook is a thread that is executed when the JVM is shutting down.
+                //  It is used to perform cleanup operations before the JVM shuts down.
+                // The shutdown hook is a good way to perform cleanup operations before the JVM shuts down.
+                // https://www.baeldung.com/jvm-shutdown-hooks
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                System.out.println(CmdColors.PURPLE + "Client is shutting down..." + CmdColors.RESET);
+                    System.out.println(CmdColors.PURPLE + "Client is shutting down..." + CmdColors.RESET);
                     userInputHandler.logout();
                 }));
 

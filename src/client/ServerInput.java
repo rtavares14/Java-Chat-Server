@@ -1,8 +1,5 @@
 package client;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import shared.utils.ServerMessage;
 import shared.enumerations.ServerCommands;
 import shared.utils.MessageHandler;
 
@@ -25,53 +22,25 @@ public class ServerInput implements Runnable {
      */
     @Override
     public void run() {
-        try {
-            InputStream is = socket.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
             String serverMessage;
             while ((serverMessage = reader.readLine()) != null) {
-                ServerMessage message = parseServerMessage(serverMessage);
-                handleServerMessage(message, writer);
+                processServerMessage(serverMessage);
             }
-
         } catch (IOException e) {
             System.err.println("Error receiving message: " + e.getMessage());
         }
     }
 
-    /**
-     * Parses a message from the server into a ServerMessage object.
-     *
-     * @param message the message from the server.
-     * @return the ServerMessage object.
-     */
-    //he here i need to use my class JsonUtils to parse the message
-    private ServerMessage parseServerMessage(String message) {
-        if ("PING".equals(message)) {
-            return new ServerMessage(ServerCommands.PING, null);
-        }
-
-        String[] parts = message.split(" ", 2);
-        ServerCommands type = ServerCommands.valueOf(parts[0]);
-        String body = parts.length > 1 ? parts[1] : "";
-
-        JsonNode data = null;
+    private void processServerMessage(String message) {
         try {
-            data = new ObjectMapper().readTree(body);
-        } catch (IOException e) {
-            System.err.println("Error parsing JSON: " + e.getMessage());
+            String[] parts = message.split(" ", 2);
+            ServerCommands command = ServerCommands.valueOf(parts[0]);
+            String jsonPayload = parts.length > 1 ? parts[1] : "";
+
+            MessageHandler.handleMessage(command, jsonPayload, writer);
+        } catch (Exception e) {
+            System.err.println("Failed to process server message: " + e.getMessage());
         }
-
-        return new ServerMessage(type, data);
-    }
-
-    /**
-     * Handles a message from the server.
-     *
-     * @param message the message from the server.
-     */
-    private void handleServerMessage(ServerMessage message, PrintWriter writer) {
-        MessageHandler.determineMessage(message, writer);
     }
 }

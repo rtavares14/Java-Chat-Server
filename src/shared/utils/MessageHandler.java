@@ -1,96 +1,118 @@
 package shared.utils;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import shared.enumerations.CmdColors;
 import shared.enumerations.ServerCommands;
+import shared.messages.*;
 
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
+import static shared.enumerations.CmdColors.*;
+import static shared.enumerations.ServerCommands.*;
 
 public class MessageHandler {
+    private static final Map<ServerCommands, BiConsumer<String, PrintWriter>> handlers = new HashMap<>();
+    //private final Map<ServerCommands, Consumer<Class>> handlers = new HashMap<>();
 
-    /**
-     * Determine the message
-     *
-     * @param serverMessage the server message
-     * @param writer the writer
-     */
-    public static void determineMessage(ServerMessage serverMessage, PrintWriter writer) {
-        JsonNode data = serverMessage.getData();
-        if (serverMessage.getType() == ServerCommands.PING) {
-            writer.println("PONG");
-            //System.out.println(CmdColors.PURPLE + "PONG sent" + CmdColors.RESET);
-        } else if (serverMessage.getType() == ServerCommands.READY) {
-            System.out.println(CmdColors.PURPLE + "Ready to chat" + CmdColors.RESET);
-        } else if (serverMessage.getType() == ServerCommands.BROADCAST) {
-            handleBroadcastMessage(data);
-        } else if (serverMessage.getType() == ServerCommands.LEFT) {
-            handleLeftMessage(data);
-        } else if (data.has("status") && "OK".equals(data.get("status").asText())) {
-            switch (serverMessage.getType()) {
-                case ServerCommands.ENTER_RESP -> System.out.println(CmdColors.GREEN + "Chat entered" + CmdColors.RESET);
-                case ServerCommands.BROADCAST_RESP -> System.out.println(CmdColors.ORANGE + "Message sent" + CmdColors.RESET);
-                case ServerCommands.PING -> System.out.println("Ping");
-                case ServerCommands.HANGUP -> System.out.println("Hangup");
-                case ServerCommands.BYE_RESP -> System.out.println(CmdColors.PURPLE + "Bye see you later" + CmdColors.RESET);
-                default -> System.out.println("Unknown command");
-            }
-        } else {
-            determineErrorMessage(serverMessage);
+    static {
+        handlers.put(PING, MessageHandler::handlePing);
+        handlers.put(READY, MessageHandler::handleReady);
+        handlers.put(ENTER_RESP, MessageHandler::handleEnterResp);
+        handlers.put(BROADCAST_RESP, MessageHandler::handleBroadcastResp);
+        handlers.put(BROADCAST, MessageHandler::handleBroadcast);
+        handlers.put(LEFT, MessageHandler::handleLeft);
+        handlers.put(BYE_RESP, MessageHandler::handleBye);
+    }
+
+    private static void handlePing(String string, PrintWriter printWriter) {
+        try {
+            printWriter.println(JsonUtils.toJson(new Pong()));
+        } catch (Exception e) {
+            System.err.println("Failed to process PING message: " + e.getMessage());
         }
     }
 
-    /**
-     * Handle the left message
-     *
-     * @param data the data
-     */
-    private static void handleLeftMessage(JsonNode data) {
-        if (data.has("username")) {
-            String username = data.get("username").asText();
-            if (username.isEmpty()) {
-                System.out.println(CmdColors.RED + "Someone left the chat" + CmdColors.RESET);
+    public static void handleMessage(ServerCommands command, String json, PrintWriter writer) {
+        BiConsumer<String, PrintWriter> handler = handlers.get(command);
+        if (handler != null) {
+            handler.accept(json, writer);
+        } else {
+            System.err.println("Unknown command: " + command);
+        }
+    }
+
+    private static void handleReady(String json, PrintWriter writer) {
+        try {
+            Ready message = JsonUtils.fromJson(json, Ready.class);
+            System.out.println(PURPLE + "Server is ready. Version: " + message.version() + RESET);
+        } catch (Exception e) {
+            System.err.println("Failed to process READY message: " + e.getMessage());
+        }
+    }
+
+    private static void handleEnterResp(String json, PrintWriter writer) {
+        try {
+            BroadcastResp message = JsonUtils.fromJson(json, BroadcastResp.class);
+            if ("OK".equalsIgnoreCase(message.status())) {
+                System.out.println(GREEN + "Welcome to the chat!" + RESET);
             } else {
-                System.out.println(CmdColors.RED + username + " left the chat" + CmdColors.RESET);
+                //here call my switch case to handle the error
+                System.err.println("Enter failed. Code: " + message.code());
             }
-        } else {
-            System.out.println("Invalid left message format");
+        } catch (Exception e) {
+            System.err.println("Failed to process ENTER_RESP message: " + e.getMessage());
         }
     }
 
-    /**
-     * Handle the broadcast message
-     *
-     * @param data the data
-     */
-    private static void handleBroadcastMessage(JsonNode data) {
-        if (data.has("username") && data.has("message")) {
-            String username = data.get("username").asText();
-            String message = data.get("message").asText();
-            System.out.println(CmdColors.ORANGE + username + ": " + message + CmdColors.RESET);
-        } else {
-            System.out.println("Invalid broadcast message format");
+    private static void handleBroadcastResp(String json, PrintWriter writer) {
+        try {
+            BroadcastResp message = JsonUtils.fromJson(json, BroadcastResp.class);
+            if ("OK".equalsIgnoreCase(message.status())) {
+                System.out.println(ORANGE + "Message sent!" + RESET);
+            } else {
+                //here call my switch case to handle the error
+                System.err.println("Broadcast failed. Code: " + message.code());
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to process BROADCAST_RESP message: " + e.getMessage());
         }
     }
 
-    /**
-     * Determine the error message
-     *
-     * @param serverMessage the server message
-     */
-    private static void determineErrorMessage(ServerMessage serverMessage) {
-        JsonNode data = serverMessage.getData();
-        if (data != null && data.has("code")) {
-            switch (data.get("code").intValue()) {
-                case 5000 -> System.out.println(CmdColors.RED + "User with this name already exists" + CmdColors.RESET);
-                case 5001 -> System.out.println(CmdColors.RED + "Username has an invalid format or length" + CmdColors.RESET);
-                case 5002 -> System.out.println(CmdColors.RED + "Already logged in" + CmdColors.RESET);
-                case 6000 -> System.out.println(CmdColors.RED + "User is not logged in" + CmdColors.RESET);
-                case 7000 -> System.out.println(CmdColors.RED + "No pong received" + CmdColors.RESET);
-                case 8000 -> System.out.println(CmdColors.RED + "Server error" + CmdColors.RESET);
-                default -> System.out.println("Unknown error " + data.get("code").asText() + " occurred - " + serverMessage.getType());
+    private static void handleBroadcast(String json, PrintWriter writer) {
+        try {
+            Broadcast message = JsonUtils.fromJson(json, Broadcast.class);
+            System.out.println(ORANGE + message.username() + " sent :" + message.message() + RESET);
+        } catch (Exception e) {
+            System.err.println("Failed to process BROADCAST message: " + e.getMessage());
+        }
+    }
+
+    private static void handleLeft(String string, PrintWriter printWriter) {
+        try {
+            Left message = JsonUtils.fromJson(string, Left.class);
+            if (message.username().isEmpty()) {
+                System.out.println(YELLOW + "Someone left the chat" + RESET);
+            } else {
+                System.out.println(YELLOW + message.username() + " left the chat" + RESET);
             }
-        } else {
-            System.out.println("Unknown error occurred - " + serverMessage.getType());
+        } catch (Exception e) {
+            System.err.println("Failed to process LEFT message: " + e.getMessage());
+        }
+    }
+
+    private static void handleBye(String json, PrintWriter writer) {
+        try {
+            BroadcastResp message = JsonUtils.fromJson(json, BroadcastResp.class);
+            if ("OK".equalsIgnoreCase(message.status())) {
+                System.out.println(PURPLE + "Bye bye see you later!" + RESET);
+            } else {
+                //here call my switch case to handle the error
+                System.err.println("Bye failed. Code: " + message.code());
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to process BYE_RESP message: " + e.getMessage());
         }
     }
 }

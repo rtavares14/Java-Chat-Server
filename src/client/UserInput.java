@@ -2,6 +2,8 @@ package client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import shared.messages.Broadcast;
+import shared.messages.BroadcastReq;
+import shared.messages.BroadcastResp;
 import shared.messages.Enter;
 import shared.utils.JsonUtils;
 import shared.enumerations.CmdColors;
@@ -14,6 +16,7 @@ import java.net.Socket;
 import java.util.Scanner;
 
 import static java.lang.Thread.sleep;
+import static shared.enumerations.ServerCommands.*;
 
 public class UserInput implements Runnable {
 
@@ -93,7 +96,8 @@ public class UserInput implements Runnable {
         Enter enter = new Enter(userUsername);
         try {
             String json = JsonUtils.toJson(enter);
-            writer.println(ServerCommands.LOGIN + " " + json);
+            sendCommand(LOGIN, json);
+            username = userUsername;
         } catch (JsonProcessingException e) {
             System.err.println("Error creating JSON: " + e.getMessage());
         }
@@ -107,10 +111,10 @@ public class UserInput implements Runnable {
      */
     private void sendGlobalMessage(String message) {
         String content = message.substring("msg ".length());
-        Broadcast broadcast = new Broadcast(getUsername(), content);
+        BroadcastReq broadcast = new BroadcastReq(content);
         try {
             String json = JsonUtils.toJson(broadcast);
-            writer.println(ServerCommands.BROADCAST.toString() + json);
+            sendCommand(BROADCAST_REQ, json);
         } catch (JsonProcessingException e) {
             System.err.println("Error creating JSON: " + e.getMessage());
         }
@@ -131,12 +135,26 @@ public class UserInput implements Runnable {
      * Method to handle the logout command
      */
     public void logout() {
-        // sends the logout to the server
-        writer.println(ServerCommands.BYE.toString());
+        writer.println(BYE);
         username = null;
     }
 
     public String getUsername() {
         return username;
     }
+
+    /**
+     * Helper method to send server commands with JSON payloads
+     *
+     * @param command the server command to be sent
+     * @param jsonPayload the JSON payload associated with the command
+     */
+    private void sendCommand(ServerCommands command, String jsonPayload) {
+        if (command != null && jsonPayload != null && !jsonPayload.isEmpty()) {
+            writer.println(command + " " + jsonPayload);
+        } else {
+            System.err.println("Invalid command or payload. Cannot send to server.");
+        }
+    }
+
 }
