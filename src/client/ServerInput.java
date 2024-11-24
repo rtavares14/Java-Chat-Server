@@ -8,13 +8,24 @@ import java.net.Socket;
 
 public class ServerInput implements Runnable {
 
+    // The socket to connect to the server
+    // The writer to send messages to the server
+    // The message handler to process server messages
     private Socket socket;
     private PrintWriter writer;
+    private final MessageHandler messageHandler;
 
+    /**
+     * Constructs a new ServerInput object.
+     *
+     * @param socket the socket.
+     * @throws IOException if an I/O error occurs.
+     */
     public ServerInput(Socket socket) throws IOException {
         this.socket = socket;
         OutputStream out = socket.getOutputStream();
         this.writer = new PrintWriter(out, true);
+        this.messageHandler = new MessageHandler();
     }
 
     /**
@@ -22,6 +33,9 @@ public class ServerInput implements Runnable {
      */
     @Override
     public void run() {
+        // Read messages from the server
+        // Process the server message
+        // If an error occurs, print the error message
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
             String serverMessage;
             while ((serverMessage = reader.readLine()) != null) {
@@ -32,13 +46,21 @@ public class ServerInput implements Runnable {
         }
     }
 
+    /**
+     * Processes the server message.
+     *
+     * @param message the message from the server.
+     */
     private void processServerMessage(String message) {
+        // Split the message into command and payload
+        // Handle the server message
+        // If an error occurs, print the error message
         try {
             String[] parts = message.split(" ", 2);
             ServerCommands command = ServerCommands.valueOf(parts[0]);
             String jsonPayload = parts.length > 1 ? parts[1] : "";
 
-            MessageHandler.handleMessage(command, jsonPayload, writer);
+            messageHandler.handleMessage(command, jsonPayload);
         } catch (Exception e) {
             System.err.println("Failed to process server message: " + e.getMessage());
         }

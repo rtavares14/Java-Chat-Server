@@ -13,37 +13,37 @@ import static shared.enumerations.CmdColors.*;
 import static shared.enumerations.ServerCommands.*;
 
 public class MessageHandler {
-    private static final Map<ServerCommands, BiConsumer<String, PrintWriter>> handlers = new HashMap<>();
-    //private final Map<ServerCommands, Consumer<Class>> handlers = new HashMap<>();
+    //private static final Map<ServerCommands, BiConsumer<String, PrintWriter>> handlers = new HashMap<>();
+    private final Map<ServerCommands, Consumer<String>> handlers = new HashMap<>();
 
-    static {
-        handlers.put(PING, MessageHandler::handlePing);
-        handlers.put(READY, MessageHandler::handleReady);
-        handlers.put(ENTER_RESP, MessageHandler::handleEnterResp);
-        handlers.put(BROADCAST_RESP, MessageHandler::handleBroadcastResp);
-        handlers.put(BROADCAST, MessageHandler::handleBroadcast);
-        handlers.put(LEFT, MessageHandler::handleLeft);
-        handlers.put(BYE_RESP, MessageHandler::handleBye);
+    public MessageHandler() {
+        handlers.put(PING, this::handlePing);
+        handlers.put(READY, this::handleReady);
+        handlers.put(ENTER_RESP, this::handleEnterResp);
+        handlers.put(BROADCAST_RESP, this::handleBroadcastResp);
+        handlers.put(BROADCAST, this::handleBroadcast);
+        handlers.put(LEFT, this::handleLeft);
+        handlers.put(BYE_RESP, this::handleBye);
     }
 
-    private static void handlePing(String string, PrintWriter printWriter) {
-        try {
-            printWriter.println(JsonUtils.toJson(new Pong()));
-        } catch (Exception e) {
-            System.err.println("Failed to process PING message: " + e.getMessage());
-        }
-    }
-
-    public static void handleMessage(ServerCommands command, String json, PrintWriter writer) {
-        BiConsumer<String, PrintWriter> handler = handlers.get(command);
+    public void handleMessage(ServerCommands command, String json) {
+        Consumer<String> handler = handlers.get(command);
         if (handler != null) {
-            handler.accept(json, writer);
+            handler.accept(json);
         } else {
             System.err.println("Unknown command: " + command);
         }
     }
 
-    private static void handleReady(String json, PrintWriter writer) {
+    private void handlePing(String json) {
+        try {
+            System.out.println(JsonUtils.toJson(new Pong()));
+        } catch (Exception e) {
+            System.err.println("Failed to process PING message: " + e.getMessage());
+        }
+    }
+
+    private void handleReady(String json) {
         try {
             Ready message = JsonUtils.fromJson(json, Ready.class);
             System.out.println(PURPLE + "Server is ready. Version: " + message.version() + RESET);
@@ -52,46 +52,44 @@ public class MessageHandler {
         }
     }
 
-    private static void handleEnterResp(String json, PrintWriter writer) {
+    private void handleEnterResp(String json) {
         try {
             BroadcastResp message = JsonUtils.fromJson(json, BroadcastResp.class);
             if ("OK".equalsIgnoreCase(message.status())) {
                 System.out.println(GREEN + "Welcome to the chat!" + RESET);
             } else {
-                //here call my switch case to handle the error
-                System.err.println("Enter failed. Code: " + message.code());
+                handleErrorMessage(message.code());
             }
         } catch (Exception e) {
             System.err.println("Failed to process ENTER_RESP message: " + e.getMessage());
         }
     }
 
-    private static void handleBroadcastResp(String json, PrintWriter writer) {
+    private void handleBroadcastResp(String json) {
         try {
             BroadcastResp message = JsonUtils.fromJson(json, BroadcastResp.class);
             if ("OK".equalsIgnoreCase(message.status())) {
                 System.out.println(ORANGE + "Message sent!" + RESET);
             } else {
-                //here call my switch case to handle the error
-                System.err.println("Broadcast failed. Code: " + message.code());
+                handleErrorMessage(message.code());
             }
         } catch (Exception e) {
             System.err.println("Failed to process BROADCAST_RESP message: " + e.getMessage());
         }
     }
 
-    private static void handleBroadcast(String json, PrintWriter writer) {
+    private void handleBroadcast(String json) {
         try {
             Broadcast message = JsonUtils.fromJson(json, Broadcast.class);
-            System.out.println(ORANGE + message.username() + " sent :" + message.message() + RESET);
+            System.out.println(ORANGE + message.username() + " sent: " + message.message() + RESET);
         } catch (Exception e) {
             System.err.println("Failed to process BROADCAST message: " + e.getMessage());
         }
     }
 
-    private static void handleLeft(String string, PrintWriter printWriter) {
+    private void handleLeft(String json) {
         try {
-            Left message = JsonUtils.fromJson(string, Left.class);
+            Left message = JsonUtils.fromJson(json, Left.class);
             if (message.username().isEmpty()) {
                 System.out.println(YELLOW + "Someone left the chat" + RESET);
             } else {
@@ -102,17 +100,28 @@ public class MessageHandler {
         }
     }
 
-    private static void handleBye(String json, PrintWriter writer) {
+    private void handleBye(String json) {
         try {
             BroadcastResp message = JsonUtils.fromJson(json, BroadcastResp.class);
             if ("OK".equalsIgnoreCase(message.status())) {
                 System.out.println(PURPLE + "Bye bye see you later!" + RESET);
             } else {
-                //here call my switch case to handle the error
-                System.err.println("Bye failed. Code: " + message.code());
+                handleErrorMessage(message.code());
             }
         } catch (Exception e) {
             System.err.println("Failed to process BYE_RESP message: " + e.getMessage());
+        }
+    }
+
+    private void handleErrorMessage(int code) {
+        switch (code) {
+            case 5000 -> System.out.println(RED + "User with this name already exists" + RESET);
+            case 5001 -> System.out.println(RED + "Username has an invalid format or length" + RESET);
+            case 5002 -> System.out.println(RED + "Already logged in" + RESET);
+            case 6000 -> System.out.println(RED + "User is not logged in" + RESET);
+            case 7000 -> System.out.println(RED + "No pong received" + RESET);
+            case 8000 -> System.out.println(RED + "Pong without ping" + RESET);
+            default -> System.out.println(RED + "Unknown error code: " + code + RESET);
         }
     }
 }

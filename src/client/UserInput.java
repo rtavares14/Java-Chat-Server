@@ -1,9 +1,7 @@
 package client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import shared.messages.Broadcast;
 import shared.messages.BroadcastReq;
-import shared.messages.BroadcastResp;
 import shared.messages.Enter;
 import shared.utils.JsonUtils;
 import shared.enumerations.CmdColors;
@@ -49,8 +47,8 @@ public class UserInput implements Runnable {
     @Override
     public void run() {
         try {
-            sleep(500);
-            System.out.println(CmdColors.PURPLE + "Type 'help' to see available commands." + CmdColors.RESET);
+            //sleep(500);
+            //System.out.println(CmdColors.PURPLE + "Type 'help' to see available commands." + CmdColors.RESET);
 
             while (true) {
                 String message = scanner.nextLine();

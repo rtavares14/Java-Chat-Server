@@ -55,6 +55,10 @@ public class Client {
 
             } catch (IOException e) {
                 System.err.println("Could not connect to server: HAHAHA AGAIN");
+                // stops for 5 seconds before trying again
+                // I chose 5 seconds because it is a good amount of time to wait before trying to reconnect
+                // I chose this implementation because it is a good way to handle the connection to the server
+                // Also we need a heartbeat connection in Parallel computing in Quartile 1
                 try {
                     // stops for 5 seconds before trying again
                     Thread.sleep(5000);
