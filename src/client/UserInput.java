@@ -54,10 +54,10 @@ public class UserInput implements Runnable {
                 String message = scanner.nextLine();
 
                 if (message.toLowerCase().startsWith("login ")) {
-                    userLogin(message);
-                    sleep(150);
-                    System.out.print(CmdColors.PURPLE + "Here is the list of commands you can use:" + CmdColors.RESET);
-                    helperMenu();
+                    if (userLogin(message)) {
+                        System.out.print(CmdColors.PURPLE + "Here is the list of commands you can use:" + CmdColors.RESET);
+                        helperMenu();
+                    }
                 } else if (message.toLowerCase().startsWith("msg ")) {
                     sendGlobalMessage(message);
                 }
@@ -88,16 +88,17 @@ public class UserInput implements Runnable {
      *
      * @param message the message to be sent to the server
      */
-    private void userLogin(String message) {
-        //need to do the same style as i did in the sendGlobalMessage
+    private boolean userLogin(String message) {
         String userUsername = message.substring("login ".length());
         Enter enter = new Enter(userUsername);
         try {
             String json = JsonUtils.toJson(enter);
             sendCommand(LOGIN, json);
             username = userUsername;
+            return true;
         } catch (JsonProcessingException e) {
             System.err.println("Error creating JSON: " + e.getMessage());
+            return false;
         }
     }
 

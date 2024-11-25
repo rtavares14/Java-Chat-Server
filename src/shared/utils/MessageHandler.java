@@ -1,12 +1,13 @@
 package shared.utils;
 
+import client.consummers.PingConsumer;
+import client.consummers.ReadyConsumer;
 import shared.enumerations.ServerCommands;
 import shared.messages.*;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static shared.enumerations.CmdColors.*;
@@ -14,9 +15,13 @@ import static shared.enumerations.ServerCommands.*;
 
 public class MessageHandler {
     //private static final Map<ServerCommands, BiConsumer<String, PrintWriter>> handlers = new HashMap<>();
+    //change the method to a consumer class and implemnt the accept method // implements Consumer<String>
+    // override the apply method
     private final Map<ServerCommands, Consumer<String>> handlers = new HashMap<>();
+    private final PrintWriter writer;
 
-    public MessageHandler() {
+    public MessageHandler(PrintWriter writer) {
+        this.writer = writer;
         handlers.put(PING, this::handlePing);
         handlers.put(READY, this::handleReady);
         handlers.put(ENTER_RESP, this::handleEnterResp);
@@ -24,7 +29,15 @@ public class MessageHandler {
         handlers.put(BROADCAST, this::handleBroadcast);
         handlers.put(LEFT, this::handleLeft);
         handlers.put(BYE_RESP, this::handleBye);
+        handlers.put(HANGUP, this::handlePongError);
     }
+    //refactoring
+
+    //evrry message
+    //i need to get the ServerCoomands, split the message into command get the play payload
+    //check if i have the command in the handlers map
+    //if not i say paka paka
+    //if i have the command i get the handler and pass the payload to it
 
     public void handleMessage(ServerCommands command, String json) {
         Consumer<String> handler = handlers.get(command);
@@ -37,16 +50,22 @@ public class MessageHandler {
 
     private void handlePing(String json) {
         try {
-            System.out.println(JsonUtils.toJson(new Pong()));
+            writer.println(PONG);
         } catch (Exception e) {
             System.err.println("Failed to process PING message: " + e.getMessage());
         }
+    }
+
+    private void handlePongError(String string) {
+        System.out.println(RED + "No pong received" + RESET);
     }
 
     private void handleReady(String json) {
         try {
             Ready message = JsonUtils.fromJson(json, Ready.class);
             System.out.println(PURPLE + "Server is ready. Version: " + message.version() + RESET);
+            System.out.println(PURPLE + "Type 'help' to see available commands" + RESET);
+            System.out.println(PURPLE + "Type 'login <username>' to enter the chat" + RESET);
         } catch (Exception e) {
             System.err.println("Failed to process READY message: " + e.getMessage());
         }

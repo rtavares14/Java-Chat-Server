@@ -29,7 +29,7 @@ public class Client {
             try {
                 //connection to the server
                 Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
-                System.out.println(CmdColors.PURPLE + "Connected to server." + CmdColors.RESET);
+                //System.out.println(CmdColors.PURPLE + "Connected to server." + CmdColors.RESET);
 
                 // start a new thread to handle user input and server messages
                 UserInput userInputHandler = new UserInput(socket);

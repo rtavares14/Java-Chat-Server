@@ -8,6 +8,7 @@ public enum ServerCommands {
     BROADCAST_RESP("BROADCAST_RESP"), // Response to broadcast command
     BROADCAST("BROADCAST"), // Broadcast command to send message to all clients
     PING("PING"), // Ping command to check if server is alive need to respond with PONG
+    PONG("PONG"), // Pong command to respond to PING
     HANGUP("HANGUP"), // Hangup command to disconnect from server - pong not received
     PONG_ERROR("PONG_ERROR"), // Error response to PING command - ping not received before pong
     BYE("BYE"), // Logout command
