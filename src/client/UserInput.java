@@ -13,7 +13,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
-import static java.lang.Thread.sleep;
 import static shared.enumerations.ServerCommands.*;
 
 public class UserInput implements Runnable {
@@ -47,17 +46,11 @@ public class UserInput implements Runnable {
     @Override
     public void run() {
         try {
-            //sleep(500);
-            //System.out.println(CmdColors.PURPLE + "Type 'help' to see available commands." + CmdColors.RESET);
-
             while (true) {
                 String message = scanner.nextLine();
 
                 if (message.toLowerCase().startsWith("login ")) {
-                    if (userLogin(message)) {
-                        System.out.print(CmdColors.PURPLE + "Here is the list of commands you can use:" + CmdColors.RESET);
-                        helperMenu();
-                    }
+                    userLogin(message);
                 } else if (message.toLowerCase().startsWith("msg ")) {
                     sendGlobalMessage(message);
                 }
@@ -74,6 +67,7 @@ public class UserInput implements Runnable {
                     break;
                 } else {
                     System.out.println(CmdColors.RED + "Invalid command. Please try again." + CmdColors.RESET);
+                    helperMenu();
                 }
             }
         } catch (Exception e) {
@@ -138,14 +132,10 @@ public class UserInput implements Runnable {
         username = null;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
     /**
      * Helper method to send server commands with JSON payloads
      *
-     * @param command the server command to be sent
+     * @param command     the server command to be sent
      * @param jsonPayload the JSON payload associated with the command
      */
     private void sendCommand(ServerCommands command, String jsonPayload) {
@@ -155,5 +145,4 @@ public class UserInput implements Runnable {
             System.err.println("Invalid command or payload. Cannot send to server.");
         }
     }
-
 }
