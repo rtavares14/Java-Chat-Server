@@ -60,13 +60,13 @@ public class MessageHandler {
      */
     public static void handleErrorMessage(int code) {
         switch (code) {
-            case 5000 -> System.out.println(RED + "User with this name already exists" + RESET);
-            case 5001 -> System.out.println(RED + "Username has an invalid format or length" + RESET);
-            case 5002 -> System.out.println(RED + "Already logged in" + RESET);
-            case 6000 -> System.out.println(RED + "User is not logged in" + RESET);
-            case 7000 -> System.out.println(RED + "No pong received" + RESET);
-            case 8000 -> System.out.println(RED + "Pong without ping" + RESET);
-            default -> System.out.println(RED + "Unknown error code: " + code + RESET);
+            case 5000 -> MessageWriter.printColoredMessage(RED,"User with this name already exists" );
+            case 5001 -> MessageWriter.printColoredMessage(RED,"Username has an invalid format or length");
+            case 5002 -> MessageWriter.printColoredMessage(RED,"Already logged in");
+            case 6000 -> MessageWriter.printColoredMessage(RED,"User is not logged in");
+            case 7000 -> MessageWriter.printColoredMessage(RED,"No pong received" );
+            case 8000 -> MessageWriter.printColoredMessage(RED,"Pong without ping");
+            default -> MessageWriter.printColoredMessage(RED,"Unknown error code: " + code);
         }
     }
 }

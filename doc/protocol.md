@@ -77,7 +77,151 @@ Possible `<error code>`:
 |------------|------------------------|
 | 6000       | User is not logged in  |
 
-# 3. Heartbeat message
+# 3. Private message
+
+Sends a private message from a client to specific client. The sending client does not receive the message itself but gets a confirmation that the message has been sent.
+
+## 3.1 Happy flow
+
+```
+C -> S: SENDTO_REQ {"username":"<username>","message":"<message>"}
+S -> C: SENDTO_RESP {"status":"OK"}
+```
+- `<username>`: the username of the user that must receive the message.
+- `<message>`: the message that must be sent.
+
+Chosen client receive the message as follows:
+```
+S -> chosen client: SENDTO_RESP {"username":"<username>","message":"<message>"}   
+```   
+- `<username>`: the username of the user that is sending the message.
+- `<message>`: the message that must be sent.
+
+## 3.2 Unhappy flow
+
+```
+S -> C: SENDTO_RESP {"status": "ERROR", "code": <error code>}
+```
+Possible `<error code>`:
+
+| Error code | Description            |
+|------------|------------------------|
+| 6000       | User is not logged in  |
+| 6006       | Username not in system |
+
+# 4. List of connected clients
+
+The server sends a list of connected clients to the client that requested it.
+
+## 4.1 Happy flow
+
+```
+C -> S: LIST_REQ
+S -> C: LIST_RESP {"clients":["<username1>","<username2>",...]}
+```
+- `<username1>`, `<username2>`, ...: the usernames of the connected clients.
+
+## 4.2 Unhappy flow
+
+```
+S -> C: LIST_RESP {"status": "ERROR", "code": <error code>}
+```
+Possible `<error code>`:
+
+| Error code | Description            |
+|------------|------------------------|
+| 6000       | User is not logged in  |
+
+# 5. Rock Paper Scissors game
+
+The user will request to play a game of rock-paper-scissors with the first client that is available. When the first client request to play a goblal messafe will be sent to all clients that the client is in a game. When the second client request to play a game, they both will enter the *game room*. The game will be played in rounds. The game ends when one of the clients wins 3 rounds.
+
+## 5.1 Enter the game 
+### Happy flow
+
+```
+C1 -> S: RPS_REQ
+S -> C1: RPS_RESP {"status":"OK"}
+s -> others: RPS_JOINED {"username":"<username>"}
+C2 -> S: RPS_REQ
+S -> C2: RPS_RESP {"status":"OK"}
+```
+- `<username>`: the username of the user that is in the game.
+
+### Unhappy flow
+
+```
+S -> C1: RPS_RESP {"status":"ERROR","code":<error code>}
+```
+
+Possible `<error code>`:
+
+| Error code | Description       |
+|------------|-------------------|
+| 9000       | Already participating in a game |
+| 9009       | Game room is full |
+
+## 5.2 Play the game
+
+The server will send a message to both clients when the *game room* is full and the game will start.
+When the game starts, the users can type in their choice (max 20 seconds). Then the server will send a message to both clients with the result of the round. The game ends when one of the clients wins 3 rounds.
+
+### Happy flow
+
+```
+C1 -> s: RPS_CHOICE {"choice":"<choice>"}
+C2 -> s: RPS_CHOICE {"choice":"<choice>"}
+```
+- `<choice>`: the choice of the user (rock, paper or scissors).
+
+The server will send a message to both clients with the result of the round:
+```
+S -> C1: RPS_RESULT {"round":<round number>,"result":"<result>","score":"<score>"}
+S -> C2: RPS_RESULT {"round":<round number>,"result":"<result>","score":"<score>"}
+```
+- `<round number>`: the number of the round. Example: 1, 2, 3, ...
+- `<result>`: the result of the round. Example: "win", "lose" or "draw".
+- `<score>`: the score of the game. Example: "1-0".
+
+### Unhappy flow
+
+```
+S -> C1: RPS_RESP {"status":"ERROR","code":<error code>}
+```
+
+Possible `<error code>`:
+
+| Error code | Description       |
+|------------|-------------------|
+| 9005       | Anwser not in time|
+| 9006       | Cant chose twice  |
+
+## 5.3 End the game
+
+When the game ends, the server will send a message to both clients with the result of the game and make them leave the *game room*.
+
+### Happy flow
+
+```
+S -> C1: RPS_END {"result":"<result>"}
+S -> C2: RPS_END {"result":"<result>"}
+```
+- `<result>`: the result of the game. Example: "won" or "lose".
+
+### Unhappy flow
+
+```
+S -> C1: RPS_RESP {"status":"ERROR","code":<error code>}
+```
+
+Possible `<error code>`:
+
+| Error code | Description             |
+|------------|-------------------------|
+| 9007       | Game not completed something went wrong |
+
+maybe a user left the game room before the game was finished.
+# 6. Heartbeat message
 
 Sends a ping message to the client to check whether the client is still active. The receiving client should respond with a pong message to confirm it is still active. If after 3 seconds no pong message has been received by the server, the connection to the client is closed. Before closing, the client is notified with a HANGUP message, with reason code 7000.
 
@@ -85,14 +229,14 @@ The server sends a ping message to a client every 10 seconds. The first ping mes
 
 When the server receives a PONG message while it is not expecting one, a PONG_ERROR message will be returned.
 
-## 3.1 Happy flow
+## 6.1 Happy flow
 
 ```
 S -> C: PING
 C -> S: PONG
 ```     
 
-## 3.2 Unhappy flow
+## 6.2 Unhappy flow
 
 ```
 S -> C: HANGUP {"reason": <reason code>}
@@ -113,11 +257,11 @@ Possible `<error code>`:
 |------------|---------------------|
 | 8000       | Pong without ping   |    
 
-# 4. Termination of the connection
+# 7. Termination of the connection
 
 When the connection needs to be terminated, the client sends a bye message. This will be answered (with a BYE_RESP message) after which the server will close the socket connection.
 
-## 4.1 Happy flow
+## 7.1 Happy flow
 ```
 C -> S: BYE
 S -> C: BYE_RESP {"status":"OK"}
@@ -129,11 +273,11 @@ Other, still connected clients, clients receive:
 S -> others: LEFT {"username":"<username>"}
 ```
 
-## 4.2 Unhappy flow
+## 7.2 Unhappy flow
 
 - None
 
-# 5. Invalid message header
+# 8. Invalid message header
 
 If the client sends an invalid message header (not defined above), the server replies with an unknown command message. The client remains connected.
 
@@ -143,7 +287,7 @@ C -> S: MSG This is an invalid message
 S -> C: UNKNOWN_COMMAND
 ```
 
-# 6. Invalid message body
+# 9. Invalid message body
 
 If the client sends a valid message, but the body is not valid JSON, the server replies with a pars error message. The client remains connected.
 

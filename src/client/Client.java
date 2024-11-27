@@ -1,6 +1,7 @@
 package client;
 
 import shared.enumerations.CmdColors;
+import shared.utils.MessageWriter;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -29,7 +30,6 @@ public class Client {
             try {
                 //connection to the server
                 Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
-                //System.out.println(CmdColors.PURPLE + "Connected to server." + CmdColors.RESET);
 
                 // start a new thread to handle user input and server messages
                 UserInput userInputHandler = new UserInput(socket);
@@ -41,12 +41,12 @@ public class Client {
                 clientThread.start();
 
 
-                //The shutdown hook is a thread that is executed when the JVM is shutting down.
+                // The shutdown hook is a thread that is executed when the JVM is shutting down.
                 //  It is used to perform cleanup operations before the JVM shuts down.
                 // The shutdown hook is a good way to perform cleanup operations before the JVM shuts down.
                 // https://www.baeldung.com/jvm-shutdown-hooks
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                    System.out.println(CmdColors.PURPLE + "Client is shutting down..." + CmdColors.RESET);
+                    MessageWriter.printColoredMessage(CmdColors.PURPLE, "Client is shutting down...");
                     userInputHandler.logout();
                 }));
 

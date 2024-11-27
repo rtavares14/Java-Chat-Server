@@ -2,6 +2,7 @@ package client.consummers;
 
 import shared.messages.Broadcast;
 import shared.utils.JsonUtils;
+import shared.utils.MessageWriter;
 
 import java.util.function.Consumer;
 
@@ -13,9 +14,9 @@ public class BroadcastConsumer implements Consumer<String> {
     public void accept(String json) {
         try {
             Broadcast message = JsonUtils.fromJson(json, Broadcast.class);
-            System.out.println(ORANGE + message.username() + " sent: " + message.message() + RESET);
+            MessageWriter.printColoredMessage(ORANGE, message.username() + " sent: " + message.message());
         } catch (Exception e) {
             System.err.println("Failed to process BROADCAST message: " + e.getMessage());
         }
     }
-}//fabulous
+}

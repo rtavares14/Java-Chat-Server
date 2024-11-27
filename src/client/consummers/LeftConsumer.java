@@ -2,6 +2,7 @@ package client.consummers;
 
 import shared.messages.Left;
 import shared.utils.JsonUtils;
+import shared.utils.MessageWriter;
 
 import java.util.function.Consumer;
 
@@ -14,9 +15,9 @@ public class LeftConsumer implements Consumer<String> {
         try {
             Left message = JsonUtils.fromJson(json, Left.class);
             if (message.username().isEmpty()) {
-                System.out.println(YELLOW + "Someone left the chat" + RESET);
+                MessageWriter.printColoredMessage(YELLOW, "Someone left the chat");
             } else {
-                System.out.println(YELLOW + message.username() + " left the chat" + RESET);
+                MessageWriter.printColoredMessage(YELLOW, message.username() + " left the chat");
             }
         } catch (Exception e) {
             System.err.println("Failed to process LEFT message: " + e.getMessage());

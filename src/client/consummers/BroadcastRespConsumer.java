@@ -2,6 +2,7 @@ package client.consummers;
 
 import shared.messages.BroadcastResp;
 import shared.utils.JsonUtils;
+import shared.utils.MessageWriter;
 
 import java.util.function.Consumer;
 
@@ -15,7 +16,7 @@ public class BroadcastRespConsumer implements Consumer<String> {
         try {
             BroadcastResp message = JsonUtils.fromJson(json, BroadcastResp.class);
             if ("OK".equalsIgnoreCase(message.status())) {
-                System.out.println(ORANGE + "Message sent!" + RESET);
+                MessageWriter.printColoredMessage(ORANGE , "Message sent!");
             } else {
                 handleErrorMessage(message.code());
             }

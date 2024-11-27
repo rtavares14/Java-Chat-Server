@@ -2,6 +2,7 @@ package client.consummers;
 
 import shared.messages.BroadcastResp;
 import shared.utils.JsonUtils;
+import shared.utils.MessageWriter;
 
 import java.util.function.Consumer;
 
@@ -15,7 +16,7 @@ public class ByeConsumer implements Consumer<String> {
         try {
             BroadcastResp message = JsonUtils.fromJson(json, BroadcastResp.class);
             if ("OK".equalsIgnoreCase(message.status())) {
-                System.out.println(PURPLE + "Bye bye see you later!" + RESET);
+                MessageWriter.printColoredMessage(PURPLE, "Bye bye see you later!");
             } else {
                 handleErrorMessage(message.code());
             }

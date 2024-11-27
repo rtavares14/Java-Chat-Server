@@ -6,6 +6,7 @@ import shared.messages.Enter;
 import shared.utils.JsonUtils;
 import shared.enumerations.CmdColors;
 import shared.enumerations.ServerCommands;
+import shared.utils.MessageWriter;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -66,7 +67,7 @@ public class UserInput implements Runnable {
                     logout();
                     break;
                 } else {
-                    System.out.println(CmdColors.RED + "Invalid command. Please try again." + CmdColors.RESET);
+                    MessageWriter.printColoredMessage(CmdColors.RED, "Invalid command. Please try again.");
                     helperMenu();
                 }
             }
@@ -82,18 +83,11 @@ public class UserInput implements Runnable {
      *
      * @param message the message to be sent to the server
      */
-    private boolean userLogin(String message) {
+    private void userLogin(String message) throws JsonProcessingException {
         String userUsername = message.substring("login ".length());
         Enter enter = new Enter(userUsername);
-        try {
-            String json = JsonUtils.toJson(enter);
-            sendCommand(LOGIN, json);
-            username = userUsername;
-            return true;
-        } catch (JsonProcessingException e) {
-            System.err.println("Error creating JSON: " + e.getMessage());
-            return false;
-        }
+        String json = JsonUtils.toJson(enter);
+        sendCommand(LOGIN, json);
     }
 
     /**
@@ -102,15 +96,11 @@ public class UserInput implements Runnable {
      *
      * @param message the message to be sent to the server
      */
-    private void sendGlobalMessage(String message) {
+    private void sendGlobalMessage(String message) throws JsonProcessingException {
         String content = message.substring("msg ".length());
         BroadcastReq broadcast = new BroadcastReq(content);
-        try {
-            String json = JsonUtils.toJson(broadcast);
-            sendCommand(BROADCAST_REQ, json);
-        } catch (JsonProcessingException e) {
-            System.err.println("Error creating JSON: " + e.getMessage());
-        }
+        String json = JsonUtils.toJson(broadcast);
+        sendCommand(BROADCAST, json);
     }
 
     /**
