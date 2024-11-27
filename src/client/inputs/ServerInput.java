@@ -1,4 +1,4 @@
-package client;
+package client.inputs;
 
 import shared.enumerations.ServerCommands;
 import shared.utils.MessageHandler;
@@ -8,9 +8,11 @@ import java.net.Socket;
 
 public class ServerInput implements Runnable {
 
-    // The socket to connect to the server
-    // The writer to send messages to the server
-    // The message handler to process server messages
+    /**
+     * The socket to connect to the server
+     * The writer to send messages to the server
+     * The message handler to process server messages
+     */
     private Socket socket;
     private PrintWriter writer;
     private final MessageHandler messageHandler;
@@ -30,12 +32,12 @@ public class ServerInput implements Runnable {
 
     /**
      * Receives messages from the server and handles them.
+     * Read messages from the server
+     * Process the server message
+     * If an error occurs, print the error message
      */
     @Override
     public void run() {
-        // Read messages from the server
-        // Process the server message
-        // If an error occurs, print the error message
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
             String serverMessage;
             while ((serverMessage = reader.readLine()) != null) {
@@ -48,6 +50,9 @@ public class ServerInput implements Runnable {
 
     /**
      * Processes the server message.
+     * Split the message into command and payload
+     * Handle the server message
+     * If an error occurs, print the error message
      *
      * @param message the message from the server.
      */

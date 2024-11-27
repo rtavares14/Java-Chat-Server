@@ -7,7 +7,6 @@ import shared.utils.MessageWriter;
 import java.util.function.Consumer;
 
 import static shared.enumerations.CmdColors.*;
-import static shared.utils.MessageHandler.handleErrorMessage;
 
 public class ByeConsumer implements Consumer<String> {
 
@@ -18,7 +17,7 @@ public class ByeConsumer implements Consumer<String> {
             if ("OK".equalsIgnoreCase(message.status())) {
                 MessageWriter.printColoredMessage(PURPLE, "Bye bye see you later!");
             } else {
-                handleErrorMessage(message.code());
+                MessageWriter.handleErrorMessage(message.code());
             }
         } catch (Exception e) {
             System.err.println("Failed to process BYE_RESP message: " + e.getMessage());

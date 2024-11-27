@@ -1,10 +1,12 @@
 package server;
 
-import client.Client;
+import shared.utils.MessageWriter;
 
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static shared.enumerations.CmdColors.*;
 
 public class Server {
 
@@ -16,15 +18,16 @@ public class Server {
     private final String VERSION = "RCT 1.0";
     private boolean ShouldPing = false;
 
-    public void startServer() {
+    public void startingServer() {
         try {
             serverSocket = new ServerSocket(PORT);
-            System.out.println("Server started on port " + PORT);
+            MessageWriter.printColoredMessage(PURPLE,"Server started on port " + PORT);
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("New client connected: " + clientSocket.getInetAddress().getHostAddress());
-                //ClientHandler clientHandler = new ClientHandler(clientSocket);
-               // new Thread(clientHandler).start();
+
+                MessageWriter.printColoredMessage(GREEN,"New client connected: " + clientSocket.getInetAddress().getHostAddress());
+                ClientHandler clientHandler = new ClientHandler(clientSocket);
+                new Thread(clientHandler).start();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -39,5 +42,10 @@ public class Server {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        Server server = new Server();
+        server.startingServer();
     }
 }

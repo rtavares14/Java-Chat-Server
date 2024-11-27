@@ -1,4 +1,4 @@
-package client;
+package client.inputs;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import shared.messages.BroadcastReq;
@@ -18,7 +18,6 @@ import static shared.enumerations.ServerCommands.*;
 
 public class UserInput implements Runnable {
 
-    private String username;
     private Socket socket;
     private PrintWriter writer;
     private Scanner scanner = new Scanner(System.in);
@@ -31,7 +30,6 @@ public class UserInput implements Runnable {
      */
     public UserInput(Socket socket) throws IOException {
         this.socket = socket;
-        this.username = null;
         OutputStream out = socket.getOutputStream();
         this.writer = new PrintWriter(out, true);
     }
@@ -119,7 +117,6 @@ public class UserInput implements Runnable {
      */
     public void logout() {
         writer.println(BYE);
-        username = null;
     }
 
     /**

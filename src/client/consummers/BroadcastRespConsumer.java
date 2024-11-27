@@ -7,7 +7,6 @@ import shared.utils.MessageWriter;
 import java.util.function.Consumer;
 
 import static shared.enumerations.CmdColors.*;
-import static shared.utils.MessageHandler.handleErrorMessage;
 
 public class BroadcastRespConsumer implements Consumer<String> {
 
@@ -18,7 +17,7 @@ public class BroadcastRespConsumer implements Consumer<String> {
             if ("OK".equalsIgnoreCase(message.status())) {
                 MessageWriter.printColoredMessage(ORANGE , "Message sent!");
             } else {
-                handleErrorMessage(message.code());
+                MessageWriter.handleErrorMessage(message.code());
             }
         } catch (Exception e) {
             System.err.println("Failed to process BROADCAST_RESP message: " + e.getMessage());
