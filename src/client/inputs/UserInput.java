@@ -6,7 +6,7 @@ import shared.messages.Enter;
 import shared.utils.JsonUtils;
 import shared.enumerations.CmdColors;
 import shared.enumerations.ServerCommands;
-import shared.utils.MessageWriter;
+import shared.utils.MessageHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -65,7 +65,7 @@ public class UserInput implements Runnable {
                     logout();
                     break;
                 } else {
-                    MessageWriter.printColoredMessage(CmdColors.RED, "Invalid command. Please try again.");
+                    MessageHelper.printColoredMessage(CmdColors.RED, "Invalid command. Please try again.");
                     helperMenu();
                 }
             }
@@ -98,7 +98,7 @@ public class UserInput implements Runnable {
         String content = message.substring("msg ".length());
         BroadcastReq broadcast = new BroadcastReq(content);
         String json = JsonUtils.toJson(broadcast);
-        sendCommand(BROADCAST, json);
+        sendCommand(BROADCAST_REQ, json);
     }
 
     /**

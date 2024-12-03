@@ -2,7 +2,7 @@ package client.consummers;
 
 import shared.messages.BroadcastResp;
 import shared.utils.JsonUtils;
-import shared.utils.MessageWriter;
+import shared.utils.MessageHelper;
 
 import java.util.function.Consumer;
 
@@ -15,9 +15,9 @@ public class EnterConsumer implements Consumer<String> {
         try {
             BroadcastResp message = JsonUtils.fromJson(json, BroadcastResp.class);
             if ("OK".equalsIgnoreCase(message.status())) {
-                MessageWriter.printColoredMessage(GREEN, "Welcome to the chat!");
+                MessageHelper.printColoredMessage(GREEN, "Welcome to the chat!");
             } else {
-                MessageWriter.handleErrorMessage(message.code());
+                MessageHelper.handleErrorMessage(message.code());
             }
         } catch (Exception e) {
             System.err.println("Failed to process ENTER_RESP message: " + e.getMessage());

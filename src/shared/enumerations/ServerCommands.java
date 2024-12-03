@@ -1,8 +1,9 @@
 package shared.enumerations;
 
 public enum ServerCommands {
-    LOGIN("ENTER"), // Login command
     READY("READY"), // Server is ready to accept commands
+    LOGIN("ENTER"), // Login command
+    ENTER("ENTER"), // Login command
     ENTER_RESP("ENTER_RESP"), // Response to login command
     BROADCAST_REQ("BROADCAST_REQ"), // Send broadcast request
     BROADCAST_RESP("BROADCAST_RESP"), // Response to broadcast command
@@ -15,7 +16,8 @@ public enum ServerCommands {
     BYE_RESP("BYE_RESP"), // Response to logout command
     LEFT("LEFT"), // Response to all clients when a client leaves
     PARSE_ERROR("PARSE_ERROR"), // Error parsing command received from client - invalid format
-    UNKNOWN_COMMAND("UNKNOWN_COMMAND"); // Unknown command received
+    UNKNOWN_COMMAND("UNKNOWN_COMMAND"), // Unknown command received
+    JOINED("JOINED"); // Response to all clients when a new client joins
 
 
     private final String command;

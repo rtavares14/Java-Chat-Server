@@ -3,7 +3,7 @@ package client;
 import client.inputs.ServerInput;
 import client.inputs.UserInput;
 import shared.enumerations.CmdColors;
-import shared.utils.MessageWriter;
+import shared.utils.MessageHelper;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -54,7 +54,7 @@ public class Client {
 
 
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                    MessageWriter.printColoredMessage(CmdColors.PURPLE, "Client is shutting down...");
+                    MessageHelper.printColoredMessage(CmdColors.PURPLE, "Client is shutting down...");
                     userInputHandler.logout();
                 }));
 

@@ -1,6 +1,6 @@
 package client.consummers;
 
-import shared.utils.MessageWriter;
+import shared.utils.MessageHelper;
 
 import java.util.function.Consumer;
 
@@ -10,6 +10,6 @@ public class HangupConsumer implements Consumer<String> {
 
     @Override
     public void accept(String json) {
-        MessageWriter.printColoredMessage(RED, "Bye bye see you later!");
+        MessageHelper.printColoredMessage(RED, "Bye bye see you later!");
     }
 }

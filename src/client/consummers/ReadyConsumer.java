@@ -2,7 +2,7 @@ package client.consummers;
 
 import shared.messages.Ready;
 import shared.utils.JsonUtils;
-import shared.utils.MessageWriter;
+import shared.utils.MessageHelper;
 
 import java.util.function.Consumer;
 
@@ -14,9 +14,9 @@ public class ReadyConsumer implements Consumer<String> {
     public void accept(String json) {
         try {
             Ready message = JsonUtils.fromJson(json, Ready.class);
-            MessageWriter.printColoredMessage(PURPLE, "Server is ready. Version: " + message.version());
-            MessageWriter.printColoredMessage(PURPLE, "Type 'help' to see available commands");
-            MessageWriter.printColoredMessage(PURPLE, "Type 'login <username>' to enter the chat");
+            MessageHelper.printColoredMessage(PURPLE, "Server is ready. Version: " + message.version());
+            MessageHelper.printColoredMessage(PURPLE, "Type 'help' to see available commands");
+            MessageHelper.printColoredMessage(PURPLE, "Type 'login <username>' to enter the chat");
         } catch (Exception e) {
             System.err.println("Failed to process READY message: " + e.getMessage());
         }

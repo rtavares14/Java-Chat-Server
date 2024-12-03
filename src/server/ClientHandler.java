@@ -1,43 +1,29 @@
 package server;
 
-import shared.utils.MessageWriter;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import static shared.enumerations.CmdColors.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import shared.messages.*;
+import shared.utils.JsonUtils;
 
-public class ClientHandler implements Runnable {
-    private final Socket clientSocket;
-    private PrintWriter out;
-    private BufferedReader in;
+public class ClientHandler {
 
-    public ClientHandler(Socket socket) {
-        this.clientSocket = socket;
+    private ClientInstance clientInstance;
+
+    public ClientHandler(ClientInstance clientInstance ) {
+        this.clientInstance = clientInstance;
     }
 
-    @Override
-    public void run() {
-        try {
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+    public EnterResp handleLogin(Enter loginMessage) throws JsonProcessingException {
+        String username = loginMessage.getUsername();
 
-            String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                // Process the input message
-                MessageWriter.printColoredMessage(GREEN, "Received: " + inputLine);
-                // Here you can add logic to handle different types of messages
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                in.close();
-                out.close();
-                clientSocket.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if (UsernameValidator.isUsernameValid(username) && UsernameValidator.isUsernameAvailable(username) &&
+                clientInstance.getUsername() == "") {
+            // Add username to a global list of logged-in users
+            Server.logInUser(username, clientInstance);
+            clientInstance.setUsername(username);
+            return new EnterResp("OK", 0);
+        } else {
+            int errorCode = UsernameValidator.checkUsername(username);
+            return new EnterResp("ERROR", errorCode);
         }
     }
 }

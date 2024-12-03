@@ -1,6 +1,6 @@
 package server;
 
-import shared.utils.MessageWriter;
+import shared.utils.MessageHelper;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -13,21 +13,21 @@ public class Server {
     private final int PORT = 1337;
     private ServerSocket serverSocket;
 
-    //private ConcurrentHashMap<,> activeUsers = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, ClientInstance> loggedInUsers = new ConcurrentHashMap<>();
 
-    private final String VERSION = "RCT 1.0";
+    private final String VERSION = "RCT 1.1";
     private boolean ShouldPing = false;
 
     public void startingServer() {
         try {
             serverSocket = new ServerSocket(PORT);
-            MessageWriter.printColoredMessage(PURPLE,"Server started on port " + PORT);
+            MessageHelper.printColoredMessage(PURPLE,"Starting server version (" + VERSION + ") on port: " + PORT);
             while (true) {
                 Socket clientSocket = serverSocket.accept();
+                MessageHelper.printColoredMessage(PURPLE,"New client connected: " + clientSocket.getInetAddress().getHostAddress() + ":" + clientSocket.getPort());
 
-                MessageWriter.printColoredMessage(GREEN,"New client connected: " + clientSocket.getInetAddress().getHostAddress());
-                ClientHandler clientHandler = new ClientHandler(clientSocket);
-                new Thread(clientHandler).start();
+                ClientInstance clientInstance = new ClientInstance(clientSocket, this);
+                new Thread(clientInstance).start();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -42,6 +42,34 @@ public class Server {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static ConcurrentHashMap<String, ClientInstance> getLoggedInUsers() {
+        return loggedInUsers;
+    }
+
+    public static void logInUser(String username, ClientInstance handler) {
+        loggedInUsers.put(username, handler);
+    }
+
+    public static void removeUser(String username) {
+        loggedInUsers.remove(username);
+    }
+
+    public static boolean isLoggedIn(String username) {
+        return loggedInUsers.containsKey(username);
+    }
+
+    public String getVersion() {
+        return VERSION;
+    }
+
+    public String getClientUserCounts() {
+        int totalClients = loggedInUsers.size();
+        long loggedInUsersCount = loggedInUsers.values().stream()
+                .filter(handler -> handler.getUsername() != null && !handler.getUsername().isEmpty())
+                .count();
+        return totalClients + " client(s) / " +  loggedInUsersCount + " user(s)";
     }
 
     public static void main(String[] args) {
