@@ -39,6 +39,7 @@ public class Client {
      */
     public void run() {
         while (true) {
+
             try {
                 //connection to the server
                 Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);

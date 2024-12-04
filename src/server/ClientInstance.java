@@ -18,18 +18,31 @@ import static shared.enumerations.ServerCommands.*;
 public class ClientInstance implements Runnable {
     private final Socket clientSocket;
     private final Server server;
-    private static PrintWriter out;
+    private PrintWriter out;
     private BufferedReader in;
     private AtomicBoolean isRunning;
     private String username = "";
     private ClientHandler clientHandler = new ClientHandler(this);
 
+    /**
+     * Constructor for the ClientInstance class
+     *
+     * @param socket the client socket
+     * @param server the server instance
+     */
     public ClientInstance(Socket socket, Server server) {
         this.clientSocket = socket;
         this.server = server;
         this.isRunning = new AtomicBoolean(true);
     }
 
+    /**
+     * Run the client instance
+     * This method is used to run the client instance
+     * It sends a READY message to the client and then processes incoming messages
+     * If the client disconnects, the method closes the input and output streams and the client socket
+     * If an exception occurs, the method prints the stack trace
+     */
     @Override
     public void run() {
         try {
@@ -40,18 +53,13 @@ public class ClientInstance implements Runnable {
             String json = JsonUtils.toJson(ready);
             sendCommand(READY, json);
 
-            if (username == null) {
-                MessageHelper.printColoredMessage(PURPLE, "S --> (): " + JsonUtils.toJson(ready));
-            } else {
-                MessageHelper.printColoredMessage(PURPLE, "S --> (" + username + "): " + JsonUtils.toJson(ready));
-            }
+            MessageHelper.printColoredMessage(PURPLE, "S --> (): " + JsonUtils.toJson(ready));
 
-            String clientUserCounts = server.getClientUserCounts();
-            MessageHelper.printColoredMessage(GREEN, clientUserCounts);
+            server.getClientUserCounts();
 
             String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                MessageHelper.printColoredMessage(GREEN, "C (" + username + ") --> S: " + inputLine);
+            while (isRunning.get() && (inputLine = in.readLine()) != null) {
+                MessageHelper.printColoredMessage(PURPLE, "C (" + username + ") --> S: " + inputLine);
                 processMessage(inputLine);
             }
         } catch (Exception e) {
@@ -67,6 +75,14 @@ public class ClientInstance implements Runnable {
         }
     }
 
+    /**
+     * Process a message
+     * This method is used to process a message
+     * It splits the message into parts and then processes the command
+     * If an exception occurs, the method prints an error message
+     *
+     * @param message the message to be processed
+     */
     private void processMessage(String message) {
         try {
             String[] parts = message.split(" ", 2);
@@ -76,6 +92,7 @@ public class ClientInstance implements Runnable {
             switch (command) {
                 case ENTER -> handleLogin(jsonPayload);
                 case BROADCAST_REQ -> handleBroadcastReq(jsonPayload);
+                case BYE -> handleLogout();
                 default -> MessageHelper.printColoredMessage(RED, "Unknown command: " + command);
             }
         } catch (Exception e) {
@@ -83,33 +100,101 @@ public class ClientInstance implements Runnable {
         }
     }
 
+    private void handleLogout() throws JsonProcessingException {
+        ByeResp byeResp = new ByeResp("OK");
+        sendCommand(BYE_RESP, JsonUtils.toJson(byeResp));
+        MessageHelper.printColoredMessage(PURPLE, "S --> (" + username + "): " + JsonUtils.toJson(byeResp));
+
+        Left left = new Left(username);
+        server.broadcastMessage(left, username, LEFT);
+
+        // Stop the thread and close the client instance
+        isRunning.set(false);
+        try {
+            in.close();
+            out.close();
+            clientSocket.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Handle a login message
+     * This method is used to handle a login message
+     * It deserializes the message and then processes the login
+     * If an exception occurs, the method prints an error message
+     *
+     * @param jsonPayload the JSON payload of the message
+     */
     private void handleLogin(String jsonPayload) throws JsonProcessingException {
         try {
             Enter enter = JsonUtils.fromJson(jsonPayload, Enter.class);
             EnterResp response = clientHandler.handleLogin(enter);
-            //setUsername(enter.getUsername());
             sendCommand(ENTER_RESP, JsonUtils.toJson(response));
             MessageHelper.printColoredMessage(PURPLE, "S --> (" + username + "): " + JsonUtils.toJson(response));
-
+            server.getClientUserCounts();
         } catch (Exception e) {
             EnterResp response = new EnterResp("ERROR", 5001);
             sendCommand(ENTER_RESP, JsonUtils.toJson(response));
-            System.err.println("Failed to process login message: " + e.getMessage());
-        }
+            MessageHelper.printColoredMessage(RED, "S --> (): " + JsonUtils.toJson(response));}
     }
 
-    private void handleBroadcastReq(String jsonPayload) {
+    /**
+     * Handle a broadcast request
+     * This method is used to handle a broadcast request
+     * It deserializes the message and then processes the broadcast
+     * If an exception occurs, the method prints an error message
+     *
+     * @param jsonPayload the JSON payload of the message
+     */
+    private void handleBroadcastReq(String jsonPayload) throws JsonProcessingException {
+            BroadcastReq broadcastReq = JsonUtils.fromJson(jsonPayload, BroadcastReq.class);
+            if (username == "" || username.isEmpty()) {
+                BroadcastResp response = new BroadcastResp("ERROR", 6000);
+                sendCommand(BROADCAST_RESP, JsonUtils.toJson(response));
+                MessageHelper.printColoredMessage(RED, "S --> (): " + JsonUtils.toJson(response));
+                return;
+            }
+
+            // Broadcast the message to all other clients
+            Broadcast broadcast = new Broadcast(username, broadcastReq.getMessage());
+            server.broadcastMessage(broadcast, username, BROADCAST);
+
+
+        // Send confirmation to the sender
+            BroadcastResp response = new BroadcastResp("OK", 0);
+            sendCommand(BROADCAST_RESP, JsonUtils.toJson(response));
     }
 
-    public CharSequence getUsername() {
+    /**
+     * Get the username
+     *
+     * @return the username
+     */
+    public String getUsername() {
         return username;
     }
 
+    /**
+     * Set the username
+     *
+     * @param username the username
+     */
     public void setUsername(String username) {
         this.username = username;
     }
 
-    static void sendCommand(ServerCommands command, String jsonPayload) {
+    /**
+     * Send a command to the client
+     * This method is used to send a command to the client
+     * It sends the command and the JSON payload to the client
+     * If the command or payload is invalid, the method prints an error message
+     *
+     * @param command    the command to be sent
+     * @param jsonPayload the JSON payload to be sent
+     */
+    void sendCommand(ServerCommands command, String jsonPayload) {
         if (command != null && jsonPayload != null && !jsonPayload.isEmpty()) {
             out.println(command + " " + jsonPayload);
         } else {
