@@ -1,4 +1,4 @@
-package server;
+package server.clientHelper;
 
 public class UsernameValidator {
 
@@ -17,7 +17,7 @@ public class UsernameValidator {
      * @return true if the username is available, false otherwise
      */
     public static boolean isUsernameAvailable(String username) {
-        return !Server.isLoggedIn(username);
+        return !ClientLogger.getInstance().isUserLoggedIn(username);
     }
 
     /**

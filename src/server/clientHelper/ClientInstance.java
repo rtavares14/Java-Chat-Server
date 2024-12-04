@@ -1,6 +1,7 @@
-package server;
+package server.clientHelper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import server.Server;
 import shared.enumerations.ServerCommands;
 import shared.messages.*;
 import shared.utils.JsonUtils;
@@ -100,25 +101,6 @@ public class ClientInstance implements Runnable {
         }
     }
 
-    private void handleLogout() throws JsonProcessingException {
-        ByeResp byeResp = new ByeResp("OK");
-        sendCommand(BYE_RESP, JsonUtils.toJson(byeResp));
-        MessageHelper.printColoredMessage(PURPLE, "S --> (" + username + "): " + JsonUtils.toJson(byeResp));
-
-        Left left = new Left(username);
-        server.broadcastMessage(left, username, LEFT);
-
-        // Stop the thread and close the client instance
-        isRunning.set(false);
-        try {
-            in.close();
-            out.close();
-            clientSocket.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     /**
      * Handle a login message
      * This method is used to handle a login message
@@ -163,8 +145,37 @@ public class ClientInstance implements Runnable {
 
 
         // Send confirmation to the sender
-            BroadcastResp response = new BroadcastResp("OK", 0);
+            BroadcastResp response = new BroadcastResp("OK", null);
             sendCommand(BROADCAST_RESP, JsonUtils.toJson(response));
+    }
+
+    /**
+     * Handle a logout message
+     * This method is used to handle a logout message
+     * It sends a BYE_RESP message to the client and then broadcasts a LEFT message to all other clients
+     * If an exception occurs, the method prints an error message
+     */
+    private void handleLogout() throws JsonProcessingException {
+        ByeResp byeResp = new ByeResp("OK");
+        sendCommand(BYE_RESP, JsonUtils.toJson(byeResp));
+        MessageHelper.printColoredMessage(PURPLE, "S --> (" + username + "): " + JsonUtils.toJson(byeResp));
+
+        Left left = new Left(username);
+        server.broadcastMessage(left, username, LEFT);
+
+        // Remove the client from the allClients list
+        ClientLogger.getInstance().getAllClients().remove(this);
+
+        // Stop the thread and close the client instance
+        isRunning.set(false);
+        server.getClientUserCounts();
+        try {
+            in.close();
+            out.close();
+            clientSocket.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -194,7 +205,7 @@ public class ClientInstance implements Runnable {
      * @param command    the command to be sent
      * @param jsonPayload the JSON payload to be sent
      */
-    void sendCommand(ServerCommands command, String jsonPayload) {
+    public void sendCommand(ServerCommands command, String jsonPayload) {
         if (command != null && jsonPayload != null && !jsonPayload.isEmpty()) {
             out.println(command + " " + jsonPayload);
         } else {

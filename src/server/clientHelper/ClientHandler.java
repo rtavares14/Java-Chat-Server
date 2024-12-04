@@ -1,8 +1,7 @@
-package server;
+package server.clientHelper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import shared.messages.*;
-import shared.utils.JsonUtils;
 
 public class ClientHandler {
 
@@ -32,9 +31,9 @@ public class ClientHandler {
         if (UsernameValidator.isUsernameValid(username) && UsernameValidator.isUsernameAvailable(username) &&
                 clientInstance.getUsername().equals("")) {
             // Add username to a global list of logged-in users
-            Server.logInUser(username, clientInstance);
+            ClientLogger.getInstance().logInUser(username, clientInstance);
             clientInstance.setUsername(username);
-            return new EnterResp("OK", 0);
+            return new EnterResp("OK", null);
         } else {
             int errorCode = UsernameValidator.checkUsername(username);
             return new EnterResp("ERROR", errorCode);
