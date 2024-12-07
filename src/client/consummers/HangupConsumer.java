@@ -10,6 +10,6 @@ public class HangupConsumer implements Consumer<String> {
 
     @Override
     public void accept(String json) {
-        MessageHelper.printColoredMessage(RED, "Bye bye see you later!");
+        MessageHelper.printColoredMessage(RED, "You have been hung up on.");
     }
 }

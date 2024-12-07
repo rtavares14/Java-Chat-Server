@@ -1,6 +1,6 @@
 package client.consummers;
 
-import shared.messages.UserList;
+import shared.messages.List;
 import shared.utils.JsonUtils;
 import shared.utils.MessageHelper;
 
@@ -13,9 +13,9 @@ public class ListConsumer implements Consumer<String> {
     @Override
     public void accept(String json) {
         try {
-            UserList userList = JsonUtils.fromJson(json, UserList.class);
+            List list = JsonUtils.fromJson(json, List.class);
             StringBuilder usersList = new StringBuilder();
-            for (String user : userList.getUsers()) {
+            for (String user : list.getUsers()) {
                 usersList.append(user).append("\n");
             }
             MessageHelper.printColoredMessage(CYAN, usersList.toString());        } catch (Exception e) {

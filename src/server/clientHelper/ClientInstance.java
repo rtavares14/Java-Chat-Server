@@ -137,17 +137,17 @@ public class ClientInstance implements Runnable {
      */
     private void handleListReq() throws JsonProcessingException {
         if (username == "" || username.isEmpty()) {
-            UserListResp response = new UserListResp("ERROR", 6000);
+            ListResp response = new ListResp("ERROR", 6000);
             sendCommand(LIST_RESP, JsonUtils.toJson(response));
             MessageHelper.printColoredMessage(RED, "S --> (): " + JsonUtils.toJson(response));
             return;
         }
 
-        UserListResp response = new UserListResp("OK",null);
+        ListResp response = new ListResp("OK", null);
         sendCommand(LIST_RESP, JsonUtils.toJson(response));
 
-        UserList userList = new UserList(ClientLogger.getInstance().getClients());
-        sendCommand(LIST, JsonUtils.toJson(userList));
+        List list = new List(ClientLogger.getInstance().getClients());
+        sendCommand(LIST, JsonUtils.toJson(list));
     }
 
     /**

@@ -1,6 +1,6 @@
 package shared.messages;
 
-public record UserListReq(String username){
+public record ListReq(String username){
     public String getUsername() {
         return username;
     }
