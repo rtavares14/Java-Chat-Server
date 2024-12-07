@@ -1,10 +1,8 @@
-object mapper class to read the user/ server message from and to
-and parse to and fom objects
-folder for both classes
-
-
-i reed the message i get the type u cast the type to the object
-then i can get a new message, by passing to that message type the contest of the message the status or the code or the message
-then i can get the message from the object
-i cast the message to that type and i cast the message to tojason
-the best way is to create a new hashmap that the key is the message as EMUN and the boddy is the handeller to a string
+GREEN - user login success
+BLUE - other user login
+CYAN - user userList
+ORANGE - global message
+WHITE - private message
+YELLOW - user left
+RED - error messages
+PURPLE - server stuff

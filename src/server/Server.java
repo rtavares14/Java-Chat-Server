@@ -17,7 +17,7 @@ public class Server {
     private final int PORT = 1337;
     private ServerSocket serverSocket;
 
-    private final String VERSION = "RCT 1.1";
+    private final String VERSION = "1.6.0";
 //singleton
     /**
      * Start the server
@@ -92,9 +92,11 @@ public class Server {
         }
         if (command == LEFT) {
             ClientLogger.getInstance().removeUser(senderUsername);
-            MessageHelper.printColoredMessage(YELLOW, "S --> (ALL): " + jsonMessage);
-        } else {
-            MessageHelper.printColoredMessage(ORANGE, "S --> (ALL): " + jsonMessage);
+            MessageHelper.printColoredMessage(YELLOW, "S --> (ALL): " + command + " " + jsonMessage);
+        } else if (command == JOINED){
+            MessageHelper.printColoredMessage(BLUE, "S --> (ALL): " + command + " " + jsonMessage);
+        }else {
+            MessageHelper.printColoredMessage(ORANGE, "S --> (ALL): " + command + " " + jsonMessage);
         }
     }
 

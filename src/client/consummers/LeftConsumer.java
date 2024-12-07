@@ -15,9 +15,9 @@ public class LeftConsumer implements Consumer<String> {
         try {
             Left message = JsonUtils.fromJson(json, Left.class);
             if (message.username().isEmpty()) {
-                MessageHelper.printColoredMessage(YELLOW, "Someone left the chat");
+                MessageHelper.printColoredMessage(YELLOW, "Someone left the chat!");
             } else {
-                MessageHelper.printColoredMessage(YELLOW, message.username() + " left the chat");
+                MessageHelper.printColoredMessage(YELLOW, message.username() + " left the chat!");
             }
         } catch (Exception e) {
             System.err.println("Failed to process LEFT message: " + e.getMessage());

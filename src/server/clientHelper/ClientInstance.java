@@ -7,6 +7,7 @@ import shared.messages.*;
 import shared.utils.JsonUtils;
 import shared.utils.MessageHelper;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -92,7 +93,9 @@ public class ClientInstance implements Runnable {
 
             switch (command) {
                 case ENTER -> handleLogin(jsonPayload);
+                case LIST_REQ -> handleListReq();
                 case BROADCAST_REQ -> handleBroadcastReq(jsonPayload);
+                case SENDTO_REQ -> handlePrivateMessage(jsonPayload);
                 case BYE -> handleLogout();
                 default -> MessageHelper.printColoredMessage(RED, "Unknown command: " + command);
             }
@@ -114,12 +117,37 @@ public class ClientInstance implements Runnable {
             Enter enter = JsonUtils.fromJson(jsonPayload, Enter.class);
             EnterResp response = clientHandler.handleLogin(enter);
             sendCommand(ENTER_RESP, JsonUtils.toJson(response));
-            MessageHelper.printColoredMessage(PURPLE, "S --> (" + username + "): " + JsonUtils.toJson(response));
+            MessageHelper.printColoredMessage(GREEN, "S --> (" + username + "): " + JsonUtils.toJson(response));
+
+            Joined joined = new Joined(username);
+            server.broadcastMessage(joined, username, JOINED);
             server.getClientUserCounts();
         } catch (Exception e) {
             EnterResp response = new EnterResp("ERROR", 5001);
             sendCommand(ENTER_RESP, JsonUtils.toJson(response));
             MessageHelper.printColoredMessage(RED, "S --> (): " + JsonUtils.toJson(response));}
+    }
+
+    /**
+     * Handle a list request
+     * This method is used to handle a list request
+     * It deserializes the message and then processes the list request
+     * If an exception occurs, the method prints an error message
+     *
+     */
+    private void handleListReq() throws JsonProcessingException {
+        if (username == "" || username.isEmpty()) {
+            UserListResp response = new UserListResp("ERROR", 6000);
+            sendCommand(LIST_RESP, JsonUtils.toJson(response));
+            MessageHelper.printColoredMessage(RED, "S --> (): " + JsonUtils.toJson(response));
+            return;
+        }
+
+        UserListResp response = new UserListResp("OK",null);
+        sendCommand(LIST_RESP, JsonUtils.toJson(response));
+
+        UserList userList = new UserList(ClientLogger.getInstance().getClients());
+        sendCommand(LIST, JsonUtils.toJson(userList));
     }
 
     /**
@@ -144,7 +172,7 @@ public class ClientInstance implements Runnable {
             server.broadcastMessage(broadcast, username, BROADCAST);
 
 
-        // Send confirmation to the sender
+            // Send confirmation to the sender
             BroadcastResp response = new BroadcastResp("OK", null);
             sendCommand(BROADCAST_RESP, JsonUtils.toJson(response));
     }
@@ -155,6 +183,39 @@ public class ClientInstance implements Runnable {
      * It sends a BYE_RESP message to the client and then broadcasts a LEFT message to all other clients
      * If an exception occurs, the method prints an error message
      */
+
+    private void handlePrivateMessage(String jsonPayload) throws JsonProcessingException {
+        SendToReq sendToReq = JsonUtils.fromJson(jsonPayload, SendToReq.class);
+        String receiver = sendToReq.getUsername();
+        String content = sendToReq.getMessage();
+
+        if (username == "" || username.isEmpty()) {
+            SendToResp response = new SendToResp("ERROR", 6000);
+            sendCommand(SENDTO_RESP, JsonUtils.toJson(response));
+            MessageHelper.printColoredMessage(RED, "S --> (): " + SENDTO_RESP + " " + JsonUtils.toJson(response));
+            return;
+        }
+
+        // Send the message to the receiver
+        SendTo sendTo = new SendTo(username, content);
+        String json = JsonUtils.toJson(sendTo);
+
+        ClientInstance receiverInstance = ClientLogger.getInstance().getClient(receiver);
+        if (receiverInstance == null) {
+            SendToResp response = new SendToResp("ERROR", 6006);
+            sendCommand(SENDTO_RESP, JsonUtils.toJson(response));
+            MessageHelper.printColoredMessage(RED, "S --> ("+username+"): " + SENDTO_RESP + " " + JsonUtils.toJson(response));
+        }
+        else {
+        receiverInstance.sendCommand(SENDTO, json);
+        MessageHelper.printColoredMessage(WHITE, "C (" + username + ") --> C (" + receiver + "): " + SENDTO + " : " + jsonPayload);
+
+
+        // Send confirmation to the sender
+        SendToResp response = new SendToResp("OK", null);
+        sendCommand(SENDTO_RESP, JsonUtils.toJson(response));}
+    }
+
     private void handleLogout() throws JsonProcessingException {
         ByeResp byeResp = new ByeResp("OK");
         sendCommand(BYE_RESP, JsonUtils.toJson(byeResp));

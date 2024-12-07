@@ -1,8 +1,7 @@
 package client.inputs;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import shared.messages.BroadcastReq;
-import shared.messages.Enter;
+import shared.messages.*;
 import shared.utils.JsonUtils;
 import shared.enumerations.CmdColors;
 import shared.enumerations.ServerCommands;
@@ -47,33 +46,37 @@ public class UserInput implements Runnable {
         try {
             while (true) {
                 String message = scanner.nextLine();
+                String command = message.split(" ")[0].toLowerCase();
 
-                if (message.toLowerCase().startsWith("login ")) {
-                    userLogin(message);
-                } else if (message.toLowerCase().startsWith("msg ")) {
-                    sendGlobalMessage(message);
-                }
-
-                // Helper menu for acoustic people who do not know the commands
-                // I am the acoustic person, so I need this :(
-                else if (message.equalsIgnoreCase("help")) {
-                    helperMenu();
-                }
-
-                // Paka Paka condition
-                else if (message.equalsIgnoreCase("bye")) {
-                    logout();
-                    break;
-                } else {
-                    MessageHelper.printColoredMessage(CmdColors.RED, "Invalid command. Please try again.");
-                    helperMenu();
+                switch (command) {
+                    case "login":
+                        userLogin(message);
+                        break;
+                    case "msg":
+                        sendGlobalMessage(message);
+                        break;
+                    case "pvm":
+                        sendPrivateMessage(message);
+                        break;
+                    case "ulist":
+                        requestUserList();
+                        break;
+                    case "help":
+                        helperMenu();
+                        break;
+                    case "bye":
+                        logout();
+                        return;
+                    default:
+                        MessageHelper.printColoredMessage(CmdColors.RED, "Invalid command. Please try again.");
+                        helperMenu();
+                        break;
                 }
             }
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
         }
     }
-
 
     /**
      * Option 1
@@ -90,6 +93,15 @@ public class UserInput implements Runnable {
 
     /**
      * Option 2
+     * Method to handle the list command
+     *
+     */
+    private void requestUserList() {
+        writer.println(LIST_REQ);
+    }
+
+    /**
+     * Option 3
      * Method to handle the message command
      *
      * @param message the message to be sent to the server
@@ -102,12 +114,33 @@ public class UserInput implements Runnable {
     }
 
     /**
+     * Option 4
+     * Method to handle the private message command
+     *
+     * @param message the message to be sent to the server
+     */
+    private void sendPrivateMessage(String message) throws JsonProcessingException {
+        String[] parts = message.split(" ", 3);
+        if (parts.length < 3) {
+            MessageHelper.printColoredMessage(CmdColors.RED, "To send a private message type pvm <username> <message>");
+        } else {
+            String receiver = parts[1];
+            String content = parts[2];
+            SendToReq sendTo = new SendToReq(receiver, content);
+            String json = JsonUtils.toJson(sendTo);
+            sendCommand(SENDTO_REQ, json);
+        }
+    }
+
+    /**
      * Helper menu for the user
      */
     private void helperMenu() {
         System.out.println(CmdColors.PURPLE + "Commands:");
         System.out.println("login \"username\" - Login to the server");
+        System.out.println("ulist - Request a list of all login users");
         System.out.println("msg \"message\" - Send a global broadcast message");
+        System.out.println("pvm \"username\" \"message\" - Send a private message to a user");
         System.out.println("help - Display this help menu");
         System.out.println("bye - Disconnect from the server" + CmdColors.RESET);
     }

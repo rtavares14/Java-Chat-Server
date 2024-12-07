@@ -111,7 +111,7 @@ Possible `<error code>`:
 
 # 4. List of connected clients
 
-The server sends a list of connected clients to the client that requested it.
+The server sends a userList of connected clients to the client that requested it.
 
 ## 4.1 Happy flow
 

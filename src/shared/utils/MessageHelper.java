@@ -26,12 +26,13 @@ public class MessageHelper {
      */
     public static void handleErrorMessage(int code) {
         switch (code) {
-            case 5000 -> MessageHelper.printColoredMessage(RED,"User with this name already exists" );
-            case 5001 -> MessageHelper.printColoredMessage(RED,"Username has an invalid format or length");
-            case 5002 -> MessageHelper.printColoredMessage(RED,"Already logged in");
-            case 6000 -> MessageHelper.printColoredMessage(RED,"User is not logged in");
-            case 7000 -> MessageHelper.printColoredMessage(RED,"No pong received" );
-            case 8000 -> MessageHelper.printColoredMessage(RED,"Pong without ping");
+            case 5000 -> MessageHelper.printColoredMessage(RED,"User with this name already exists!" );
+            case 5001 -> MessageHelper.printColoredMessage(RED,"Username has an invalid format or length!");
+            case 5002 -> MessageHelper.printColoredMessage(RED,"Already logged in!");
+            case 6000 -> MessageHelper.printColoredMessage(RED,"User is not logged in!");
+            case 6006 -> MessageHelper.printColoredMessage(RED,"User is not login atm!");
+            case 7000 -> MessageHelper.printColoredMessage(RED,"No pong received!" );
+            case 8000 -> MessageHelper.printColoredMessage(RED,"Pong without ping!");
             default -> MessageHelper.printColoredMessage(RED,"Unknown error code: " + code);
         }
     }

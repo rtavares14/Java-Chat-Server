@@ -25,14 +25,19 @@ public class MessageHandler {
         this.writer = writer;
         handlersClient.put(PING, new PingConsumer(writer));
         handlersClient.put(READY, new ReadyConsumer());
-        handlersClient.put(ENTER_RESP, new EnterConsumer());
+        handlersClient.put(ENTER_RESP, new EnterRespConsumer());
         handlersClient.put(BROADCAST_RESP, new BroadcastRespConsumer());
         handlersClient.put(BROADCAST, new BroadcastConsumer());
         handlersClient.put(LEFT, new LeftConsumer());
         handlersClient.put(BYE_RESP, new ByeConsumer());
         handlersClient.put(HANGUP, new HangupConsumer());
+        handlersClient.put(JOINED, new JoinedConsumer());
+        handlersClient.put(SENDTO_RESP, new SendToRespConsumer());
+        handlersClient.put(SENDTO, new SendToConsumer());
+        handlersClient.put(LIST, new ListConsumer());
+        handlersClient.put(LIST_RESP, new ListRespConsumer());
 
-        handlersServer.put(ENTER, new EnterConsumer());
+
     }
 
     /**

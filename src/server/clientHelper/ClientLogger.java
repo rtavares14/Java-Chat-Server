@@ -51,6 +51,19 @@ public class ClientLogger {
     }
 
     /**
+     * Get all clients
+     *
+     * @return List of all clients
+     */
+    public ArrayList<String> getClients() {
+        ArrayList<String> clients = new ArrayList<>();
+        for (ClientInstance client : allClients) {
+            clients.add(client.getUsername());
+        }
+        return clients;
+    }
+
+    /**
      * Add a client to the all clients list
      *
      * @param client the client instance
@@ -82,10 +95,20 @@ public class ClientLogger {
      * Check if a user is logged in
      *
      * @param username the username
-     * @return
+     * @return true if the user is logged in, false otherwise
      */
     public boolean isUserLoggedIn(String username) {
         loggedInUsers.containsKey(username);
         return false;
+    }
+
+    /**
+     * Get a client instance
+     *
+     * @param receiver the receiver
+     * @return the client instance
+     */
+    public ClientInstance getClient(String receiver) {
+        return loggedInUsers.get(receiver);
     }
 }
