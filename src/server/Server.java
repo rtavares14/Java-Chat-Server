@@ -17,7 +17,7 @@ public class Server {
     private final int PORT = 1337;
     private ServerSocket serverSocket;
 
-    private final String VERSION = "1.6.0";
+    private final String VERSION = "RCT Chat Server V1.14";
 //singleton
     /**
      * Start the server

@@ -6,3 +6,17 @@ WHITE - private message
 YELLOW - user left
 RED - error messages
 PURPLE - server stuff
+
+TODO:
+ # 1. Login
+ # 1.2 Logout
+ # 2. Broadcast a message
+ # 3. Private message
+ # 4. List users
+      # 5. RPC
+      # 6. Heartbeat
+ # 7. Bye
+ # 8. Unknown command
+      # 9. Error messages
+      # close and open the server before each test
+

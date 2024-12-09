@@ -13,11 +13,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class MultipleUserTests {
 
     private final static Properties PROPS = new Properties();
-
+    private Process serverProcess;
     private Socket socketUser1, socketUser2;
     private BufferedReader inUser1, inUser2;
     private PrintWriter outUser1, outUser2;
-
     private final static int MAX_DELTA_ALLOWED_MS = 100;
 
     @BeforeAll
@@ -28,7 +27,13 @@ class MultipleUserTests {
     }
 
     @BeforeEach
-    void setup() throws IOException {
+    void setup() throws IOException, InterruptedException {
+        // Start the server
+        serverProcess = new ProcessBuilder("java", "java", "src/server/Server.java").start();
+
+        // Wait for the server to start
+        Thread.sleep(200);
+
         socketUser1 = new Socket(PROPS.getProperty("host"), Integer.parseInt(PROPS.getProperty("port")));
         inUser1 = new BufferedReader(new InputStreamReader(socketUser1.getInputStream()));
         outUser1 = new PrintWriter(socketUser1.getOutputStream(), true);
@@ -40,8 +45,12 @@ class MultipleUserTests {
 
     @AfterEach
     void cleanup() throws IOException {
+        // Close the sockets
         socketUser1.close();
         socketUser2.close();
+
+        // Stop the server
+        serverProcess.destroy();
     }
 
     @Test

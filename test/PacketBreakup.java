@@ -14,11 +14,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class PacketBreakup {
 
     private final static Properties PROPS = new Properties();
-
+    private Process serverProcess;
     private Socket s;
     private BufferedReader in;
     private PrintWriter out;
-
     private final static int MAX_DELTA_ALLOWED_MS = 100;
 
     @BeforeAll
@@ -29,7 +28,13 @@ class PacketBreakup {
     }
 
     @BeforeEach
-    void setup() throws IOException {
+    void setup() throws IOException, InterruptedException {
+        // Start the server
+        serverProcess = new ProcessBuilder("java", "java", "src/server/Server.java").start();
+
+        // Wait for the server to start
+        Thread.sleep(200);
+
         s = new Socket(PROPS.getProperty("host"), Integer.parseInt(PROPS.getProperty("port")));
         in = new BufferedReader(new InputStreamReader(s.getInputStream()));
         out = new PrintWriter(s.getOutputStream(), true);
@@ -37,7 +42,11 @@ class PacketBreakup {
 
     @AfterEach
     void cleanup() throws IOException {
+        // Close the socket
         s.close();
+
+        // Stop the server
+        serverProcess.destroy();
     }
 
     @Test

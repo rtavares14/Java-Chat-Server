@@ -1,7 +1,9 @@
 package client.inputs;
 
+import client.consummers.UnknownConsumer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import shared.messages.*;
+import shared.utils.HelperMenu;
 import shared.utils.JsonUtils;
 import shared.enumerations.CmdColors;
 import shared.enumerations.ServerCommands;
@@ -69,7 +71,7 @@ public class UserInput implements Runnable {
                         return;
                     default:
                         MessageHelper.printColoredMessage(CmdColors.RED, "Invalid command. Please try again.");
-                        helperMenu();
+                        writer.println(message);
                         break;
                 }
             }
@@ -136,13 +138,7 @@ public class UserInput implements Runnable {
      * Helper menu for the user
      */
     private void helperMenu() {
-        System.out.println(CmdColors.PURPLE + "Commands:");
-        System.out.println("login \"username\" - Login to the server");
-        System.out.println("ulist - Request a list of all login users");
-        System.out.println("msg \"message\" - Send a global broadcast message");
-        System.out.println("pvm \"username\" \"message\" - Send a private message to a user");
-        System.out.println("help - Display this help menu");
-        System.out.println("bye - Disconnect from the server" + CmdColors.RESET);
+        HelperMenu.menu();
     }
 
     /**

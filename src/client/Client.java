@@ -35,7 +35,7 @@ public class Client {
      * It is used to perform cleanup operations before the JVM shuts down.
      * The shutdown hook is a good way to perform cleanup operations before the JVM shuts down.
      * <p>
-     * Source: https://www.baeldung.com/jvm-shutdown-hooks
+     * Source: <a href="https://www.baeldung.com/jvm-shutdown-hooks">...</a>
      */
     public void run() {
         while (true) {

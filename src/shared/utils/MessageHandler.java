@@ -36,8 +36,7 @@ public class MessageHandler {
         handlersClient.put(SENDTO, new SendToConsumer());
         handlersClient.put(LIST, new ListConsumer());
         handlersClient.put(LIST_RESP, new ListRespConsumer());
-
-
+        handlersClient.put(UNKNOWN_COMMAND, new UnknownConsumer());
     }
 
     /**

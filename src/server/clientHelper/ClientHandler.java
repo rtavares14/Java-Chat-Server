@@ -12,7 +12,7 @@ public class ClientHandler {
      *
      * @param clientInstance the client instance
      */
-    public ClientHandler(ClientInstance clientInstance ) {
+    public ClientHandler(ClientInstance clientInstance) {
         this.clientInstance = clientInstance;
     }
 
@@ -30,7 +30,6 @@ public class ClientHandler {
 
         if (UsernameValidator.isUsernameValid(username) && UsernameValidator.isUsernameAvailable(username) &&
                 clientInstance.getUsername().equals("")) {
-            // Add username to a global list of logged-in users
             ClientLogger.getInstance().logInUser(username, clientInstance);
             clientInstance.setUsername(username);
             return new EnterResp("OK", null);

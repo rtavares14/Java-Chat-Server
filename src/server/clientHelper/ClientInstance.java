@@ -4,11 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import server.Server;
 import shared.enumerations.ServerCommands;
 import shared.messages.*;
+import shared.messages.List;
 import shared.utils.JsonUtils;
 import shared.utils.MessageHelper;
 
-import java.awt.*;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -64,16 +65,11 @@ public class ClientInstance implements Runnable {
                 MessageHelper.printColoredMessage(PURPLE, "C (" + username + ") --> S: " + inputLine);
                 processMessage(inputLine);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("Client disconnected unexpectedly: " + e.getMessage());
+            cleanup();
         } finally {
-            try {
-                in.close();
-                out.close();
-                clientSocket.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            cleanup();
         }
     }
 
@@ -85,7 +81,7 @@ public class ClientInstance implements Runnable {
      *
      * @param message the message to be processed
      */
-    private void processMessage(String message) {
+    private void processMessage(String message) throws JsonProcessingException {
         try {
             String[] parts = message.split(" ", 2);
             ServerCommands command = ServerCommands.valueOf(parts[0]);
@@ -97,11 +93,18 @@ public class ClientInstance implements Runnable {
                 case BROADCAST_REQ -> handleBroadcastReq(jsonPayload);
                 case SENDTO_REQ -> handlePrivateMessage(jsonPayload);
                 case BYE -> handleLogout();
-                default -> MessageHelper.printColoredMessage(RED, "Unknown command: " + command);
+                case PING -> sendCommand(ServerCommands.PONG, "");
             }
+        } catch (IllegalArgumentException e) {
+            invalidCommand();
         } catch (Exception e) {
             System.err.println("Failed to process message: " + e.getMessage());
         }
+    }
+
+    private void invalidCommand() {
+        sendCommand(UNKNOWN_COMMAND, UNKNOWN_COMMAND.toString());
+        MessageHelper.printColoredMessage(RED, "S --> (): " + UNKNOWN_COMMAND);
     }
 
     /**
@@ -117,15 +120,22 @@ public class ClientInstance implements Runnable {
             Enter enter = JsonUtils.fromJson(jsonPayload, Enter.class);
             EnterResp response = clientHandler.handleLogin(enter);
             sendCommand(ENTER_RESP, JsonUtils.toJson(response));
-            MessageHelper.printColoredMessage(GREEN, "S --> (" + username + "): " + JsonUtils.toJson(response));
 
-            Joined joined = new Joined(username);
-            server.broadcastMessage(joined, username, JOINED);
-            server.getClientUserCounts();
+            if (response.getStatus().equals("OK")) {
+                MessageHelper.printColoredMessage(GREEN, "S --> (" + username + "): " + JsonUtils.toJson(response));
+                Joined joined = new Joined(username);
+                server.broadcastMessage(joined, username, JOINED);
+                server.getClientUserCounts();
+            } else {
+                MessageHelper.printColoredMessage(RED, "S --> (): " + JsonUtils.toJson(response));
+            }
+
+
         } catch (Exception e) {
             EnterResp response = new EnterResp("ERROR", 5001);
             sendCommand(ENTER_RESP, JsonUtils.toJson(response));
-            MessageHelper.printColoredMessage(RED, "S --> (): " + JsonUtils.toJson(response));}
+            MessageHelper.printColoredMessage(RED, "S --> (): " + JsonUtils.toJson(response));
+        }
     }
 
     /**
@@ -133,7 +143,6 @@ public class ClientInstance implements Runnable {
      * This method is used to handle a list request
      * It deserializes the message and then processes the list request
      * If an exception occurs, the method prints an error message
-     *
      */
     private void handleListReq() throws JsonProcessingException {
         if (username == "" || username.isEmpty()) {
@@ -159,22 +168,22 @@ public class ClientInstance implements Runnable {
      * @param jsonPayload the JSON payload of the message
      */
     private void handleBroadcastReq(String jsonPayload) throws JsonProcessingException {
-            BroadcastReq broadcastReq = JsonUtils.fromJson(jsonPayload, BroadcastReq.class);
-            if (username == "" || username.isEmpty()) {
-                BroadcastResp response = new BroadcastResp("ERROR", 6000);
-                sendCommand(BROADCAST_RESP, JsonUtils.toJson(response));
-                MessageHelper.printColoredMessage(RED, "S --> (): " + JsonUtils.toJson(response));
-                return;
-            }
-
-            // Broadcast the message to all other clients
-            Broadcast broadcast = new Broadcast(username, broadcastReq.getMessage());
-            server.broadcastMessage(broadcast, username, BROADCAST);
-
-
-            // Send confirmation to the sender
-            BroadcastResp response = new BroadcastResp("OK", null);
+        BroadcastReq broadcastReq = JsonUtils.fromJson(jsonPayload, BroadcastReq.class);
+        if (username == null || username.isEmpty()) {
+            BroadcastResp response = new BroadcastResp("ERROR", 6000);
             sendCommand(BROADCAST_RESP, JsonUtils.toJson(response));
+            MessageHelper.printColoredMessage(RED, "S --> (): " + JsonUtils.toJson(response));
+            return;
+        }
+
+        // Broadcast the message to all other clients
+        Broadcast broadcast = new Broadcast(username, broadcastReq.getMessage());
+        server.broadcastMessage(broadcast, username, BROADCAST);
+
+
+        // Send confirmation to the sender
+        BroadcastResp response = new BroadcastResp("OK", null);
+        sendCommand(BROADCAST_RESP, JsonUtils.toJson(response));
     }
 
     /**
@@ -204,16 +213,16 @@ public class ClientInstance implements Runnable {
         if (receiverInstance == null) {
             SendToResp response = new SendToResp("ERROR", 6006);
             sendCommand(SENDTO_RESP, JsonUtils.toJson(response));
-            MessageHelper.printColoredMessage(RED, "S --> ("+username+"): " + SENDTO_RESP + " " + JsonUtils.toJson(response));
+            MessageHelper.printColoredMessage(RED, "S --> (" + username + "): " + SENDTO_RESP + " " + JsonUtils.toJson(response));
+        } else {
+            receiverInstance.sendCommand(SENDTO, json);
+            MessageHelper.printColoredMessage(WHITE, "C (" + username + ") --> C (" + receiver + "): " + SENDTO + " : " + jsonPayload);
+
+
+            // Send confirmation to the sender
+            SendToResp response = new SendToResp("OK", null);
+            sendCommand(SENDTO_RESP, JsonUtils.toJson(response));
         }
-        else {
-        receiverInstance.sendCommand(SENDTO, json);
-        MessageHelper.printColoredMessage(WHITE, "C (" + username + ") --> C (" + receiver + "): " + SENDTO + " : " + jsonPayload);
-
-
-        // Send confirmation to the sender
-        SendToResp response = new SendToResp("OK", null);
-        sendCommand(SENDTO_RESP, JsonUtils.toJson(response));}
     }
 
     private void handleLogout() throws JsonProcessingException {
@@ -263,7 +272,7 @@ public class ClientInstance implements Runnable {
      * It sends the command and the JSON payload to the client
      * If the command or payload is invalid, the method prints an error message
      *
-     * @param command    the command to be sent
+     * @param command     the command to be sent
      * @param jsonPayload the JSON payload to be sent
      */
     public void sendCommand(ServerCommands command, String jsonPayload) {
@@ -271,6 +280,18 @@ public class ClientInstance implements Runnable {
             out.println(command + " " + jsonPayload);
         } else {
             System.err.println("Invalid command or payload. Cannot send to server.");
+        }
+    }
+
+    private void cleanup() {
+        try {
+            if (in != null) in.close();
+            if (out != null) out.close();
+            if (clientSocket != null) clientSocket.close();
+        } catch (IOException e) {
+            System.err.println("Error closing resources: " + e.getMessage());
+        } finally {
+            ClientLogger.getInstance().removeUser(username);
         }
     }
 }

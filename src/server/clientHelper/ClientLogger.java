@@ -98,8 +98,7 @@ public class ClientLogger {
      * @return true if the user is logged in, false otherwise
      */
     public boolean isUserLoggedIn(String username) {
-        loggedInUsers.containsKey(username);
-        return false;
+        return loggedInUsers.containsKey(username);
     }
 
     /**

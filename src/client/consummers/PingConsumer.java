@@ -16,7 +16,6 @@ public class PingConsumer implements Consumer<String> {
     public void accept(String json) {
         try {
             writer.println(PONG);
-            System.out.println("nigga");
         } catch (Exception e) {
             System.err.println("Failed to process PING message: " + e.getMessage());
         }

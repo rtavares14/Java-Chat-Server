@@ -19,6 +19,7 @@ class SingleUserTests {
     private static int pingTimeMsDeltaAllowed;
     private final static int MAX_DELTA_ALLOWED_MS = 100;
 
+    private Process serverProcess;
     private Socket s;
     private BufferedReader in;
     private PrintWriter out;
@@ -34,7 +35,13 @@ class SingleUserTests {
     }
 
     @BeforeEach
-    void setup() throws IOException {
+    void setup() throws IOException, InterruptedException {
+        // Start the server
+        serverProcess = new ProcessBuilder("java", "java", "src/server/Server.java").start();
+
+        // Wait for the server to start
+        Thread.sleep(200);
+
         s = new Socket(PROPS.getProperty("host"), Integer.parseInt(PROPS.getProperty("port")));
         in = new BufferedReader(new InputStreamReader(s.getInputStream()));
         out = new PrintWriter(s.getOutputStream(), true);
@@ -42,14 +49,18 @@ class SingleUserTests {
 
     @AfterEach
     void cleanup() throws IOException {
+        // Close the socket
         s.close();
+
+        // Stop the server
+        serverProcess.destroy();
     }
 
     @Test
     void tc51InitialConnectionToServerReturnsReadyMessage() throws JsonProcessingException {
         String firstLine = receiveLineWithTimeout(in);
         Ready ready = Utils.messageToObject(firstLine);
-        assertEquals(new Ready("1.6.0"), ready);
+        assertEquals(new Ready("RCT Chat Server V1.14"), ready);
     }
 
     @Test
