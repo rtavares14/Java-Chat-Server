@@ -1,6 +1,6 @@
-package client.consummers;
+package shared.consummers;
 
-import shared.messages.private_message.SendToResp;
+import shared.messages.broadcast.BroadcastResp;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
 
@@ -8,19 +8,19 @@ import java.util.function.Consumer;
 
 import static shared.enumerations.CmdColors.*;
 
-public class ListRespConsumer implements Consumer<String> {
+public class EnterRespConsumer implements Consumer<String> {
 
     @Override
     public void accept(String json) {
         try {
-            SendToResp message = JsonUtils.fromJson(json, SendToResp.class);
+            BroadcastResp message = JsonUtils.fromJson(json, BroadcastResp.class);
             if ("OK".equalsIgnoreCase(message.status())) {
-                MessageHelper.printColoredMessage(CYAN , "List response!");
+                MessageHelper.printColoredMessage(GREEN, "Welcome to the chat!");
             } else {
                 MessageHelper.handleErrorMessage(message.code());
             }
         } catch (Exception e) {
-            System.err.println("Failed to process LIST_RESP message: " + e.getMessage());
+            System.err.println("Failed to process ENTER_RESP message: " + e.getMessage());
         }
     }
 }

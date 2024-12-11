@@ -17,10 +17,20 @@ public class Server {
 
     private final int SERVER_PORT = 1337;
     private final int FILE_PORT = 1338;
+    private final String VERSION = "RCT Chat Server V1.14";
     private ServerSocket serverSocket;
     private ServerSocket fileServerSocket;
 
-    private final String VERSION = "RCT Chat Server V1.14";
+    /**
+     * Main method
+     * This method is used to start the server
+     *
+     * @param args the arguments
+     */
+    public static void main(String[] args) {
+        Server server = new Server();
+        server.startingServer();
+    }
 
     /**
      * Start the server
@@ -100,16 +110,5 @@ public class Server {
         }else {
             MessageHelper.printColoredMessage(ORANGE, "S --> (ALL): " + command + " " + jsonMessage);
         }
-    }
-
-    /**
-     * Main method
-     * This method is used to start the server
-     *
-     * @param args the arguments
-     */
-    public static void main(String[] args) {
-        Server server = new Server();
-        server.startingServer();
     }
 }

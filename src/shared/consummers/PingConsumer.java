@@ -1,4 +1,4 @@
-package client.consummers;
+package shared.consummers;
 
 import java.io.PrintWriter;
 import java.util.function.Consumer;

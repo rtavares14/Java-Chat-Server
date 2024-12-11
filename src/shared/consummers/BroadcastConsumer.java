@@ -1,4 +1,4 @@
-package client.consummers;
+package shared.consummers;
 
 import shared.messages.broadcast.Broadcast;
 import shared.utils.JsonUtils;

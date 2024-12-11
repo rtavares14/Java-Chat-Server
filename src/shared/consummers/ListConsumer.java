@@ -1,4 +1,4 @@
-package client.consummers;
+package shared.consummers;
 
 import shared.messages.list.List;
 import shared.utils.JsonUtils;
@@ -15,11 +15,13 @@ public class ListConsumer implements Consumer<String> {
         try {
             List list = JsonUtils.fromJson(json, List.class);
             StringBuilder usersList = new StringBuilder();
+            int index = 1;
             for (String user : list.getUsers()) {
-                usersList.append(user).append("\n");
+                usersList.append(index++).append("- ").append(user).append("\n");
             }
-            MessageHelper.printColoredMessage(CYAN, usersList.toString());        } catch (Exception e) {
-            System.err.println("Failed to process BROADCAST message: " + e.getMessage());
+            MessageHelper.printColoredMessage(CYAN, usersList.toString());
+        } catch (Exception e) {
+            System.err.println("Failed to process LIST message: " + e.getMessage());
         }
     }
 }

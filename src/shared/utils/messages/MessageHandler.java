@@ -1,6 +1,6 @@
 package shared.utils.messages;
 
-import client.consummers.*;
+import shared.consummers.*;
 import shared.enumerations.ServerCommands;
 
 import java.io.PrintWriter;
@@ -11,33 +11,32 @@ import java.util.function.Consumer;
 import static shared.enumerations.ServerCommands.*;
 
 public class MessageHandler {
-    private final Map<ServerCommands, Consumer<String>> handlersClient = new HashMap<>();
-    private final Map<ServerCommands, Consumer<String>> handlersServer = new HashMap<>();
+    private final Map<ServerCommands, Consumer<String>> handlers = new HashMap<>();
     private final PrintWriter writer;
 
     /**
      * Constructor
-     * MessageHandler constructor that initializes the writer and handlersClient map with the appropriate consumers
+     * MessageHandler constructor that initializes the writer and handlers map with the appropriate consumers
      *
      * @param writer writer
      */
     public MessageHandler(PrintWriter writer) {
         this.writer = writer;
-        handlersClient.put(PING, new PingConsumer(writer));
-        handlersClient.put(READY, new ReadyConsumer());
-        handlersClient.put(ENTER_RESP, new EnterRespConsumer());
-        handlersClient.put(BROADCAST_RESP, new BroadcastRespConsumer());
-        handlersClient.put(BROADCAST, new BroadcastConsumer());
-        handlersClient.put(LEFT, new LeftConsumer());
-        handlersClient.put(BYE_RESP, new ByeConsumer());
-        handlersClient.put(HANGUP, new HangupConsumer());
-        handlersClient.put(JOINED, new JoinedConsumer());
-        handlersClient.put(SENDTO_RESP, new SendToRespConsumer());
-        handlersClient.put(SENDTO, new SendToConsumer());
-        handlersClient.put(LIST, new ListConsumer());
-        handlersClient.put(LIST_RESP, new ListRespConsumer());
-        handlersClient.put(UNKNOWN_COMMAND, new UnknownConsumer());
-        handlersClient.put(PARSE_ERROR, new ParseConsumer());
+        handlers.put(PING, new PingConsumer(writer));
+        handlers.put(READY, new ReadyConsumer());
+        handlers.put(ENTER_RESP, new EnterRespConsumer());
+        handlers.put(BROADCAST_RESP, new BroadcastRespConsumer());
+        handlers.put(BROADCAST, new BroadcastConsumer());
+        handlers.put(LEFT, new LeftConsumer());
+        handlers.put(BYE_RESP, new ByeConsumer());
+        handlers.put(HANGUP, new HangupConsumer());
+        handlers.put(JOINED, new JoinedConsumer());
+        handlers.put(SENDTO_RESP, new SendToRespConsumer());
+        handlers.put(SENDTO, new SendToConsumer());
+        handlers.put(LIST, new ListConsumer());
+        handlers.put(LIST_RESP, new ListRespConsumer());
+        handlers.put(UNKNOWN_COMMAND, new UnknownConsumer());
+        handlers.put(PARSE_ERROR, new ParseConsumer());
     }
 
     /**
@@ -48,7 +47,7 @@ public class MessageHandler {
      * @param json json
      */
     public void handleMessage(ServerCommands command, String json) {
-        Consumer<String> handler = handlersClient.get(command);
+        Consumer<String> handler = handlers.get(command);
         if (handler != null) {
             handler.accept(json);
         } else {

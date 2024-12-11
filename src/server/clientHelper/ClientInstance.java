@@ -4,14 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import server.Server;
 import server.logger.ClientLogger;
 import shared.enumerations.ServerCommands;
-import shared.messages.*;
-import shared.messages.errors.ParseError;
-import shared.messages.list.List;
+import shared.messages.Ready;
 import shared.messages.broadcast.Broadcast;
 import shared.messages.broadcast.BroadcastReq;
 import shared.messages.broadcast.BroadcastResp;
 import shared.messages.enter.Enter;
 import shared.messages.enter.EnterResp;
+import shared.messages.errors.ParseError;
+import shared.messages.list.List;
 import shared.messages.list.ListResp;
 import shared.messages.login_logout.ByeResp;
 import shared.messages.login_logout.Joined;
@@ -22,7 +22,10 @@ import shared.messages.private_message.SendToResp;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -37,6 +40,7 @@ public class ClientInstance implements Runnable {
     private AtomicBoolean isRunning;
     private String username = "";
     private ClientHandler clientHandler = new ClientHandler(this);
+    private boolean normalDisconnection = false;
 
     /**
      * Constructor for the ClientInstance class
@@ -77,7 +81,9 @@ public class ClientInstance implements Runnable {
                 processMessage(inputLine);
             }
         } catch (IOException e) {
-            System.err.println("Client disconnected unexpectedly: " + e.getMessage());
+            if (!normalDisconnection) {
+                System.err.println("Client disconnected unexpectedly: " + e.getMessage());
+            }
         } finally {
             cleanup();
         }
@@ -104,11 +110,11 @@ public class ClientInstance implements Runnable {
                 case SENDTO_REQ -> handlePrivateMessage(jsonPayload);
                 case BYE -> handleLogout();
                 case PING -> sendCommand(ServerCommands.PONG, "");
-                default -> invalidCommand();
+                default -> parseError();
             }
         } catch (IllegalArgumentException e) {
             System.err.println("Failed to process message: " + e.getMessage());
-            parseError();
+            invalidCommand();
         }
     }
 
@@ -129,7 +135,7 @@ public class ClientInstance implements Runnable {
      * It sends an UNKNOWN_COMMAND message to the client and then prints an error message
      */
     private void invalidCommand() {
-        sendCommand(UNKNOWN_COMMAND, UNKNOWN_COMMAND.toString());
+        out.println(UNKNOWN_COMMAND);
         MessageHelper.printColoredMessage(RED, "S --> (): " + UNKNOWN_COMMAND);
     }
 
@@ -284,7 +290,10 @@ public class ClientInstance implements Runnable {
 
         // Stop the thread and close the client instance
         isRunning.set(false);
+        normalDisconnection = true;
         server.getClientUserCounts();
+        cleanup();
+
         try {
             in.close();
             out.close();
@@ -337,16 +346,18 @@ public class ClientInstance implements Runnable {
      */
     private void cleanup() {
         try {
-            in.close();
-            out.close();
-            clientSocket.close();
+            if (in != null) in.close();
+            if (out != null) out.close();
+            if (clientSocket != null) clientSocket.close();
         } catch (IOException e) {
             System.err.println("Error closing resources: " + e.getMessage());
         } finally {
             ClientLogger.getInstance().removeUser(username);
             ClientLogger.getInstance().getAllClients().remove(this);
-            MessageHelper.printColoredMessage(RED, "Client disconnected unexpectedly: " + username);
-            server.getClientUserCounts();
+            if (!normalDisconnection) {
+                MessageHelper.printColoredMessage(RED, "Client disconnected unexpectedly: " + username);
+                server.getClientUserCounts();
+            }
         }
     }
 }

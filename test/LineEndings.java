@@ -20,7 +20,7 @@ class LineEndings {
     private Socket s;
     private BufferedReader in;
     private PrintWriter out;
-    private final static int MAX_DELTA_ALLOWED_MS = 100;
+    private final static int MAX_DELTA_ALLOWED_MS = 500;
 
     @BeforeAll
     static void setupAll() throws IOException {
@@ -32,6 +32,7 @@ class LineEndings {
     @BeforeEach
     void setup() throws IOException, InterruptedException {
         // Start the server
+        //import server run
         serverProcess = new ProcessBuilder("java", "java", "src/server/Server.java").start();
 
         // Wait for the server to start

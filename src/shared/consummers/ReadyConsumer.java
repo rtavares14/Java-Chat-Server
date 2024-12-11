@@ -1,4 +1,4 @@
-package client.consummers;
+package shared.consummers;
 
 import shared.messages.Ready;
 import shared.utils.JsonUtils;

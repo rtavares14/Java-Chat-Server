@@ -10,7 +10,7 @@ public class UsernameValidator {
      * @return true if the username is valid, false otherwise
      */
     public static boolean isUsernameValid(String username){
-        return !username.equals("") && username.matches("^[A-Za-z0-9_]{3,14}$");
+        return !username.isEmpty() && username.matches("^[A-Za-z0-9_]{3,14}$");
     }
 
     /**

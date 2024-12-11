@@ -1,4 +1,4 @@
-package client.consummers;
+package shared.consummers;
 
 import shared.messages.login_logout.Joined;
 import shared.utils.JsonUtils;

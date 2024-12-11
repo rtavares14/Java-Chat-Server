@@ -16,6 +16,19 @@ public class MessageHelper {
     }
 
     /**
+     * Display the help menu
+     */
+    public static void menu() {
+        printColoredMessage(PURPLE , "Commands:");
+        printColoredMessage(PURPLE ,"login \"username\" - Login to the server");
+        printColoredMessage(PURPLE ,"ulist - Request a list of all login users");
+        printColoredMessage(PURPLE ,"msg \"message\" - Send a global broadcast message");
+        printColoredMessage(PURPLE ,"pvm \"username\" \"message\" - Send a private message to a user");
+        printColoredMessage(PURPLE ,"help - Display this help menu");
+        printColoredMessage(PURPLE ,"bye - Disconnect from the server");
+    }
+
+    /**
      * Handle error messages
      * This method is used to handle error messages from the server
      * This method needs to be STATIC because it is called from the other class
