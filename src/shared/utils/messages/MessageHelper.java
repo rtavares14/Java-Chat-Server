@@ -1,4 +1,4 @@
-package shared.utils;
+package shared.utils.messages;
 
 import shared.enumerations.CmdColors;
 import static shared.enumerations.CmdColors.*;

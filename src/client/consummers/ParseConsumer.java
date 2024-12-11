@@ -6,10 +6,9 @@ import java.util.function.Consumer;
 
 import static shared.enumerations.CmdColors.*;
 
-public class HangupConsumer implements Consumer<String> {
-
+public class ParseConsumer implements Consumer<String> {
     @Override
     public void accept(String json) {
-        MessageHelper.printColoredMessage(RED, "You have been hung up on.");
+    MessageHelper.printColoredMessage(RED, "Error parsing command !" );
     }
 }

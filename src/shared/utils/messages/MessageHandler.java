@@ -1,4 +1,4 @@
-package shared.utils;
+package shared.utils.messages;
 
 import client.consummers.*;
 import shared.enumerations.ServerCommands;
@@ -37,6 +37,7 @@ public class MessageHandler {
         handlersClient.put(LIST, new ListConsumer());
         handlersClient.put(LIST_RESP, new ListRespConsumer());
         handlersClient.put(UNKNOWN_COMMAND, new UnknownConsumer());
+        handlersClient.put(PARSE_ERROR, new ParseConsumer());
     }
 
     /**

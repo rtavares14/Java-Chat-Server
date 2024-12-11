@@ -1,6 +1,11 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
-import shared.messages.*;
 import org.junit.jupiter.api.*;
+import shared.messages.broadcast.Broadcast;
+import shared.messages.broadcast.BroadcastReq;
+import shared.messages.broadcast.BroadcastResp;
+import shared.messages.enter.Enter;
+import shared.messages.enter.EnterResp;
+import shared.messages.login_logout.Joined;
 import utils.Utils;
 
 import java.io.*;

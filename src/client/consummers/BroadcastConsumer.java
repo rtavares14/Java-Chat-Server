@@ -1,8 +1,8 @@
 package client.consummers;
 
-import shared.messages.Broadcast;
+import shared.messages.broadcast.Broadcast;
 import shared.utils.JsonUtils;
-import shared.utils.MessageHelper;
+import shared.utils.messages.MessageHelper;
 
 import java.util.function.Consumer;
 

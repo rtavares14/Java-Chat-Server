@@ -1,4 +1,4 @@
-package shared.messages;
+package shared.messages.private_message;
 
 public record SendToReq (String username, String message) {
 

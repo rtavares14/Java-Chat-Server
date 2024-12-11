@@ -2,7 +2,7 @@ package client.consummers;
 
 import shared.messages.Ready;
 import shared.utils.JsonUtils;
-import shared.utils.MessageHelper;
+import shared.utils.messages.MessageHelper;
 
 import java.util.function.Consumer;
 

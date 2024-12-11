@@ -1,7 +1,10 @@
 package server.clientHelper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import shared.messages.*;
+import server.logger.ClientLogger;
+import server.validator.UsernameValidator;
+import shared.messages.enter.Enter;
+import shared.messages.enter.EnterResp;
 
 public class ClientHandler {
 

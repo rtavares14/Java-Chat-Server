@@ -1,4 +1,6 @@
-package server.clientHelper;
+package server.logger;
+
+import server.clientHelper.ClientInstance;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,6 +90,7 @@ public class ClientLogger {
      * @param username the username
      */
     public void removeUser(String username) {
+        allClients.remove(getClient(username));
         loggedInUsers.remove(username);
     }
 

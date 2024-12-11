@@ -2,16 +2,27 @@ package server.clientHelper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import server.Server;
+import server.logger.ClientLogger;
 import shared.enumerations.ServerCommands;
 import shared.messages.*;
-import shared.messages.List;
+import shared.messages.errors.ParseError;
+import shared.messages.list.List;
+import shared.messages.broadcast.Broadcast;
+import shared.messages.broadcast.BroadcastReq;
+import shared.messages.broadcast.BroadcastResp;
+import shared.messages.enter.Enter;
+import shared.messages.enter.EnterResp;
+import shared.messages.list.ListResp;
+import shared.messages.login_logout.ByeResp;
+import shared.messages.login_logout.Joined;
+import shared.messages.login_logout.Left;
+import shared.messages.private_message.SendTo;
+import shared.messages.private_message.SendToReq;
+import shared.messages.private_message.SendToResp;
 import shared.utils.JsonUtils;
-import shared.utils.MessageHelper;
+import shared.utils.messages.MessageHelper;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -67,7 +78,6 @@ public class ClientInstance implements Runnable {
             }
         } catch (IOException e) {
             System.err.println("Client disconnected unexpectedly: " + e.getMessage());
-            cleanup();
         } finally {
             cleanup();
         }
@@ -94,17 +104,49 @@ public class ClientInstance implements Runnable {
                 case SENDTO_REQ -> handlePrivateMessage(jsonPayload);
                 case BYE -> handleLogout();
                 case PING -> sendCommand(ServerCommands.PONG, "");
+                default -> invalidCommand();
             }
         } catch (IllegalArgumentException e) {
-            invalidCommand();
-        } catch (Exception e) {
             System.err.println("Failed to process message: " + e.getMessage());
+            parseError();
         }
     }
 
+    /**
+     * Parse error
+     * This method is used to handle a parse error
+     * It prints an error message
+     */
+    private void parseError() throws JsonProcessingException {
+        ParseError parseError = new ParseError();
+        sendCommand(PARSE_ERROR, JsonUtils.toJson(parseError));
+        MessageHelper.printColoredMessage(RED, "S --> (): " + JsonUtils.toJson(parseError));
+    }
+
+    /**
+     * Invalid command
+     * This method is used to handle an invalid command
+     * It sends an UNKNOWN_COMMAND message to the client and then prints an error message
+     */
     private void invalidCommand() {
         sendCommand(UNKNOWN_COMMAND, UNKNOWN_COMMAND.toString());
         MessageHelper.printColoredMessage(RED, "S --> (): " + UNKNOWN_COMMAND);
+    }
+
+    /**
+     * Check if the message is valid JSON
+     * This method is used to check if a message is valid JSON
+     * It returns true if the message is valid JSON, false otherwise
+     *
+     * @param messageBody the body of the message
+     * @return true if the message is valid JSON, false otherwise
+     */
+    private boolean isValidJson(String messageBody) {
+        // Use a regex to check if the message looks like valid JSON
+        // This checks for a valid JSON object or array structure
+        String jsonPattern = "\\s*(\\{.*\\}|\\[.*\\])\\s*";
+
+        return messageBody.matches(jsonPattern);
     }
 
     /**
@@ -129,8 +171,6 @@ public class ClientInstance implements Runnable {
             } else {
                 MessageHelper.printColoredMessage(RED, "S --> (): " + JsonUtils.toJson(response));
             }
-
-
         } catch (Exception e) {
             EnterResp response = new EnterResp("ERROR", 5001);
             sendCommand(ENTER_RESP, JsonUtils.toJson(response));
@@ -192,7 +232,6 @@ public class ClientInstance implements Runnable {
      * It sends a BYE_RESP message to the client and then broadcasts a LEFT message to all other clients
      * If an exception occurs, the method prints an error message
      */
-
     private void handlePrivateMessage(String jsonPayload) throws JsonProcessingException {
         SendToReq sendToReq = JsonUtils.fromJson(jsonPayload, SendToReq.class);
         String receiver = sendToReq.getUsername();
@@ -225,6 +264,12 @@ public class ClientInstance implements Runnable {
         }
     }
 
+    /**
+     * Handle a logout message
+     * This method is used to handle a logout message
+     * It sends a BYE_RESP message to the client and then broadcasts a LEFT message to all other clients
+     * If an exception occurs, the method prints an error message
+     */
     private void handleLogout() throws JsonProcessingException {
         ByeResp byeResp = new ByeResp("OK");
         sendCommand(BYE_RESP, JsonUtils.toJson(byeResp));
@@ -234,6 +279,7 @@ public class ClientInstance implements Runnable {
         server.broadcastMessage(left, username, LEFT);
 
         // Remove the client from the allClients list
+        ClientLogger.getInstance().removeUser(username);
         ClientLogger.getInstance().getAllClients().remove(this);
 
         // Stop the thread and close the client instance
@@ -283,15 +329,24 @@ public class ClientInstance implements Runnable {
         }
     }
 
+    /**
+     * Cleanup the client instance
+     * This method is used to cleanup the client instance
+     * It closes the input and output streams and the client socket
+     * If an exception occurs, the method prints an error message
+     */
     private void cleanup() {
         try {
-            if (in != null) in.close();
-            if (out != null) out.close();
-            if (clientSocket != null) clientSocket.close();
+            in.close();
+            out.close();
+            clientSocket.close();
         } catch (IOException e) {
             System.err.println("Error closing resources: " + e.getMessage());
         } finally {
             ClientLogger.getInstance().removeUser(username);
+            ClientLogger.getInstance().getAllClients().remove(this);
+            MessageHelper.printColoredMessage(RED, "Client disconnected unexpectedly: " + username);
+            server.getClientUserCounts();
         }
     }
 }

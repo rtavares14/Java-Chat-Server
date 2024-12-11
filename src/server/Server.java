@@ -2,9 +2,10 @@ package server;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import server.clientHelper.ClientInstance;
-import server.clientHelper.ClientLogger;
+import server.logger.ClientLogger;
 import shared.enumerations.ServerCommands;
 import shared.utils.*;
+import shared.utils.messages.MessageHelper;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -14,19 +15,21 @@ import static shared.enumerations.ServerCommands.*;
 
 public class Server {
 
-    private final int PORT = 1337;
+    private final int SERVER_PORT = 1337;
+    private final int FILE_PORT = 1338;
     private ServerSocket serverSocket;
+    private ServerSocket fileServerSocket;
 
     private final String VERSION = "RCT Chat Server V1.14";
-//singleton
+
     /**
      * Start the server
      * This method is used to start the server
      */
     public void startingServer() {
         try {
-            serverSocket = new ServerSocket(PORT);
-            MessageHelper.printColoredMessage(PURPLE,"Starting server version (" + VERSION + ") on port: " + PORT);
+            serverSocket = new ServerSocket(SERVER_PORT);
+            MessageHelper.printColoredMessage(PURPLE,"Starting server version (" + VERSION + ") on port: " + SERVER_PORT);
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 MessageHelper.printColoredMessage(PURPLE,"New client connected: " + clientSocket.getInetAddress().getHostAddress() + ":" + clientSocket.getPort());
@@ -91,7 +94,6 @@ public class Server {
             }
         }
         if (command == LEFT) {
-            ClientLogger.getInstance().removeUser(senderUsername);
             MessageHelper.printColoredMessage(YELLOW, "S --> (ALL): " + command + " " + jsonMessage);
         } else if (command == JOINED){
             MessageHelper.printColoredMessage(BLUE, "S --> (ALL): " + command + " " + jsonMessage);
@@ -110,5 +112,4 @@ public class Server {
         Server server = new Server();
         server.startingServer();
     }
-
 }

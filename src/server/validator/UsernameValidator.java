@@ -1,4 +1,6 @@
-package server.clientHelper;
+package server.validator;
+
+import server.logger.ClientLogger;
 
 public class UsernameValidator {
 

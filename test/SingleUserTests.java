@@ -1,6 +1,12 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.*;
 import shared.messages.*;
+import shared.messages.enter.Enter;
+import shared.messages.enter.EnterResp;
+import shared.messages.errors.ParseError;
+import shared.messages.ping_pong.Ping;
+import shared.messages.ping_pong.Pong;
+import shared.messages.ping_pong.PongError;
 import utils.Utils;
 
 import java.io.*;

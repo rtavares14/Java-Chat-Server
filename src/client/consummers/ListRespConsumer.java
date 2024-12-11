@@ -1,8 +1,8 @@
 package client.consummers;
 
-import shared.messages.SendToResp;
+import shared.messages.private_message.SendToResp;
 import shared.utils.JsonUtils;
-import shared.utils.MessageHelper;
+import shared.utils.messages.MessageHelper;
 
 import java.util.function.Consumer;
 

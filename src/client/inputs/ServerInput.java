@@ -1,7 +1,7 @@
 package client.inputs;
 
 import shared.enumerations.ServerCommands;
-import shared.utils.MessageHandler;
+import shared.utils.messages.MessageHandler;
 
 import java.io.*;
 import java.net.Socket;

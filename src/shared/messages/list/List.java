@@ -1,4 +1,4 @@
-package shared.messages;
+package shared.messages.list;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package shared.messages;
+package shared.messages.enter;
 
 public record Enter(String username) {
 

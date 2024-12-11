@@ -3,7 +3,7 @@ package client;
 import client.inputs.ServerInput;
 import client.inputs.UserInput;
 import shared.enumerations.CmdColors;
-import shared.utils.MessageHelper;
+import shared.utils.messages.MessageHelper;
 
 import java.io.IOException;
 import java.net.Socket;

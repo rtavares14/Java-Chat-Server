@@ -1,13 +1,14 @@
 package client.inputs;
 
-import client.consummers.UnknownConsumer;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import shared.messages.*;
+import shared.messages.broadcast.BroadcastReq;
+import shared.messages.enter.Enter;
+import shared.messages.private_message.SendToReq;
 import shared.utils.HelperMenu;
 import shared.utils.JsonUtils;
 import shared.enumerations.CmdColors;
 import shared.enumerations.ServerCommands;
-import shared.utils.MessageHelper;
+import shared.utils.messages.MessageHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;

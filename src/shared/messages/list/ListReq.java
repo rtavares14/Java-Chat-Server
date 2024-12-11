@@ -1,4 +1,4 @@
-package shared.messages;
+package shared.messages.list;
 
 public record ListReq(String username){
     public String getUsername() {

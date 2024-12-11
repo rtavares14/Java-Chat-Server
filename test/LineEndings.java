@@ -1,9 +1,9 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.*;
-import shared.messages.BroadcastReq;
-import shared.messages.BroadcastResp;
-import shared.messages.Enter;
-import shared.messages.EnterResp;
+import shared.messages.broadcast.BroadcastReq;
+import shared.messages.broadcast.BroadcastResp;
+import shared.messages.enter.Enter;
+import shared.messages.enter.EnterResp;
 import utils.Utils;
 
 import java.io.*;
@@ -35,7 +35,7 @@ class LineEndings {
         serverProcess = new ProcessBuilder("java", "java", "src/server/Server.java").start();
 
         // Wait for the server to start
-        Thread.sleep(2000);
+        Thread.sleep(200);
 
         s = new Socket(PROPS.getProperty("host"), Integer.parseInt(PROPS.getProperty("port")));
         in = new BufferedReader(new InputStreamReader(s.getInputStream()));
