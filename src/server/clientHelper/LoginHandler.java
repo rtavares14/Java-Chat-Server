@@ -1,12 +1,11 @@
 package server.clientHelper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import server.logger.ClientLogger;
-import server.validator.UsernameValidator;
+import server.loggers.ClientLogger;
 import shared.messages.enter.Enter;
 import shared.messages.enter.EnterResp;
 
-public class ClientHandler {
+public class LoginHandler {
 
     private ClientInstance clientInstance;
 
@@ -15,7 +14,7 @@ public class ClientHandler {
      *
      * @param clientInstance the client instance
      */
-    public ClientHandler(ClientInstance clientInstance) {
+    public LoginHandler(ClientInstance clientInstance) {
         this.clientInstance = clientInstance;
     }
 
@@ -31,13 +30,13 @@ public class ClientHandler {
     public EnterResp handleLogin(Enter loginMessage) {
         String username = loginMessage.getUsername();
 
-        if (UsernameValidator.isUsernameValid(username) && UsernameValidator.isUsernameAvailable(username) &&
+        if (ClientLogger.isUsernameValid(username) && ClientLogger.isUsernameAvailable(username) &&
                 clientInstance.getUsername().equals("")) {
             ClientLogger.getInstance().logInUser(username, clientInstance);
             clientInstance.setUsername(username);
             return new EnterResp("OK", null);
         } else {
-            int errorCode = UsernameValidator.checkUsername(username);
+            int errorCode = ClientLogger.checkUsername(username);
             return new EnterResp("ERROR", errorCode);
         }
     }

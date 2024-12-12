@@ -1,4 +1,4 @@
-package shared.consummers;
+package client.consumers;
 
 import shared.utils.messages.MessageHelper;
 

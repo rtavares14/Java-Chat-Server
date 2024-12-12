@@ -1,6 +1,6 @@
-package shared.consummers;
+package client.consumers;
 
-import shared.messages.login_logout.Joined;
+import shared.messages.private_message.SendTo;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
 
@@ -8,13 +8,13 @@ import java.util.function.Consumer;
 
 import static shared.enumerations.CmdColors.*;
 
-public class JoinedConsumer implements Consumer<String> {
+public class SendToConsumer implements Consumer<String> {
 
     @Override
     public void accept(String json) {
         try {
-            Joined message = JsonUtils.fromJson(json, Joined.class);
-            MessageHelper.printColoredMessage(BLUE, message.username()+" has joined the chat!");
+            SendTo message = JsonUtils.fromJson(json, SendTo.class);
+            MessageHelper.printColoredMessage(WHITE, message.username() + " sent in private: " + message.message());
         } catch (Exception e) {
             System.err.println("Failed to process ENTER_RESP message: " + e.getMessage());
         }

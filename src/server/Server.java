@@ -1,17 +1,13 @@
 package server;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import server.clientHelper.ClientInstance;
-import server.logger.ClientLogger;
-import shared.enumerations.ServerCommands;
-import shared.utils.*;
+import server.loggers.ClientLogger;
 import shared.utils.messages.MessageHelper;
 
 import java.net.ServerSocket;
 import java.net.Socket;
 
 import static shared.enumerations.CmdColors.*;
-import static shared.enumerations.ServerCommands.*;
 
 public class Server {
 
@@ -30,6 +26,16 @@ public class Server {
     public static void main(String[] args) {
         Server server = new Server();
         server.startingServer();
+    }
+
+    /**
+     * Get version
+     * This method is used to get the version of the server
+     *
+     * @return String
+     */
+    public String getVersion() {
+        return VERSION;
     }
 
     /**
@@ -61,54 +67,11 @@ public class Server {
      */
     public void stopServer() {
         try {
+            MessageHelper.printColoredMessage(PURPLE,"Stopping server...");
             serverSocket.close();
+            ClientLogger.getInstance().closeAllClients();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    /**
-     * Get version
-     * This method is used to get the version of the server
-     *
-     * @return String
-     */
-    public String getVersion() {
-        return VERSION;
-    }
-
-    /**
-     * Get client user counts
-     * This method is used to get the client user counts
-     *
-     * @return String
-     */
-    public void getClientUserCounts() {
-        MessageHelper.printColoredMessage(GREEN, ClientLogger.getInstance().getLoggedInUsers().size() + " client(s) / " +  ClientLogger.getInstance().getAllClients().size() + " user(s)");
-    }
-
-    /**
-     * Broadcast message
-     * This method is used to broadcast a message to all users
-     *
-     * @param message the message to be broadcasted
-     * @param senderUsername the username of the sender
-     * @param command the command
-     * @throws JsonProcessingException if an exception occurs
-     */
-    public void broadcastMessage(Object message, String senderUsername, ServerCommands command) throws JsonProcessingException {
-        String jsonMessage = JsonUtils.toJson(message);
-        for (ClientInstance client : ClientLogger.getInstance().getLoggedInUsers().values()) {
-            if (!client.getUsername().equals(senderUsername)) {
-                client.sendCommand(command, jsonMessage);
-            }
-        }
-        if (command == LEFT) {
-            MessageHelper.printColoredMessage(YELLOW, "S --> (ALL): " + command + " " + jsonMessage);
-        } else if (command == JOINED){
-            MessageHelper.printColoredMessage(BLUE, "S --> (ALL): " + command + " " + jsonMessage);
-        }else {
-            MessageHelper.printColoredMessage(ORANGE, "S --> (ALL): " + command + " " + jsonMessage);
         }
     }
 }

@@ -1,6 +1,6 @@
-package shared.consummers;
+package client.consumers;
 
-import shared.messages.private_message.SendToResp;
+import shared.messages.broadcast.BroadcastResp;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
 
@@ -8,19 +8,19 @@ import java.util.function.Consumer;
 
 import static shared.enumerations.CmdColors.*;
 
-public class SendToRespConsumer implements Consumer<String> {
+public class BroadcastRespConsumer implements Consumer<String> {
 
     @Override
     public void accept(String json) {
         try {
-            SendToResp message = JsonUtils.fromJson(json, SendToResp.class);
+            BroadcastResp message = JsonUtils.fromJson(json, BroadcastResp.class);
             if ("OK".equalsIgnoreCase(message.status())) {
-                MessageHelper.printColoredMessage(WHITE , "Private message sent!");
+                MessageHelper.printColoredMessage(ORANGE , "Message sent!");
             } else {
                 MessageHelper.handleErrorMessage(message.code());
             }
         } catch (Exception e) {
-            System.err.println("Failed to process ENTER_RESP message: " + e.getMessage());
+            System.err.println("Failed to process BROADCAST_RESP message: " + e.getMessage());
         }
     }
 }

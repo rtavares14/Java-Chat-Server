@@ -27,7 +27,7 @@ public class ServerInput implements Runnable {
         this.socket = socket;
         OutputStream out = socket.getOutputStream();
         this.writer = new PrintWriter(out, true);
-        this.messageHandler = new MessageHandler(writer);
+        this.messageHandler = new MessageHandler(writer,null);
     }
 
     /**
@@ -65,7 +65,7 @@ public class ServerInput implements Runnable {
             ServerCommands command = ServerCommands.valueOf(parts[0]);
             String jsonPayload = parts.length > 1 ? parts[1] : "";
 
-            messageHandler.handleMessage(command, jsonPayload);
+            messageHandler.handleServerMessage(command, jsonPayload);
         } catch (Exception e) {
             System.err.println("Failed to process server message: " + e.getMessage());
         }

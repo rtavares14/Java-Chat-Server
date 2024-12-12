@@ -1,6 +1,6 @@
-package shared.consummers;
+package client.consumers;
 
-import shared.messages.broadcast.BroadcastResp;
+import shared.messages.private_message.SendToResp;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
 
@@ -8,14 +8,14 @@ import java.util.function.Consumer;
 
 import static shared.enumerations.CmdColors.*;
 
-public class EnterRespConsumer implements Consumer<String> {
+public class SendToRespConsumer implements Consumer<String> {
 
     @Override
     public void accept(String json) {
         try {
-            BroadcastResp message = JsonUtils.fromJson(json, BroadcastResp.class);
+            SendToResp message = JsonUtils.fromJson(json, SendToResp.class);
             if ("OK".equalsIgnoreCase(message.status())) {
-                MessageHelper.printColoredMessage(GREEN, "Welcome to the chat!");
+                MessageHelper.printColoredMessage(WHITE , "Private message sent!");
             } else {
                 MessageHelper.handleErrorMessage(message.code());
             }
