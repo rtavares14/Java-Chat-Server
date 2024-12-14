@@ -1,5 +1,6 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.*;
+import server.Server;
 import shared.messages.broadcast.Broadcast;
 import shared.messages.broadcast.BroadcastReq;
 import shared.messages.broadcast.BroadcastResp;
