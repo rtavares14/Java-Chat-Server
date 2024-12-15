@@ -7,12 +7,22 @@ import shared.messages.broadcast.Broadcast;
 import shared.messages.broadcast.BroadcastReq;
 import shared.messages.broadcast.BroadcastResp;
 import shared.messages.enter.Enter;
+import shared.messages.enter.EnterReq;
 import shared.messages.enter.EnterResp;
 import shared.messages.errors.ParseError;
+import shared.messages.list.List;
+import shared.messages.list.ListReq;
+import shared.messages.list.ListResp;
+import shared.messages.login_logout.ByeResp;
 import shared.messages.login_logout.Joined;
+import shared.messages.login_logout.Left;
+import shared.messages.ping_pong.Hangup;
 import shared.messages.ping_pong.Ping;
 import shared.messages.ping_pong.Pong;
 import shared.messages.ping_pong.PongError;
+import shared.messages.private_message.SendTo;
+import shared.messages.private_message.SendToReq;
+import shared.messages.private_message.SendToResp;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +34,7 @@ public class Utils {
     static {
         objToNameMapping.put(Enter.class, "ENTER");
         objToNameMapping.put(EnterResp.class, "ENTER_RESP");
+        objToNameMapping.put(EnterReq.class, "ENTER_REQ");
         objToNameMapping.put(BroadcastReq.class, "BROADCAST_REQ");
         objToNameMapping.put(BroadcastResp.class, "BROADCAST_RESP");
         objToNameMapping.put(Broadcast.class, "BROADCAST");
@@ -33,6 +44,16 @@ public class Utils {
         objToNameMapping.put(PongError.class, "PONG_ERROR");
         objToNameMapping.put(Ready.class, "READY");
         objToNameMapping.put(Ping.class, "PING");
+        objToNameMapping.put(ListReq.class, "LIST_REQ");
+        objToNameMapping.put(ListResp.class, "LIST_RESP");
+        objToNameMapping.put(List.class, "LIST");
+        objToNameMapping.put(Left.class, "LEFT");
+        objToNameMapping.put(SendTo.class, "SENDTO");
+        objToNameMapping.put(SendToReq.class, "SENDTO_REQ");
+        objToNameMapping.put(SendToResp.class, "SENDTO_RESP");
+        objToNameMapping.put(Hangup.class, "HANGUP");
+        objToNameMapping.put(UnknownError.class, "UNKNOWN_COMMAND");
+        objToNameMapping.put(ByeResp.class, "BYE_RESP");
     }
 
     public static String objectToMessage(Object object) throws JsonProcessingException {

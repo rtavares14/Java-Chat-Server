@@ -36,9 +36,6 @@ public class SendToReqConsumer implements Consumer<String> {
                 return;
             }
 
-            // Send the message to the receiver
-            SendTo sendTo = new SendTo(clientInstance.getUsername(), content);
-            String json = JsonUtils.toJson(sendTo);
 
             ClientInstance receiverInstance = ClientLogger.getInstance().getClient(receiver);
             if (receiverInstance == null) {
@@ -46,13 +43,17 @@ public class SendToReqConsumer implements Consumer<String> {
                 clientInstance.sendCommand(SENDTO_RESP, JsonUtils.toJson(response));
                 MessageHelper.printColoredMessage(RED, "S --> (" + clientInstance.getUsername() + "): " + SENDTO_RESP + " " + JsonUtils.toJson(response));
             } else {
-                receiverInstance.sendCommand(SENDTO, json);
-                MessageHelper.printColoredMessage(WHITE, "C (" + clientInstance.getUsername() + ") --> C (" + receiver + "): " + SENDTO + " : " + jsonPayload);
-
-
                 // Send confirmation to the sender
                 SendToResp response = new SendToResp("OK", null);
                 clientInstance.sendCommand(SENDTO_RESP, JsonUtils.toJson(response));
+                MessageHelper.printColoredMessage(WHITE, "S --> (" + clientInstance.getUsername() + "): " + SENDTO_RESP + " " + JsonUtils.toJson(response));
+
+                // Send the message to the receiver
+                SendTo sendTo = new SendTo(clientInstance.getUsername(), content);
+                String json = JsonUtils.toJson(sendTo);
+
+                receiverInstance.sendCommand(SENDTO, json);
+                MessageHelper.printColoredMessage(WHITE, "C (" + clientInstance.getUsername() + ") --> C (" + receiver + "): " + SENDTO + " : " + jsonPayload);
             }
         } catch (Exception e) {
             System.err.println("Failed to process SENDTO_REQ message: " + e.getMessage());

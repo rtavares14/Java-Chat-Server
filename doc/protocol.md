@@ -84,7 +84,7 @@ Sends a private message from a client to specific client. The sending client doe
 ## 3.1 Happy flow
 
 ```
-C -> S: SENDTO_REQ {"username":"<username>","message":"<message>"}
+C -> S: SENDTO_REQ {"username":"<reciever>","message":"<message>"}
 S -> C: SENDTO_RESP {"status":"OK"}
 ```
 - `<username>`: the username of the user that must receive the message.
@@ -92,9 +92,10 @@ S -> C: SENDTO_RESP {"status":"OK"}
 
 Chosen client receive the message as follows:
 ```
-S -> chosen client: SENDTO {"username":"<username>","message":"<message>"}   
+S -> chosen client: SENDTO {"username":"<sender>","message":"<message>"}   
 ```   
-- `<username>`: the username of the user that is sending the message.
+- `<sender>`: the username of the user that is sending the message.
+- `<reciever>`: the username of the user that must receive the message.
 - `<message>`: the message that must be sent.
 
 ## 3.2 Unhappy flow
@@ -104,10 +105,10 @@ S -> C: SENDTO_RESP {"status": "ERROR", "code": <error code>}
 ```
 Possible `<error code>`:
 
-| Error code | Description            |
-|------------|------------------------|
-| 6000       | User is not logged in  |
-| 6006       | Username not in system |
+| Error code | Description                   |
+|------------|-------------------------------|
+| 6000       | User(sender) is not logged in |
+| 6006       | User(receiver) not in system  |
 
 # 4. List of connected clients
 
@@ -140,12 +141,29 @@ The user will request to play a game of rock-paper-scissors with the chosen clie
 ### 5.1.1 Happy flow
 
 ```
-C1 -> S: RPS_START_REQ {"username":"<username>"}
+C1 -> S: RPS_START_REQ {"username":"<player2>"}
 S -> C1: RPS_START_RESP {"status":"OK"}
-s -> C2: RPS_START {"username":"<username>"}
 ```
+
 When the game room will start:
-- `<username>`: the username of the chosen client to play with.
+- `<player1>`: the username of the first player.
+- `<player2>`: the username of the second player.
+- `<username>`: the username of the user that is sending the message.
+
+```
+s -> C2: RPS_MSG {"username":"<player1>"}
+C2 -> S: RPS_START {"answer":"YES"}
+S -> C1: RPS_START {"answer":"YES"}
+S -> All: A RPS game is starting between <player1> and <player2>
+```
+when the second player accepts the game:
+
+```
+s -> C2: RPS_MSG {"username":"<player1>"}
+C2 -> S: RPS_START {"answer":"NO"}
+S -> C1: RPS_START {"answer":"NO"}
+```
+when the second player does not accept the game:
 
 ### 5.1.2 Unhappy flow
 
@@ -209,7 +227,100 @@ S -> C2: RPS_END {"winner":"<username>" , "resultC1":"<choice>" , "resultC2":"<c
 ### 5.3.2 Unhappy flow
 - None
 
-# 6. Heartbeat message
+# 6 File transfer
+
+The user will request to send a file to the chosen client. When the first client request to send a file, a message will be sent to the chosen client. When the second client accepts to receive the file, they both will enter the *file transfer room* that is just a term for the new thread that will open for the transfer of the file. The file will be sent in chunks of 1024 bytes. The file will be saved in the folder `files` in the root of the project. 
+
+My sender will send a request to another client, as he will send the request to another client an uuid will be generated. The receiver will accept the request and the file transfer will start. If the receiver does not accept the request the file transfer will not start and the uuid will be deleted.
+
+## 6.1 Starting the file transfer
+
+### 6.1.1 Happy flow
+
+```
+C1 -> S: FILET_REQ {"username":"<reciever>","filename":"<filename>","checksum":"<checksum>","uuid":"<uuid>"}
+S -> C1: FILET_RESP {"status":"OK" , "error":<error code>}
+S -> C2: FILET {"username":"<sender>","filename":"<filename>","checksum":"<checksum>","uuid":"<uuid>"}
+```
+- `<reciever>`: the username of the chosen client to send the file to.
+- `<sender>`: the username of the chosen client to receive the file.
+- `<filename>`: the name of the file that must be sent.
+- `<checksum>`: the checksum of the file that must be sent.
+- `<uuid>`: the uuid of the file transfer.
+
+### 6.1.2 Unhappy flow
+
+```
+S -> C1: FILET_RESP {"status":"ERROR","code":<error code>}
+```
+
+Possible `<error code>`:
+
+| Error code | Description               |
+|------------|---------------------------|
+| 6000       | User is not logged in     |
+| 6006       | User not found            |
+| 1000       | File not found            |
+
+## 6.2 Accepting the file transfer
+
+### 6.2.1 Happy flow
+
+```
+C2 -> S: FILET_ACP 
+S -> C2: FILET_ACP_RESP {"status":"OK"}
+```
+
+The downloader will open a new socket connection to start the file transfer. The downloader will get file in the folder `files` in the root of the project.
+
+```
+C2_Downloader -> S (Opens the fileT socket)
+S -> C1 : FILET_START {"status":"OK","username":"<reciever>","uuid":"<uuid>"}
+C1_Uploader -> S (Opens the fileT socket)
+```
+
+The file transfer will start and the file will be sent in chunks of bytes.
+
+```
+C1_Uploader -> S <<uuid> + <bytes>>
+S -> C2_Downloader <<uuid> + <bytes>>
+```
+
+After the file transfer is done, the server will send a message to both clients that the file transfer is done and the socket will be closed.
+
+```
+S -> C1: FILET_END {"status":"OK","uuid":"<uuid>"}
+S -> C2: FILET_END {"status":"OK","uuid":"<uuid>"}
+```
+
+- `<reciever>`: the username of the chosen client to send the file to.
+- `<uuid>`: the uuid of the file transfer.
+- `<bytes>`: the bytes of the file that must be sent.
+
+
+### 6.2.2 Unhappy flow
+
+Example when the receiver does not accept the file transfer:
+
+````
+C2 -> S: FILET_DCL_REQ
+S -> C2: FILET_DCL_RESP {"status":"OK"}
+S -> C1: FILET_DCL {"status":"OK"}
+````
+
+```
+S -> C2 or C1: FILET_RESP {"status":"ERROR","code":<error code>}
+```
+
+Possible `<error code>`:
+
+| Error code | Description   |
+|------------|---------------|
+| 1001       | Sender left   |
+| 1002       | Receiver left |
+
+
+# 7. Heartbeat message
 
 Sends a ping message to the client to check whether the client is still active. The receiving client should respond with a pong message to confirm it is still active. If after 3 seconds no pong message has been received by the server, the connection to the client is closed. Before closing, the client is notified with a HANGUP message, with reason code 7000.
 
@@ -217,14 +328,14 @@ The server sends a ping message to a client every 10 seconds. The first ping mes
 
 When the server receives a PONG message while it is not expecting one, a PONG_ERROR message will be returned.
 
-## 6.1 Happy flow
+## 7.1 Happy flow
 
 ```
 S -> C: PING
 C -> S: PONG
 ```     
 
-## 6.2 Unhappy flow
+## 7.2 Unhappy flow
 
 ```
 S -> C: HANGUP {"reason": <reason code>}
@@ -245,11 +356,11 @@ Possible `<error code>`:
 |------------|---------------------|
 | 8000       | Pong without ping   |    
 
-# 7. Termination of the connection
+# 8. Termination of the connection
 
 When the connection needs to be terminated, the client sends a bye message. This will be answered (with a BYE_RESP message) after which the server will close the socket connection.
 
-## 7.1 Happy flow
+## 8.1 Happy flow
 ```
 C -> S: BYE
 S -> C: BYE_RESP {"status":"OK"}
@@ -261,11 +372,11 @@ Other, still connected clients, clients receive:
 S -> others: LEFT {"username":"<username>"}
 ```
 
-## 7.2 Unhappy flow
+## 8.2 Unhappy flow
 
 - None
 
-# 8. Invalid message header
+# 9. Invalid message header
 
 If the client sends an invalid message header (not defined above), the server replies with an unknown command message. The client remains connected.
 
@@ -275,7 +386,7 @@ C -> S: MSG This is an invalid message
 S -> C: UNKNOWN_COMMAND
 ```
 
-# 9. Invalid message body
+# 10. Invalid message body
 
 If the client sends a valid message, but the body is not valid JSON, the server replies with a pars error message. The client remains connected.
 

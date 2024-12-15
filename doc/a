@@ -19,4 +19,10 @@ TODO:
  # 8. Unknown command
       # 9. Error messages
  # close and open the server before each test
-
+    # 10. Test RPC
+ # 11. Test private messages
+ # 12. Test list
+    # 13. Do Protocol File Transfer
+    # 14. Received ok from protocol FileTransfer
+    # 15. FileTransfer
+    # 16. Test FileTransfer
