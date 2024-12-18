@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Timer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static shared.enumerations.CmdColors.PURPLE;
@@ -29,6 +30,9 @@ public class ClientInstance implements Runnable {
     private PrintWriter out;
     private BufferedReader in;
     private String username = "";
+    private final boolean shouldPing = true;
+    private Timer heartbeatTimer;
+    //private AtomicBoolean wasPingReceived = null;
 
     /**
      * Constructor for the ClientInstance class
@@ -41,6 +45,7 @@ public class ClientInstance implements Runnable {
         this.server = server;
         this.isRunning = new AtomicBoolean(true);
         this.messageHandler = new MessageHandler(out, this);
+        //this.wasPingReceived.set(false);
     }
 
     /**
@@ -85,7 +90,6 @@ public class ClientInstance implements Runnable {
             String inputLine;
             while (isRunning.get() && (inputLine = in.readLine()) != null) {
                 MessageHelper.printColoredMessage(PURPLE, "C (" + username + ") --> S: " + inputLine);
-                //processMessage(inputLine);
                 processUserMessage(inputLine);
             }
         } catch (IOException e) {
@@ -106,9 +110,6 @@ public class ClientInstance implements Runnable {
      * @param message the message to be processed
      */
     private void processUserMessage(String message) {
-        // Split the message into command and payload
-        // Handle the user message
-        // If an error occurs, prints and send unknown command
         try {
             String[] parts = message.split(" ", 2);
             ServerCommands command = ServerCommands.valueOf(parts[0]);
@@ -152,6 +153,7 @@ public class ClientInstance implements Runnable {
             if (in != null) in.close();
             if (out != null) out.close();
             if (clientSocket != null) clientSocket.close();
+            if (heartbeatTimer != null) heartbeatTimer.cancel();
         } catch (IOException e) {
             System.err.println("Error closing resources: " + e.getMessage());
         } finally {

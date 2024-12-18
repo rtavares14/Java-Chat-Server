@@ -1,9 +1,12 @@
 package shared.utils.messages;
 
 import client.consumers.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import server.clientHelper.ClientInstance;
 import server.consumers.*;
 import shared.enumerations.ServerCommands;
+import shared.messages.errors.ParseError;
+import shared.utils.JsonUtils;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -72,13 +75,19 @@ public class MessageHandler {
         }
     }
 
-    public void handleClientMessage(ServerCommands command, String json) {
-        Consumer<String> handler = handlersS.get(command);
-        if (handler != null) {
-            handler.accept(json);
-        } else {
-            writer.println(UNKNOWN_COMMAND);
-            MessageHelper.printColoredMessage(RED, "S --> (): " + UNKNOWN_COMMAND);
+    public void handleClientMessage(ServerCommands command, String json) throws JsonProcessingException {
+        try {
+            Consumer<String> handler = handlersS.get(command);
+            if (handler != null) {
+                handler.accept(json);
+            } else {
+                writer.println(UNKNOWN_COMMAND);
+                MessageHelper.printColoredMessage(RED, "S --> (): " + UNKNOWN_COMMAND);
+            }
+        } catch (Exception e) {
+            ParseError parseError = new ParseError();
+            writer.println(JsonUtils.toJson(parseError));
+            MessageHelper.printColoredMessage(RED, "S --> (): " + JsonUtils.toJson(parseError));
         }
     }
 }

@@ -314,13 +314,14 @@ S -> C2 or C1: FILET_RESP {"status":"ERROR","code":<error code>}
 
 Possible `<error code>`:
 
-| Error code | Description   |
-|------------|---------------|
-| 1001       | Sender left   |
-| 1002       | Receiver left |
+| Error code | Description     |
+|------------|-----------------|
+| 1001       | Sender left     |
+| 1002       | Receiver left   |
+| 1003       | Checksum bad    |
 
 
-# 7. Heartbeat message
+# 7.Heartbeat message
 
 Sends a ping message to the client to check whether the client is still active. The receiving client should respond with a pong message to confirm it is still active. If after 3 seconds no pong message has been received by the server, the connection to the client is closed. Before closing, the client is notified with a HANGUP message, with reason code 7000.
 

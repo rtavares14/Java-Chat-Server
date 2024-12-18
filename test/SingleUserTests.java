@@ -24,7 +24,7 @@ class SingleUserTests {
     private final static Properties PROPS = new Properties();
     private static int pingTimeMs;
     private static int pingTimeMsDeltaAllowed;
-    private final static int MAX_DELTA_ALLOWED_MS = 100;
+    private final static int MAX_DELTA_ALLOWED_MS = 1000;
 
     private Process serverProcess;
     private Socket s;

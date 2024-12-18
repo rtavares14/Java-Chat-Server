@@ -1,7 +1,7 @@
 package server.consumers;
 
-import server.clientHelper.LoginHandler;
 import server.clientHelper.ClientInstance;
+import server.loggers.ClientLogger;
 import server.loggers.ServerLogger;
 import shared.messages.enter.Enter;
 import shared.messages.enter.EnterResp;
@@ -18,19 +18,17 @@ import static shared.enumerations.ServerCommands.JOINED;
 
 public class EnterConsumer implements Consumer<String> {
     private final ClientInstance clientInstance;
-    private final LoginHandler loginHandler;
 
 
     public EnterConsumer(ClientInstance clientInstance) {
         this.clientInstance = clientInstance;
-        this.loginHandler = new LoginHandler(clientInstance);
     }
 
     @Override
     public void accept(String jsonPayload) {
         try {
             Enter enter = JsonUtils.fromJson(jsonPayload, Enter.class);
-            EnterResp response = loginHandler.handleLogin(enter);
+            EnterResp response = handleLogin(enter);
             clientInstance.sendCommand(ENTER_RESP, JsonUtils.toJson(response));
 
             if (response.getStatus().equals("OK")) {
@@ -49,6 +47,28 @@ public class EnterConsumer implements Consumer<String> {
             } catch (Exception ex) {
                 System.err.println("Failed to process ENTER message: " + e.getMessage());
             }
+        }
+    }
+
+    /**
+     * Handle the login message
+     * This method is used to handle the login message
+     * It checks if the username is valid and available and then logs the user in
+     *
+     * @param loginMessage the login message
+     * @return the response to the login message
+     */
+    private EnterResp handleLogin(Enter loginMessage) {
+        String username = loginMessage.getUsername();
+
+        if (ClientLogger.isUsernameValid(username) && ClientLogger.isUsernameAvailable(username) &&
+                clientInstance.getUsername().equals("")) {
+            ClientLogger.getInstance().logInUser(username, clientInstance);
+            clientInstance.setUsername(username);
+            return new EnterResp("OK", null);
+        } else {
+            int errorCode = ClientLogger.checkUsername(username);
+            return new EnterResp("ERROR", errorCode);
         }
     }
 }

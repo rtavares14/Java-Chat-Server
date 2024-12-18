@@ -26,3 +26,10 @@ TODO:
     # 14. Received ok from protocol FileTransfer
     # 15. FileTransfer
     # 16. Test FileTransfer
+
+
+tansfer to method that will conect the downloader and receiver
+d- download
+r- receive
+
+need to have some kind of a way to know if the file is being sent or received

@@ -117,7 +117,7 @@ public class ExtendedTests {
     }
 
     @Test
-    void tc57SendPrivateMessage() throws JsonProcessingException {
+    void tc57SendPrivateMessageNoCorrectUser() throws JsonProcessingException {
         receiveLineWithTimeout(inUser1); // ready message
         outUser1.println(Utils.objectToMessage(new Enter("user1")));
         outUser1.flush();

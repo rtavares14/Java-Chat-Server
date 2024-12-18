@@ -6,7 +6,7 @@ import shared.utils.messages.MessageHelper;
 
 import java.util.function.Consumer;
 
-import static shared.enumerations.CmdColors.*;
+import static shared.enumerations.CmdColors.CYAN;
 
 public class ListConsumer implements Consumer<String> {
 
@@ -16,8 +16,13 @@ public class ListConsumer implements Consumer<String> {
             List list = JsonUtils.fromJson(json, List.class);
             StringBuilder usersList = new StringBuilder();
             int index = 1;
+            int lastIndex = list.getSize();
             for (String user : list.getUsers()) {
-                usersList.append(index++).append("- ").append(user).append("\n");
+                if (index != lastIndex) {
+                    usersList.append(index++).append("- ").append(user).append("\n");
+                } else {
+                    usersList.append(index++).append("- ").append(user);
+                }
             }
             MessageHelper.printColoredMessage(CYAN, usersList.toString());
         } catch (Exception e) {

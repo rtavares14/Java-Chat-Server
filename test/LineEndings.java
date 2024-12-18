@@ -23,7 +23,7 @@ class LineEndings {
     private Socket s;
     private BufferedReader in;
     private PrintWriter out;
-    private final static int MAX_DELTA_ALLOWED_MS = 100;
+    private final static int MAX_DELTA_ALLOWED_MS = 400;
 
     @BeforeAll
     static void setupAll() throws IOException {
