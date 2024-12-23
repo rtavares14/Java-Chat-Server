@@ -28,7 +28,7 @@ TODO:
     # 16. Test FileTransfer
 
 
-tansfer to method that will conect the downloader and receiver
+transfer to method that will connect the downloader and receiver
 d- download
 r- receive
 

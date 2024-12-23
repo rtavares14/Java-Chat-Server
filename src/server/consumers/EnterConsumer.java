@@ -1,6 +1,7 @@
 package server.consumers;
 
 import server.clientHelper.ClientInstance;
+import server.clientHelper.HeartbeatHandler;
 import server.loggers.ClientLogger;
 import server.loggers.ServerLogger;
 import shared.messages.enter.Enter;
@@ -36,6 +37,7 @@ public class EnterConsumer implements Consumer<String> {
                 Joined joined = new Joined(clientInstance.getUsername());
                 ServerLogger.getInstance().broadcastMessage(joined, clientInstance.getUsername(), JOINED);
                 ServerLogger.getInstance().getClientUserCounts();
+                HeartbeatHandler.getInstance().startHeartbeat(clientInstance);
             } else {
                 MessageHelper.printColoredMessage(RED, "S --> (): " + JsonUtils.toJson(response));
             }

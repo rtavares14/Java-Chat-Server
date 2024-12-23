@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static shared.enumerations.CmdColors.PURPLE;
@@ -30,9 +31,9 @@ public class ClientInstance implements Runnable {
     private PrintWriter out;
     private BufferedReader in;
     private String username = "";
-    private final boolean shouldPing = true;
     private Timer heartbeatTimer;
-    //private AtomicBoolean wasPingReceived = null;
+    private boolean expectingPong = false;
+    private boolean pingPongEnabled = false;
 
     /**
      * Constructor for the ClientInstance class
@@ -45,7 +46,6 @@ public class ClientInstance implements Runnable {
         this.server = server;
         this.isRunning = new AtomicBoolean(true);
         this.messageHandler = new MessageHandler(out, this);
-        //this.wasPingReceived.set(false);
     }
 
     /**
@@ -65,6 +65,27 @@ public class ClientInstance implements Runnable {
     public void setUsername(String username) {
         this.username = username;
     }
+
+    public synchronized void setExpectingPong(boolean expectingPong) {
+        this.expectingPong = expectingPong;
+    }
+
+    public synchronized boolean isExpectingPong() {
+        return expectingPong;
+    }
+
+    public synchronized void setHeartbeatTimer(Timer heartbeatTimer) {
+        this.heartbeatTimer = heartbeatTimer;
+    }
+
+    public PrintWriter getOut() {
+        return out;
+    }
+
+    public boolean isPingPongEnabled() {
+        return pingPongEnabled;
+    }
+
 
     /**
      * Run the client instance
@@ -113,12 +134,21 @@ public class ClientInstance implements Runnable {
         try {
             String[] parts = message.split(" ", 2);
             ServerCommands command = ServerCommands.valueOf(parts[0]);
-            String jsonPayload = parts.length > 1 ? parts[1] : "";
-            if (jsonPayload.contains("\\s*(\\{.*\\}|\\[.*\\])\\s*")) {
-                out.println(PARSE_ERROR);
+
+            if (command == PONG) {
+                synchronized (this) {
+                    if (expectingPong) {
+                        expectingPong = false;
+                    } else {
+                        out.println(PONG_ERROR);
+                        MessageHelper.printColoredMessage(RED, "S --> (" + getUsername() + "): " + PONG_ERROR);
+                    }
+                }
+                return;
             }
 
-            messageHandler.handleClientMessage(command, jsonPayload);
+            // Handle other commands
+            messageHandler.handleClientMessage(command, parts.length > 1 ? parts[1] : "");
         } catch (Exception e) {
             out.println(UNKNOWN_COMMAND);
             MessageHelper.printColoredMessage(RED, "S --> (): " + UNKNOWN_COMMAND);
@@ -150,10 +180,11 @@ public class ClientInstance implements Runnable {
      */
     public void cleanup() {
         try {
+            System.out.println("Cleaning up resources for " + username);
+            if (heartbeatTimer != null) heartbeatTimer.cancel();
             if (in != null) in.close();
             if (out != null) out.close();
             if (clientSocket != null) clientSocket.close();
-            if (heartbeatTimer != null) heartbeatTimer.cancel();
         } catch (IOException e) {
             System.err.println("Error closing resources: " + e.getMessage());
         } finally {

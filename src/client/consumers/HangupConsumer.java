@@ -11,5 +11,6 @@ public class HangupConsumer implements Consumer<String> {
     @Override
     public void accept(String json) {
         MessageHelper.printColoredMessage(RED, "You have been hung up on.");
+        //need to close the client here
     }
 }

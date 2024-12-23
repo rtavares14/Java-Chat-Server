@@ -78,7 +78,7 @@ public class MessageHandler {
     public void handleClientMessage(ServerCommands command, String json) throws JsonProcessingException {
         try {
             Consumer<String> handler = handlersS.get(command);
-            if (handler != null) {
+            if (json.trim() != null) {
                 handler.accept(json);
             } else {
                 writer.println(UNKNOWN_COMMAND);
