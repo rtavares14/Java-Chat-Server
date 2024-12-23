@@ -5,6 +5,7 @@ import server.loggers.ClientLogger;
 import server.loggers.ServerLogger;
 import shared.enumerations.ServerCommands;
 import shared.messages.Ready;
+import shared.messages.ping_pong.PongError;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHandler;
 import shared.utils.messages.MessageHelper;
@@ -14,8 +15,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static shared.enumerations.CmdColors.PURPLE;
@@ -31,9 +30,8 @@ public class ClientInstance implements Runnable {
     private PrintWriter out;
     private BufferedReader in;
     private String username = "";
-    private Timer heartbeatTimer;
     private boolean expectingPong = false;
-    private boolean pingPongEnabled = false;
+    private boolean pingPongEnabled = true;
 
     /**
      * Constructor for the ClientInstance class
@@ -70,22 +68,32 @@ public class ClientInstance implements Runnable {
         this.expectingPong = expectingPong;
     }
 
+    /**
+     * Check if the client is expecting a pong
+     *
+     * @return the expecting pong status
+     */
     public synchronized boolean isExpectingPong() {
         return expectingPong;
     }
 
-    public synchronized void setHeartbeatTimer(Timer heartbeatTimer) {
-        this.heartbeatTimer = heartbeatTimer;
-    }
-
+    /**
+     * Get the output stream
+     *
+     * @return the output stream
+     */
     public PrintWriter getOut() {
         return out;
     }
 
+    /**
+     * Set the ping pong enabled status
+     *
+     * @return the ping pong enabled status
+     */
     public boolean isPingPongEnabled() {
         return pingPongEnabled;
     }
-
 
     /**
      * Run the client instance
@@ -140,7 +148,9 @@ public class ClientInstance implements Runnable {
                     if (expectingPong) {
                         expectingPong = false;
                     } else {
-                        out.println(PONG_ERROR);
+                        PongError pongError = new PongError(8000);
+                        String json = JsonUtils.toJson(pongError);
+                        sendCommand(PONG_ERROR, json);
                         MessageHelper.printColoredMessage(RED, "S --> (" + getUsername() + "): " + PONG_ERROR);
                     }
                 }
@@ -180,8 +190,6 @@ public class ClientInstance implements Runnable {
      */
     public void cleanup() {
         try {
-            System.out.println("Cleaning up resources for " + username);
-            if (heartbeatTimer != null) heartbeatTimer.cancel();
             if (in != null) in.close();
             if (out != null) out.close();
             if (clientSocket != null) clientSocket.close();

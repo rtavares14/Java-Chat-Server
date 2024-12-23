@@ -1,6 +1,7 @@
 package client.consumers;
 
 import shared.messages.broadcast.BroadcastResp;
+import shared.messages.login_logout.ByeResp;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
 
@@ -13,11 +14,9 @@ public class ByeConsumer implements Consumer<String> {
     @Override
     public void accept(String json) {
         try {
-            BroadcastResp message = JsonUtils.fromJson(json, BroadcastResp.class);
+            ByeResp message = JsonUtils.fromJson(json, ByeResp.class);
             if ("OK".equalsIgnoreCase(message.status())) {
                 MessageHelper.printColoredMessage(PURPLE, "Bye bye see you later!");
-            } else {
-                MessageHelper.handleErrorMessage(message.code());
             }
         } catch (Exception e) {
             System.err.println("Failed to process BYE_RESP message: " + e.getMessage());

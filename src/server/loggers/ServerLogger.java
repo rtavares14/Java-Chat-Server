@@ -13,9 +13,18 @@ public class ServerLogger {
 
     private static ServerLogger instance;
 
+    /**
+     * Constructor for the ServerLogger class
+     */
     private ServerLogger() {
     }
 
+    /**
+     * Get instance
+     * This method is used to get the instance of the server logger
+     *
+     * @return ServerLogger
+     */
     public static ServerLogger getInstance() {
         if (instance == null) {
             instance = new ServerLogger();
