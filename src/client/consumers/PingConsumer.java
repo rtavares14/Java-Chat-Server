@@ -1,5 +1,8 @@
 package client.consumers;
 
+import shared.enumerations.CmdColors;
+import shared.utils.messages.MessageHelper;
+
 import java.io.PrintWriter;
 import java.util.function.Consumer;
 
@@ -16,6 +19,7 @@ public class PingConsumer implements Consumer<String> {
     public void accept(String json) {
         try {
             writer.println(PONG);
+            //MessageHelper.printColoredMessage(CmdColors.PURPLE, "Received PING message");
         } catch (Exception e) {
             System.err.println("Failed to process PING message: " + e.getMessage());
         }

@@ -189,10 +189,11 @@ public class ClientInstance implements Runnable {
      * If an exception occurs, the method prints an error message
      */
     public void cleanup() {
+        isRunning.set(false);
         try {
+            if (clientSocket != null) clientSocket.close();
             if (in != null) in.close();
             if (out != null) out.close();
-            if (clientSocket != null) clientSocket.close();
         } catch (IOException e) {
             System.err.println("Error closing resources: " + e.getMessage());
         } finally {

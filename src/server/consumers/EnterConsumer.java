@@ -35,8 +35,8 @@ public class EnterConsumer implements Consumer<String> {
             if (response.getStatus().equals("OK")) {
                 MessageHelper.printColoredMessage(GREEN, "S --> (" + clientInstance.getUsername() + "): " + JsonUtils.toJson(response));
                 Joined joined = new Joined(clientInstance.getUsername());
-                ServerLogger.getInstance().broadcastMessage(joined, clientInstance.getUsername(), JOINED);
                 ServerLogger.getInstance().getClientUserCounts();
+                ServerLogger.getInstance().broadcastMessage(joined, clientInstance.getUsername(), JOINED);
                 HeartbeatHandler.getInstance().startHeartbeat(clientInstance);
             } else {
                 MessageHelper.printColoredMessage(RED, "S --> (): " + JsonUtils.toJson(response));

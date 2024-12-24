@@ -1,7 +1,8 @@
 package server.clientHelper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import shared.messages.login_logout.Joined;
+import server.Server;
+import server.loggers.ServerLogger;
 import shared.messages.ping_pong.Hangup;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
@@ -10,7 +11,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static shared.enumerations.CmdColors.PURPLE;
-import static shared.enumerations.CmdColors.RED;
 import static shared.enumerations.ServerCommands.HANGUP;
 import static shared.enumerations.ServerCommands.PING;
 
@@ -51,35 +51,44 @@ public class HeartbeatHandler {
         if (!clientInstance.isPingPongEnabled()) {
             return;
         }
-            MessageHelper.printColoredMessage(PURPLE, "Starting heartbeat for " + clientInstance.getUsername());
+        MessageHelper.printColoredMessage(PURPLE, "Starting heartbeat for " + clientInstance.getUsername());
 
-            Timer heartbeatTimer = new Timer();
+        Timer heartbeatTimer = new Timer();
 
-            TimerTask heartbeatTask = new TimerTask() {
-                @Override
-                public void run() {
-                    synchronized (clientInstance) {
-                        if (clientInstance.isExpectingPong()) {
-                            //MessageHelper.printColoredMessage(RED, "Client " + clientInstance.getUsername() + " did not respond to PING. Disconnecting client.");
-                            try {
-                                heartbeatTimer.cancel();
-                                Hangup hangup = new Hangup(7000);
-                                String json = JsonUtils.toJson(hangup);
-                                clientInstance.sendCommand(HANGUP, json);
-                            } catch (JsonProcessingException e) {
-                                throw new RuntimeException(e);
-                            }
+        TimerTask heartbeatTask = new TimerTask() {
+            @Override
+            public void run() {
+                synchronized (clientInstance) {
+                    if (clientInstance.isExpectingPong()) {
+                        try {
+                            // Send HANGUP message
+                            Hangup hangup = new Hangup(7000);
+                            String json = JsonUtils.toJson(hangup);
+                            clientInstance.sendCommand(HANGUP, json);
+                            MessageHelper.printColoredMessage(PURPLE, "S --> C(" + clientInstance.getUsername() + ") : " + json);
 
-                        } else {
-                            clientInstance.getOut().println(PING);
-                            clientInstance.setExpectingPong(true);
-                            MessageHelper.printColoredMessage(PURPLE, "S --> C(" + clientInstance.getUsername()+") : " + PING);
+                            // Cleanup the client and forcefully stop its thread
+                            clientInstance.cleanup();
+                            MessageHelper.printColoredMessage(PURPLE, "Client " + clientInstance.getUsername() + " has been disconnected");
+                            ServerLogger.getInstance().getClientUserCounts();
+
+                            heartbeatTimer.cancel();
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException(e);
                         }
+                    } else {
+                        // Send PING
+                        clientInstance.getOut().println(PING);
+                        clientInstance.setExpectingPong(true);
+                        MessageHelper.printColoredMessage(PURPLE, "S --> C(" + clientInstance.getUsername() + ") : " + PING);
                     }
                 }
-            };
+            }
+        };
 
-            // Schedule the heartbeat task with an initial delay of 7 seconds and repeated every 14 seconds.
-            heartbeatTimer.schedule(heartbeatTask, 7, 14000);
+        //Schedule the heartbeat task with an initial delay of 10 seconds and repeated every 15 seconds.
+        heartbeatTimer.schedule(heartbeatTask, 10000, 15000);
+        //for testing purposes
+        //heartbeatTimer.schedule(heartbeatTask, 1, 15);
     }
 }

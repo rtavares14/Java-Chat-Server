@@ -14,7 +14,12 @@ TODO:
  # 3. Private message
  # 4. List users
       # 5. RPC
-      # 6. Heartbeat
+ # 6. Heartbeat
+ # ping
+ # pong
+ # hangup
+ # pong Error
+ # tests
  # 7. Bye
  # 8. Unknown command
       # 9. Error messages

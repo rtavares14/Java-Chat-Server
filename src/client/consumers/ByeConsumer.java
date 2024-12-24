@@ -1,6 +1,5 @@
 package client.consumers;
 
-import shared.messages.broadcast.BroadcastResp;
 import shared.messages.login_logout.ByeResp;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
