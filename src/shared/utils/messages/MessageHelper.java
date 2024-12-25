@@ -1,6 +1,7 @@
 package shared.utils.messages;
 
 import shared.enumerations.CmdColors;
+
 import static shared.enumerations.CmdColors.*;
 import static shared.enumerations.ServerCommands.*;
 
@@ -9,7 +10,7 @@ public class MessageHelper {
     /**
      * Prints a message in the specified color and then resets the color.
      *
-     * @param color  the color to print the message in
+     * @param color   the color to print the message in
      * @param message the message to be printed
      */
     public static void printColoredMessage(CmdColors color, String message) {
@@ -20,15 +21,15 @@ public class MessageHelper {
      * Display the help menu
      */
     public static void menu() {
-        printColoredMessage(PURPLE , "Commands:");
-        printColoredMessage(PURPLE ,"login \"username\" - Login to the server");
-        printColoredMessage(PURPLE ,"ulist - Request a list of all login users");
-        printColoredMessage(PURPLE ,"msg \"message\" - Send a global broadcast message");
-        printColoredMessage(PURPLE ,"pvm \"username\" \"message\" - Send a private message to a user");
-        printColoredMessage(PURPLE ,"play \"username\" - Send a play request to a user");
-        printColoredMessage(PURPLE ,"In game commands: "+ROCK+","+PAPER+" or "+SCISSORS);
-        printColoredMessage(PURPLE ,"help - Display this help menu");
-        printColoredMessage(PURPLE ,"bye - Disconnect from the server");
+        printColoredMessage(PURPLE, "Commands:");
+        printColoredMessage(PURPLE, "login \"username\" - Login to the server");
+        printColoredMessage(PURPLE, "ulist - Request a list of all login users");
+        printColoredMessage(PURPLE, "msg \"message\" - Send a global broadcast message");
+        printColoredMessage(PURPLE, "pvm \"username\" \"message\" - Send a private message to a user");
+        printColoredMessage(PURPLE, "play \"username\" - Send a play request to a user");
+        printColoredMessage(PURPLE, "In game commands: " + ROCK + "," + PAPER + " or " + SCISSORS);
+        printColoredMessage(PURPLE, "help - Display this help menu");
+        printColoredMessage(PURPLE, "bye - Disconnect from the server");
     }
 
     /**
@@ -42,16 +43,17 @@ public class MessageHelper {
      */
     public static void handleErrorMessage(int code) {
         switch (code) {
-            case 5000 -> MessageHelper.printColoredMessage(RED,"User with this name already exists!" );
-            case 5001 -> MessageHelper.printColoredMessage(RED,"Username has an invalid format or length!");
-            case 5002 -> MessageHelper.printColoredMessage(RED,"Already logged in!");
-            case 6000 -> MessageHelper.printColoredMessage(RED,"User is not logged in!");
-            case 6006 -> MessageHelper.printColoredMessage(RED,"User is not login atm!");
-            case 7000 -> MessageHelper.printColoredMessage(RED,"No pong received!" );
-            case 8000 -> MessageHelper.printColoredMessage(RED,"Pong without ping!");
-            case 9000 -> MessageHelper.printColoredMessage(RED,"Already playing in a game!");
-            case 9001 -> MessageHelper.printColoredMessage(RED,"Game room is full!");
-            default -> MessageHelper.printColoredMessage(RED,"Unknown error code: " + code);
+            case 5000 -> MessageHelper.printColoredMessage(RED, "User with this name already exists!");
+            case 5001 -> MessageHelper.printColoredMessage(RED, "Username has an invalid format or length!");
+            case 5002 -> MessageHelper.printColoredMessage(RED, "Already logged in!");
+            case 6000 -> MessageHelper.printColoredMessage(RED, "User is not logged in!");
+            case 6006 -> MessageHelper.printColoredMessage(RED, "User is not login atm!");
+            case 7000 -> MessageHelper.printColoredMessage(RED, "No pong received!");
+            case 8000 -> MessageHelper.printColoredMessage(RED, "Pong without ping!");
+            case 9000 -> MessageHelper.printColoredMessage(RED, "Already playing in a game!");
+            case 9001 -> MessageHelper.printColoredMessage(RED, "Game room is full!");
+            case 9009 -> MessageHelper.printColoredMessage(RED, "You cant play with yourself!");
+            default -> MessageHelper.printColoredMessage(RED, "Unknown error code: " + code);
         }
     }
 }

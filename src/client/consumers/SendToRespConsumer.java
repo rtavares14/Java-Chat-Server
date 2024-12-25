@@ -15,7 +15,7 @@ public class SendToRespConsumer implements Consumer<String> {
         try {
             SendToResp message = JsonUtils.fromJson(json, SendToResp.class);
             if ("OK".equalsIgnoreCase(message.status())) {
-                MessageHelper.printColoredMessage(WHITE , "Private message sent!");
+                MessageHelper.printColoredMessage(WHITE, "Private message sent!");
             } else {
                 MessageHelper.handleErrorMessage(message.code());
             }

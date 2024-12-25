@@ -1,4 +1,4 @@
 package shared.messages.login_logout;
 
-public record ByeResp (String status){
+public record ByeResp(String status) {
 }

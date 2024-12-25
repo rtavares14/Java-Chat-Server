@@ -1,3 +1,4 @@
 package shared.messages.ping_pong;
 
-public record Pong() {}
+public record Pong() {
+}

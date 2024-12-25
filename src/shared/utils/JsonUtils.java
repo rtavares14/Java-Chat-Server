@@ -10,9 +10,9 @@ public class JsonUtils {
     /**
      * Converts a JSON string into an object of the specified class.
      *
-     * @param json the JSON string to convert.
+     * @param json  the JSON string to convert.
      * @param clazz the class of the object to convert to.
-     * @param <T> the type of the object.
+     * @param <T>   the type of the object.
      * @return the converted object.
      * @throws JsonProcessingException if the JSON cannot be parsed.
      */

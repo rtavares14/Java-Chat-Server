@@ -3,7 +3,7 @@ package client.consumers;
 import java.io.PrintWriter;
 import java.util.function.Consumer;
 
-import static shared.enumerations.ServerCommands.*;
+import static shared.enumerations.ServerCommands.PONG;
 
 public class PingConsumer implements Consumer<String> {
     private final PrintWriter writer;

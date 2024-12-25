@@ -1,12 +1,13 @@
 package client.inputs;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import shared.enumerations.CmdColors;
+import shared.enumerations.ServerCommands;
+import shared.messages.RPSGame.enter_game.GameStartReq;
 import shared.messages.broadcast.BroadcastReq;
 import shared.messages.enter.Enter;
 import shared.messages.private_message.SendToReq;
 import shared.utils.JsonUtils;
-import shared.enumerations.CmdColors;
-import shared.enumerations.ServerCommands;
 import shared.utils.messages.MessageHelper;
 
 import java.io.IOException;
@@ -63,6 +64,9 @@ public class UserInput implements Runnable {
                     case "ulist":
                         requestUserList();
                         break;
+                    case "play":
+                        startGame(message);
+                        break;
                     case "help":
                         helperMenu();
                         break;
@@ -90,20 +94,11 @@ public class UserInput implements Runnable {
         String userUsername = message.substring("login ".length());
         Enter enter = new Enter(userUsername);
         String json = JsonUtils.toJson(enter);
-        sendCommand(LOGIN, json);
+        sendCommand(ENTER, json);
     }
 
     /**
      * Option 2
-     * Method to handle the list command
-     *
-     */
-    private void requestUserList() {
-        writer.println(LIST_REQ);
-    }
-
-    /**
-     * Option 3
      * Method to handle the message command
      *
      * @param message the message to be sent to the server
@@ -116,7 +111,7 @@ public class UserInput implements Runnable {
     }
 
     /**
-     * Option 4
+     * Option 3
      * Method to handle the private message command
      *
      * @param message the message to be sent to the server
@@ -132,6 +127,27 @@ public class UserInput implements Runnable {
             String json = JsonUtils.toJson(sendTo);
             sendCommand(SENDTO_REQ, json);
         }
+    }
+
+    /**
+     * Option 4
+     * Method to handle the list command
+     */
+    private void requestUserList() {
+        writer.println(LIST_REQ);
+    }
+
+    /**
+     * Option 5
+     * Method to handle the play command
+     *
+     * @param message the message to be sent to the server
+     */
+    private void startGame(String message) throws JsonProcessingException {
+        String userUsername = message.substring("play ".length());
+        GameStartReq gameStartReq = new GameStartReq(userUsername);
+        String json = JsonUtils.toJson(gameStartReq);
+        sendCommand(RPS_START_REQ, json);
     }
 
     /**

@@ -1,6 +1,6 @@
 package shared.messages.private_message;
 
-public record SendToReq (String username, String message) {
+public record SendToReq(String username, String message) {
 
     public String getUsername() {
         return username;

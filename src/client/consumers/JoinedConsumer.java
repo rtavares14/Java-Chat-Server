@@ -14,7 +14,7 @@ public class JoinedConsumer implements Consumer<String> {
     public void accept(String json) {
         try {
             Joined message = JsonUtils.fromJson(json, Joined.class);
-            MessageHelper.printColoredMessage(BLUE, message.username()+" has joined the chat!");
+            MessageHelper.printColoredMessage(BLUE, message.username() + " has joined the chat!");
         } catch (Exception e) {
             System.err.println("Failed to process ENTER_RESP message: " + e.getMessage());
         }

@@ -6,7 +6,7 @@ import shared.utils.messages.MessageHelper;
 
 import java.util.function.Consumer;
 
-import static shared.enumerations.CmdColors.*;
+import static shared.enumerations.CmdColors.ORANGE;
 
 public class BroadcastRespConsumer implements Consumer<String> {
 
@@ -15,7 +15,7 @@ public class BroadcastRespConsumer implements Consumer<String> {
         try {
             BroadcastResp message = JsonUtils.fromJson(json, BroadcastResp.class);
             if ("OK".equalsIgnoreCase(message.status())) {
-                MessageHelper.printColoredMessage(ORANGE , "Message sent!");
+                MessageHelper.printColoredMessage(ORANGE, "Message sent!");
             } else {
                 MessageHelper.handleErrorMessage(message.code());
             }

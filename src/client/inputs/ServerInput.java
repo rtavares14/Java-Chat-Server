@@ -27,7 +27,7 @@ public class ServerInput implements Runnable {
         this.socket = socket;
         OutputStream out = socket.getOutputStream();
         this.writer = new PrintWriter(out, true);
-        this.messageHandler = new MessageHandler(writer,null);
+        this.messageHandler = new MessageHandler(writer, null);
     }
 
     /**

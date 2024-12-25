@@ -1,3 +1,4 @@
 package shared.messages;
 
-public record Ready(String version) {}
+public record Ready(String version) {
+}

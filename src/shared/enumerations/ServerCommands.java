@@ -2,7 +2,6 @@ package shared.enumerations;
 
 public enum ServerCommands {
     READY("READY"), // Server is ready to accept commands
-    LOGIN("ENTER"), // Login command
     ENTER("ENTER"), // Login command
     ENTER_RESP("ENTER_RESP"), // Response to login command
     JOINED("JOINED"), // Response to all clients when a new client joins
@@ -15,9 +14,17 @@ public enum ServerCommands {
     SENDTO_REQ("SENDTO_REQ"), // Send message to specific client
     SENDTO_RESP("SENDTO_RESP"), // Response to send message to specific client
     SENDTO("SENDTO"), // Message received to select client
+    RPS_START_REQ("RPS_START_REQ"), // Request to start a Rock Paper Scissors game
+    RPS_START_RESP("RPS_START_RESP"), // Response to start a Rock Paper Scissors game
+    RPS_MSG("RPS_MSG"), // Message to start a Rock Paper Scissors game
+    RPS_START("RPS_START"), // Start a Rock Paper Scissors game
+    RPS_CHOICE_REQ("RPS_CHOICE_REQ"), // Request to make a Rock Paper Scissors choice
+    RPS_CHOICE_RESP("RPS_CHOICE_RESP"), // Response to make a Rock Paper Scissors choice
+    RPS_END("RPS_END"), // End a Rock Paper Scissors game
     ROCK("ROCK"), // Rock command
     PAPER("PAPER"), // Paper command
     SCISSORS("SCISSORS"), // Scissors command
+    INFO("INFO"), // Info command
     PING("PING"), // Ping command to check if server is alive need to respond with PONG
     PONG("PONG"), // Pong command to respond to PING
     HANGUP("HANGUP"), // Hangup command to disconnect from server - pong not received

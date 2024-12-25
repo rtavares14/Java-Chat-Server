@@ -10,7 +10,7 @@ public record List(ArrayList<String> users) {
         return users;
     }
 
-    public int getSize(){
+    public int getSize() {
         return users.size();
     }
 }

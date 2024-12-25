@@ -6,11 +6,13 @@ import shared.messages.ping_pong.PongError;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
 
+import java.util.function.Consumer;
+
 import static shared.enumerations.CmdColors.PURPLE;
 import static shared.enumerations.CmdColors.RED;
 import static shared.enumerations.ServerCommands.PONG_ERROR;
 
-public class PongConsumer implements java.util.function.Consumer<String> {
+public class PongConsumer implements Consumer<String> {
     private final ClientInstance clientInstance;
 
     public PongConsumer(ClientInstance clientInstance) {

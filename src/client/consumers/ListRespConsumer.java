@@ -6,7 +6,7 @@ import shared.utils.messages.MessageHelper;
 
 import java.util.function.Consumer;
 
-import static shared.enumerations.CmdColors.*;
+import static shared.enumerations.CmdColors.CYAN;
 
 public class ListRespConsumer implements Consumer<String> {
 
@@ -15,7 +15,7 @@ public class ListRespConsumer implements Consumer<String> {
         try {
             SendToResp message = JsonUtils.fromJson(json, SendToResp.class);
             if ("OK".equalsIgnoreCase(message.status())) {
-                MessageHelper.printColoredMessage(CYAN , "List response!");
+                MessageHelper.printColoredMessage(CYAN, "List response!");
             } else {
                 MessageHelper.handleErrorMessage(message.code());
             }
