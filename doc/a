@@ -15,6 +15,7 @@ TODO:
  # 4. List users
       # 5. RPC
  # 6. Heartbeat
+ # when leave randomly close ping pong timmer
  # ping
  # pong
  # hangup
@@ -22,8 +23,9 @@ TODO:
  # tests
  # 7. Bye
  # 8. Unknown command
-      # 9. Error messages
+ # 9. Error messages
  # close and open the server before each test
+ # all tests from old protocol
     # 10. Test RPC
  # 11. Test private messages
  # 12. Test list
@@ -31,6 +33,7 @@ TODO:
     # 14. Received ok from protocol FileTransfer
     # 15. FileTransfer
     # 16. Test FileTransfer
+    # all tests from new protocol
 
 
 transfer to method that will connect the downloader and receiver

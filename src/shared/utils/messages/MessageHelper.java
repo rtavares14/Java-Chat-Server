@@ -2,6 +2,7 @@ package shared.utils.messages;
 
 import shared.enumerations.CmdColors;
 import static shared.enumerations.CmdColors.*;
+import static shared.enumerations.ServerCommands.*;
 
 public class MessageHelper {
 
@@ -24,6 +25,8 @@ public class MessageHelper {
         printColoredMessage(PURPLE ,"ulist - Request a list of all login users");
         printColoredMessage(PURPLE ,"msg \"message\" - Send a global broadcast message");
         printColoredMessage(PURPLE ,"pvm \"username\" \"message\" - Send a private message to a user");
+        printColoredMessage(PURPLE ,"play \"username\" - Send a play request to a user");
+        printColoredMessage(PURPLE ,"In game commands: "+ROCK+","+PAPER+" or "+SCISSORS);
         printColoredMessage(PURPLE ,"help - Display this help menu");
         printColoredMessage(PURPLE ,"bye - Disconnect from the server");
     }
@@ -46,6 +49,8 @@ public class MessageHelper {
             case 6006 -> MessageHelper.printColoredMessage(RED,"User is not login atm!");
             case 7000 -> MessageHelper.printColoredMessage(RED,"No pong received!" );
             case 8000 -> MessageHelper.printColoredMessage(RED,"Pong without ping!");
+            case 9000 -> MessageHelper.printColoredMessage(RED,"Already playing in a game!");
+            case 9001 -> MessageHelper.printColoredMessage(RED,"Game room is full!");
             default -> MessageHelper.printColoredMessage(RED,"Unknown error code: " + code);
         }
     }

@@ -15,6 +15,9 @@ public enum ServerCommands {
     SENDTO_REQ("SENDTO_REQ"), // Send message to specific client
     SENDTO_RESP("SENDTO_RESP"), // Response to send message to specific client
     SENDTO("SENDTO"), // Message received to select client
+    ROCK("ROCK"), // Rock command
+    PAPER("PAPER"), // Paper command
+    SCISSORS("SCISSORS"), // Scissors command
     PING("PING"), // Ping command to check if server is alive need to respond with PONG
     PONG("PONG"), // Pong command to respond to PING
     HANGUP("HANGUP"), // Hangup command to disconnect from server - pong not received
@@ -24,7 +27,6 @@ public enum ServerCommands {
     LEFT("LEFT"), // Response to all clients when a client leaves
     PARSE_ERROR("PARSE_ERROR"), // Error parsing command received from client - invalid format
     UNKNOWN_COMMAND("UNKNOWN_COMMAND"); // Unknown command received
-
 
 
     private final String command;

@@ -1,8 +1,5 @@
 package client.consumers;
 
-import shared.enumerations.CmdColors;
-import shared.utils.messages.MessageHelper;
-
 import java.io.PrintWriter;
 import java.util.function.Consumer;
 

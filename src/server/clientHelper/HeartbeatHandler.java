@@ -1,12 +1,13 @@
 package server.clientHelper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import server.Server;
 import server.loggers.ServerLogger;
 import shared.messages.ping_pong.Hangup;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -17,6 +18,8 @@ import static shared.enumerations.ServerCommands.PING;
 public class HeartbeatHandler {
 
     private static HeartbeatHandler instance;
+    private final Map<ClientInstance, Timer> clientTimers = new HashMap<>();
+    private final Map<ClientInstance, TimerTask> clientTasks = new HashMap<>();
 
     /**
      * Constructor for the HeartbeatHandler class
@@ -54,7 +57,6 @@ public class HeartbeatHandler {
         MessageHelper.printColoredMessage(PURPLE, "Starting heartbeat for " + clientInstance.getUsername());
 
         Timer heartbeatTimer = new Timer();
-
         TimerTask heartbeatTask = new TimerTask() {
             @Override
             public void run() {
@@ -65,7 +67,7 @@ public class HeartbeatHandler {
                             Hangup hangup = new Hangup(7000);
                             String json = JsonUtils.toJson(hangup);
                             clientInstance.sendCommand(HANGUP, json);
-                            MessageHelper.printColoredMessage(PURPLE, "S --> C(" + clientInstance.getUsername() + ") : " + json);
+                            MessageHelper.printColoredMessage(PURPLE, "S --> C (" + clientInstance.getUsername() + ") : " + json);
 
                             // Cleanup the client and forcefully stop its thread
                             clientInstance.cleanup();
@@ -80,7 +82,7 @@ public class HeartbeatHandler {
                         // Send PING
                         clientInstance.getOut().println(PING);
                         clientInstance.setExpectingPong(true);
-                        MessageHelper.printColoredMessage(PURPLE, "S --> C(" + clientInstance.getUsername() + ") : " + PING);
+                        MessageHelper.printColoredMessage(PURPLE, "S --> C (" + clientInstance.getUsername() + ") : " + PING);
                     }
                 }
             }
@@ -88,7 +90,28 @@ public class HeartbeatHandler {
 
         //Schedule the heartbeat task with an initial delay of 10 seconds and repeated every 15 seconds.
         heartbeatTimer.schedule(heartbeatTask, 10000, 15000);
-        //for testing purposes
-        //heartbeatTimer.schedule(heartbeatTask, 1, 15);
+
+        // Store the timer and task for this client
+        clientTimers.put(clientInstance, heartbeatTimer);
+        clientTasks.put(clientInstance, heartbeatTask);
     }
+
+
+    /**
+     * Stop the heartbeat for a specific client
+     * This method cancels the timer and task associated with the client.
+     */
+    public void stopHeartbeat(ClientInstance clientInstance) {
+        Timer timer = clientTimers.get(clientInstance);
+        TimerTask task = clientTasks.get(clientInstance);
+
+        if (timer != null && task != null) {
+            task.cancel();  // Cancel the task
+            timer.cancel();  // Cancel the timer
+            clientTimers.remove(clientInstance);  // Remove the client from the map
+            clientTasks.remove(clientInstance);  // Remove the task from the map
+            MessageHelper.printColoredMessage(PURPLE, "Heartbeat stopped for " + clientInstance.getUsername());
+        }
+    }
+
 }

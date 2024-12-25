@@ -26,17 +26,18 @@ public class ByeReqConsumer implements Consumer<String> {
         try {
             ByeResp byeResp = new ByeResp("OK");
             clientInstance.sendCommand(BYE_RESP, JsonUtils.toJson(byeResp));
-            MessageHelper.printColoredMessage(PURPLE, "S --> (" + clientInstance.getUsername() + "): " + JsonUtils.toJson(byeResp));
 
             Left left = new Left(clientInstance.getUsername());
-            ServerLogger.getInstance().broadcastMessage(left, clientInstance.getUsername(), LEFT);
 
             // Remove the client from the allClients list
             ClientLogger.getInstance().removeUser(clientInstance.getUsername());
             ClientLogger.getInstance().getAllClients().remove(this);
 
-            ServerLogger.getInstance().getClientUserCounts();
             clientInstance.cleanup();
+            MessageHelper.printColoredMessage(PURPLE, "S --> (" + clientInstance.getUsername() + "): " + JsonUtils.toJson(byeResp));
+            ServerLogger.getInstance().broadcastMessage(left, clientInstance.getUsername(), LEFT);
+            ServerLogger.getInstance().getClientUserCounts();
+
         } catch (Exception e) {
             System.err.println("Failed to process BYE_REQ message: " + e.getMessage());
         }

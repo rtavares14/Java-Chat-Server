@@ -75,18 +75,41 @@ public class MessageHandler {
         }
     }
 
+    /**
+     * Handle client message
+     * This method is used to handle messages from the client
+     *
+     * @param command command
+     * @param json json
+     * @throws JsonProcessingException JsonProcessingException
+     */
     public void handleClientMessage(ServerCommands command, String json) throws JsonProcessingException {
         try {
+            // If the command does not require a body, handle it directly
+            if (json == null || json.trim().isEmpty()) {
+                Consumer<String> handler = handlersS.get(command);
+                if (handler != null) {
+                    handler.accept("");
+                } else {
+                    writer.println(UNKNOWN_COMMAND);
+                    MessageHelper.printColoredMessage(RED, "S --> (): " + UNKNOWN_COMMAND);
+                }
+                return;
+            }
+
+            // Validate if the JSON is correct
+            JsonUtils.fromJson(json, Object.class);
+
             Consumer<String> handler = handlersS.get(command);
-            if (json.trim() != null) {
+            if (handler != null) {
                 handler.accept(json);
             } else {
                 writer.println(UNKNOWN_COMMAND);
                 MessageHelper.printColoredMessage(RED, "S --> (): " + UNKNOWN_COMMAND);
             }
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             ParseError parseError = new ParseError();
-            writer.println(JsonUtils.toJson(parseError));
+            writer.println(JsonUtils.toJson(parseError)); // Sends PARSE_ERROR
             MessageHelper.printColoredMessage(RED, "S --> (): " + JsonUtils.toJson(parseError));
         }
     }

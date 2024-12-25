@@ -5,7 +5,6 @@ import server.loggers.ClientLogger;
 import server.loggers.ServerLogger;
 import shared.enumerations.ServerCommands;
 import shared.messages.Ready;
-import shared.messages.ping_pong.PongError;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHandler;
 import shared.utils.messages.MessageHelper;
@@ -64,6 +63,11 @@ public class ClientInstance implements Runnable {
         this.username = username;
     }
 
+    /**
+     * Set the expecting pong status
+     *
+     * @param expectingPong the expecting pong status
+     */
     public synchronized void setExpectingPong(boolean expectingPong) {
         this.expectingPong = expectingPong;
     }
@@ -143,25 +147,11 @@ public class ClientInstance implements Runnable {
             String[] parts = message.split(" ", 2);
             ServerCommands command = ServerCommands.valueOf(parts[0]);
 
-            if (command == PONG) {
-                synchronized (this) {
-                    if (expectingPong) {
-                        expectingPong = false;
-                    } else {
-                        PongError pongError = new PongError(8000);
-                        String json = JsonUtils.toJson(pongError);
-                        sendCommand(PONG_ERROR, json);
-                        MessageHelper.printColoredMessage(RED, "S --> (" + getUsername() + "): " + PONG_ERROR);
-                    }
-                }
-                return;
-            }
-
             // Handle other commands
             messageHandler.handleClientMessage(command, parts.length > 1 ? parts[1] : "");
         } catch (Exception e) {
-            out.println(UNKNOWN_COMMAND);
-            MessageHelper.printColoredMessage(RED, "S --> (): " + UNKNOWN_COMMAND);
+            out.println(PARSE_ERROR);
+            MessageHelper.printColoredMessage(RED, "S --> ("+username+"): " + PARSE_ERROR);
         }
     }
 
@@ -191,6 +181,7 @@ public class ClientInstance implements Runnable {
     public void cleanup() {
         isRunning.set(false);
         try {
+            HeartbeatHandler.getInstance().stopHeartbeat(this);
             if (clientSocket != null) clientSocket.close();
             if (in != null) in.close();
             if (out != null) out.close();
