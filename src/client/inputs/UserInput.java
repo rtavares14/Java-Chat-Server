@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import shared.enumerations.CmdColors;
 import shared.enumerations.ServerCommands;
 import shared.messages.RPSGame.enter_game.GameStartReq;
+import shared.messages.RPSGame.play_game.GameChoiceReq;
 import shared.messages.broadcast.BroadcastReq;
 import shared.messages.enter.Enter;
 import shared.messages.private_message.SendToReq;
@@ -67,6 +68,9 @@ public class UserInput implements Runnable {
                     case "play":
                         startGame(message);
                         break;
+                    case "rock", "paper", "scissors":
+                        sendRPS(message);
+                        return;
                     case "help":
                         helperMenu();
                         break;
@@ -148,6 +152,21 @@ public class UserInput implements Runnable {
         GameStartReq gameStartReq = new GameStartReq(userUsername);
         String json = JsonUtils.toJson(gameStartReq);
         sendCommand(RPS_START_REQ, json);
+    }
+
+    /**
+     * Method to handle the rock, paper, scissors command
+     *
+     * @param message the message to be sent to the server
+     */
+    private void sendRPS(String message) {
+        try {
+            GameChoiceReq gameStartReq = new GameChoiceReq(message);
+            String json = JsonUtils.toJson(gameStartReq);
+            sendCommand(RPS_CHOICE_REQ, json);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

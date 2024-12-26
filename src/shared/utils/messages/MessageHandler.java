@@ -46,6 +46,7 @@ public class MessageHandler {
         handlersC.put(LIST_RESP, new ListRespConsumer());
         handlersC.put(RPS_START_RESP, new RPSStartRespConsumer());
         handlersC.put(RPS_MSG, new RPSMsgConsumer());
+        handlersC.put(RPS_CHOICE_RESP, new RPSChoiceRespConsumer());
 
         handlersC.put(PING, new PingConsumer(writer));
         handlersC.put(HANGUP, new HangupConsumer());
@@ -62,7 +63,7 @@ public class MessageHandler {
         handlersS.put(LIST_REQ, new ListReqConsumer(clientInstance));
         handlersS.put(RPS_START_REQ, new RPSStartReqConsumer(clientInstance));
 
-        handlersS.put(ROCK, new RPSChoiseConsumer(clientInstance));
+        handlersS.put(RPS_CHOICE_REQ, new RPSChoiseReqConsumer(clientInstance));
         handlersS.put(PONG, new PongConsumer(clientInstance));
         handlersS.put(BYE, new ByeReqConsumer(clientInstance));
     }

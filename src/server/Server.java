@@ -1,13 +1,14 @@
 package server;
 
 import server.clientHelper.ClientInstance;
+import server.clientHelper.RPSHandler;
 import server.loggers.ClientLogger;
 import shared.utils.messages.MessageHelper;
 
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import static shared.enumerations.CmdColors.*;
+import static shared.enumerations.CmdColors.PURPLE;
 
 public class Server {
 
@@ -45,10 +46,14 @@ public class Server {
     public void startingServer() {
         try {
             serverSocket = new ServerSocket(SERVER_PORT);
-            MessageHelper.printColoredMessage(PURPLE,"Starting server version (" + VERSION + ") on port: " + SERVER_PORT);
+            MessageHelper.printColoredMessage(PURPLE, "Starting server version (" + VERSION + ") on port: " + SERVER_PORT);
+
+            // Initialize the RPS game handler
+            RPSHandler.getInstance().startGameRoom();
+
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                MessageHelper.printColoredMessage(PURPLE,"New client connected: " + clientSocket.getInetAddress().getHostAddress() + ":" + clientSocket.getPort());
+                MessageHelper.printColoredMessage(PURPLE, "New client connected: " + clientSocket.getInetAddress().getHostAddress() + ":" + clientSocket.getPort());
 
                 ClientInstance clientInstance = new ClientInstance(clientSocket, this);
                 ClientLogger.getInstance().addClient(clientInstance);
@@ -67,8 +72,12 @@ public class Server {
      */
     public void stopServer() {
         try {
-            MessageHelper.printColoredMessage(PURPLE,"Stopping server...");
+            MessageHelper.printColoredMessage(PURPLE, "Stopping server...");
             serverSocket.close();
+
+            // Stop the RPSHandler
+            RPSHandler.getInstance().stopGameRoom();
+
             ClientLogger.getInstance().closeAllClients();
         } catch (Exception e) {
             e.printStackTrace();

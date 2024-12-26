@@ -135,7 +135,7 @@ Possible `<error code>`:
 
 # 5. Rock Paper Scissors game
 
-The user will request to play a game of rock-paper-scissors with the chosen client. When the first client request to play a message will be sent to the chosen client. When the second client accepts to play a game, they both will enter the *game room*. The game will be played in one round. If a client wants to play and the **game room** is full, the server will send an error message. Also when a client ask to play a game in a **game room**, the server will send an error message.
+The user will request to play a game of rock-paper-scissors with the chosen client. When the first client request to play a message will be sent to the chosen client. When the second client receives the message to play a game, they both will enter the *game room*. The game will be played in one round. If a client wants to play and the **game room** is full, the server will send an error message. Also when a client ask to play a game in a **game room**, the server will send an error message.
 
 ## 5.1 Enter the game 
 ### 5.1.1 Happy flow
@@ -152,38 +152,30 @@ When the game room will start:
 
 ```
 s -> C2: RPS_MSG {"username":"<player1>"}
-C2 -> S: RPS_START {"answer":"YES"}
-S -> C1: RPS_START {"answer":"YES"}
 S -> All: A RPS game is starting between <player1> and <player2>
 ```
-when the second player accepts the game:
-
-```
-s -> C2: RPS_MSG {"username":"<player1>"}
-C2 -> S: RPS_START {"answer":"NO"}
-S -> C1: RPS_START {"answer":"NO"}
-```
-when the second player does not accept the game:
+when the second player receives the invite for the game:
+both players will send to the game room and the game will start.
 
 ### 5.1.2 Unhappy flow
 
 ```
-S -> C1: RPS_RESP {"status":"ERROR","code":<error code>}
+S -> C1: RPS_GAME_RESP {"status":"ERROR","code":<error code>}
 ```
 
 Possible `<error code>`:
 
-| Error code | Description               |
-|------------|---------------------------|
-| 6000       | User is not logged in     |
-| 6006       | User not found            |
-| 9000       | Already playing in a game |
-| 9001       | Game room is full         |
+| Error code | Description                |
+|------------|:---------------------------|
+| 6000       | User is not logged in      |
+| 6006       | User not found             |
+| 9001       | Game room is full          |
+| 9009       | You cant play with yourself|
 
 ## 5.2 Play the game
 
 The server will send a message to both clients when the *game room* is full and the game will start.
-When the game starts, the users can type in their choice (max 10 seconds). Then the server will send a message to both clients with the result of the round. The game ends when one of the clients wins 3 rounds.
+When the game starts, the users can type in their choice (max 10 seconds). Then the server will send a message to both clients with the result of the round.
 
 ### 5.2.1 Happy flow
 
@@ -193,6 +185,7 @@ C2 -> s: RPS_CHOICE_REQ {"choice":"<choice>"}
 s -> C1: RPS_CHOICE_RESP {"status":"OK"}
 s -> C2: RPS_CHOICE_RESP {"status":"OK"}
 ```
+
 - `<choice>`: the choice of the user (rock, paper or scissors).
 
 ### 5.2.2 Unhappy flow

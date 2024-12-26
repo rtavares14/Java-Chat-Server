@@ -6,6 +6,7 @@ WHITE - private message
 YELLOW - user left
 RED - error messages
 PURPLE - server stuff
+OLIVE - RPS
 
 TODO:
  # 1. Login
@@ -34,6 +35,7 @@ TODO:
     # 15. FileTransfer
     # 16. Test FileTransfer
     # all tests from new protocol
+    # when unknown command is received Parse error is as well
 
 
 transfer to method that will connect the downloader and receiver

@@ -18,7 +18,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static shared.enumerations.CmdColors.PURPLE;
 import static shared.enumerations.CmdColors.RED;
-import static shared.enumerations.ServerCommands.*;
+import static shared.enumerations.ServerCommands.PARSE_ERROR;
+import static shared.enumerations.ServerCommands.READY;
 
 public class ClientInstance implements Runnable {
     private final Socket clientSocket;
@@ -30,7 +31,7 @@ public class ClientInstance implements Runnable {
     private BufferedReader in;
     private String username = "";
     private boolean expectingPong = false;
-    private boolean pingPongEnabled = true;
+    private boolean pingPongEnabled = false;
 
     /**
      * Constructor for the ClientInstance class
@@ -64,21 +65,21 @@ public class ClientInstance implements Runnable {
     }
 
     /**
-     * Set the expecting pong status
-     *
-     * @param expectingPong the expecting pong status
-     */
-    public synchronized void setExpectingPong(boolean expectingPong) {
-        this.expectingPong = expectingPong;
-    }
-
-    /**
      * Check if the client is expecting a pong
      *
      * @return the expecting pong status
      */
     public synchronized boolean isExpectingPong() {
         return expectingPong;
+    }
+
+    /**
+     * Set the expecting pong status
+     *
+     * @param expectingPong the expecting pong status
+     */
+    public synchronized void setExpectingPong(boolean expectingPong) {
+        this.expectingPong = expectingPong;
     }
 
     /**
@@ -151,7 +152,7 @@ public class ClientInstance implements Runnable {
             messageHandler.handleClientMessage(command, parts.length > 1 ? parts[1] : "");
         } catch (Exception e) {
             out.println(PARSE_ERROR);
-            MessageHelper.printColoredMessage(RED, "S --> ("+username+"): " + PARSE_ERROR);
+            MessageHelper.printColoredMessage(RED, "S --> (" + username + "): " + PARSE_ERROR);
         }
     }
 

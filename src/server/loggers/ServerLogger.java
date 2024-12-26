@@ -7,7 +7,8 @@ import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
 
 import static shared.enumerations.CmdColors.*;
-import static shared.enumerations.ServerCommands.*;
+import static shared.enumerations.ServerCommands.JOINED;
+import static shared.enumerations.ServerCommands.LEFT;
 
 public class ServerLogger {
 
@@ -35,19 +36,28 @@ public class ServerLogger {
     /**
      * Get client user counts
      * This method is used to get the client user counts
-     *
      */
     public void getClientUserCounts() {
-        MessageHelper.printColoredMessage(GREEN, ClientLogger.getInstance().getLoggedInUsers().size() + " client(s) / " +  ClientLogger.getInstance().getAllClients().size() + " user(s)");
+        MessageHelper.printColoredMessage(GREEN, ClientLogger.getInstance().getLoggedInUsers().size() + " client(s) / " + ClientLogger.getInstance().getAllClients().size() + " user(s)");
+    }
+
+    public void informAllUsers(Object message, ServerCommands command) throws JsonProcessingException {
+
+        String jsonMessage = JsonUtils.toJson(message);
+        for (ClientInstance client : ClientLogger.getInstance().getLoggedInUsers().values()) {
+            client.sendCommand(command, jsonMessage);
+        }
+
+        MessageHelper.printColoredMessage(OLIVE, "S --> (ALL): " + command + " " + jsonMessage);
     }
 
     /**
      * Broadcast message
      * This method is used to broadcast a message to all users
      *
-     * @param message the message to be broadcasted
+     * @param message        the message to be broadcasted
      * @param senderUsername the username of the sender
-     * @param command the command
+     * @param command        the command
      * @throws JsonProcessingException if an exception occurs
      */
     public void broadcastMessage(Object message, String senderUsername, ServerCommands command) throws JsonProcessingException {
@@ -59,9 +69,9 @@ public class ServerLogger {
         }
         if (command == LEFT) {
             MessageHelper.printColoredMessage(YELLOW, "S --> (ALL): " + command + " " + jsonMessage);
-        } else if (command == JOINED){
+        } else if (command == JOINED) {
             MessageHelper.printColoredMessage(BLUE, "S --> (ALL): " + command + " " + jsonMessage);
-        }else {
+        } else {
             MessageHelper.printColoredMessage(ORANGE, "S --> (ALL): " + command + " " + jsonMessage);
         }
     }

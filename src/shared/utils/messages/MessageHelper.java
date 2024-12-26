@@ -52,6 +52,8 @@ public class MessageHelper {
             case 8000 -> MessageHelper.printColoredMessage(RED, "Pong without ping!");
             case 9000 -> MessageHelper.printColoredMessage(RED, "Already playing in a game!");
             case 9001 -> MessageHelper.printColoredMessage(RED, "Game room is full!");
+            case 9003 -> MessageHelper.printColoredMessage(RED, "Not playing the game!");
+            case 9004 -> MessageHelper.printColoredMessage(RED, "Not rock paper or scissors!");
             case 9009 -> MessageHelper.printColoredMessage(RED, "You cant play with yourself!");
             default -> MessageHelper.printColoredMessage(RED, "Unknown error code: " + code);
         }
