@@ -47,7 +47,7 @@ public class MessageHandler {
         handlersC.put(RPS_START_RESP, new RPSStartRespConsumer());
         handlersC.put(RPS_MSG, new RPSMsgConsumer());
         handlersC.put(RPS_CHOICE_RESP, new RPSChoiceRespConsumer());
-
+        handlersC.put(RPS_END, new RPSEndConsumer());
         handlersC.put(PING, new PingConsumer(writer));
         handlersC.put(HANGUP, new HangupConsumer());
         handlersC.put(UNKNOWN_COMMAND, new UnknownConsumer());
