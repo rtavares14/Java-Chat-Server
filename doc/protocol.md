@@ -201,8 +201,8 @@ Possible `<error code>`:
 | 6000       | User is not logged in      |
 | 9003       | Not playing the game       |
 | 9004       | Not rock paper or scissors |
-| 9005       | Answer not in time         |
-| 9006       | Cant chose twice           |
+| 9005       | Cant chose twice           |
+| 9006       | Answer not in time         |
 
 
 ## 5.3 End the game

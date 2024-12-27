@@ -1,9 +1,9 @@
 package server.clientHelper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import server.loggers.ClientLogger;
 import server.loggers.ServerLogger;
 import shared.messages.Info;
+import shared.messages.RPSGame.play_game.GameChoiceResp;
 import shared.messages.RPSGame.play_game.GameEnd;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
@@ -59,6 +59,11 @@ public class RPSHandler implements Runnable {
         }
     }
 
+    /**
+     * Start the game
+     *
+     * @throws JsonProcessingException if an error occurs while processing JSON
+     */
     private void startGame() throws JsonProcessingException {
         Info info = new Info("Make your choice: ROCK, PAPER, SCISSORS");
         player1.sendCommand(INFO, JsonUtils.toJson(info));
@@ -97,6 +102,11 @@ public class RPSHandler implements Runnable {
         }).start();
     }
 
+    /**
+     * Determine the winner of the game
+     *
+     * @throws JsonProcessingException if an error occurs while processing JSON
+     */
     private synchronized void determineWinner() throws JsonProcessingException {
         // Determine the winner based on player choices
         String winner;
@@ -113,18 +123,17 @@ public class RPSHandler implements Runnable {
         }
 
         // Notify players of the result
-        GameEnd gameEnd = new GameEnd(winner,player1.getUsername(),player2.getUsername(), player1Choice, player2Choice);
-        ServerLogger.getInstance().informAllUsers(gameEnd, RPS_END ,null,null);
+        GameEnd gameEnd = new GameEnd(winner, player1.getUsername(), player2.getUsername(), player1Choice, player2Choice);
+        ServerLogger.getInstance().informAllUsers(gameEnd, RPS_END, null, null);
 
-        //Info info = new Info("Game ended. Winner: " + (winner == null ? "Tie" : winner));
-        //ServerLogger.getInstance().informAllUsers(info, INFO,player1,player2);
-
-
-
-        // Reset the game
         resetGame();
     }
 
+    /**
+     * Cancel the game due to timeout
+     *
+     * @throws JsonProcessingException if an error occurs while processing JSON
+     */
     private synchronized void cancelGameDueToTimeout() throws JsonProcessingException {
         // Notify players of timeout
         Info timeoutInfo = new Info("Game canceled due to timeout. Please try again.");
@@ -132,6 +141,10 @@ public class RPSHandler implements Runnable {
         player2.sendCommand(INFO, JsonUtils.toJson(timeoutInfo));
         MessageHelper.printColoredMessage(RED, "Game canceled due to timeout.");
 
+        GameChoiceResp response = new GameChoiceResp("ERROR", 9006);
+        player1.sendCommand(RPS_CHOICE_RESP, JsonUtils.toJson(response));
+        player2.sendCommand(RPS_CHOICE_RESP, JsonUtils.toJson(response));
+        MessageHelper.printColoredMessage(RED, "S --> ( players ): " + RPS_CHOICE_RESP + " " + JsonUtils.toJson(response));
 
         // Reset the game
         resetGame();
@@ -162,6 +175,20 @@ public class RPSHandler implements Runnable {
         }
     }
 
+    /**
+     * Check if a player has made a choice
+     *
+     * @param player the player to check
+     * @return boolean true if the player has made a choice, false otherwise
+     */
+    public boolean didPlayerMakeChoice(ClientInstance player) {
+        if (player1 == player) {
+            return player1Choice != null;
+        } else if (player2 == player) {
+            return player2Choice != null;
+        }
+        return false;
+    }
 
     /**
      * Remove a players from the game

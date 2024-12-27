@@ -14,7 +14,7 @@ TODO:
  # 2. Broadcast a message
  # 3. Private message
  # 4. List users
-      # 5. RPC
+ # 5. RPC
  # 6. Heartbeat
  # when leave randomly close ping pong timmer
  # ping
@@ -35,7 +35,8 @@ TODO:
     # 15. FileTransfer
     # 16. Test FileTransfer
     # all tests from new protocol
-    # when unknown command is received Parse error is as well
+ # when unknown command is sent Parse error is recieved
+
 
 
 transfer to method that will connect the downloader and receiver

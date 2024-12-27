@@ -20,7 +20,6 @@ public class MessageHandler {
     private final Map<ServerCommands, Consumer<String>> handlersC = new HashMap<>();
     private final Map<ServerCommands, Consumer<String>> handlersS = new HashMap<>();
     private final PrintWriter writer;
-    private final ClientInstance clientInstance;
 
     /**
      * Constructor
@@ -31,7 +30,6 @@ public class MessageHandler {
      */
     public MessageHandler(PrintWriter writer, ClientInstance clientInstance) {
         this.writer = writer;
-        this.clientInstance = clientInstance;
 
         // User consumers commands that the server can send
 
@@ -93,33 +91,29 @@ public class MessageHandler {
      * @throws JsonProcessingException JsonProcessingException
      */
     public void handleClientMessage(ServerCommands command, String json) throws JsonProcessingException {
-        try {
-            // If the command does not require a body, handle it directly
-            if (json == null || json.trim().isEmpty()) {
-                Consumer<String> handler = handlersS.get(command);
-                if (handler != null) {
-                    handler.accept("");
-                } else {
-                    writer.println(UNKNOWN_COMMAND);
-                    MessageHelper.printColoredMessage(RED, "S --> (): " + UNKNOWN_COMMAND);
+        Consumer<String> handler = handlersS.get(command);
+
+        if (handler != null) {
+            // Check if the command requires a body
+            if (json != null && !json.trim().isEmpty()) {
+                // Validate the JSON payload
+                try {
+                    JsonUtils.fromJson(json, Object.class); // Ensure valid JSON
+                } catch (JsonProcessingException e) {
+                    // JSON is invalid, send PARSING_ERROR
+                    writer.println(PARSE_ERROR); // Send PARSE_ERROR
+                    MessageHelper.printColoredMessage(RED, "S --> (): " + PARSE_ERROR);
+                    return;
                 }
-                return;
             }
 
-            // Validate if the JSON is correct
-            JsonUtils.fromJson(json, Object.class);
+            // If everything is valid, process the command
+            handler.accept(json);
 
-            Consumer<String> handler = handlersS.get(command);
-            if (handler != null) {
-                handler.accept(json);
-            } else {
-                writer.println(UNKNOWN_COMMAND);
-                MessageHelper.printColoredMessage(RED, "S --> (): " + UNKNOWN_COMMAND);
-            }
-        } catch (JsonProcessingException e) {
-            ParseError parseError = new ParseError();
-            writer.println(JsonUtils.toJson(parseError)); // Sends PARSE_ERROR
-            MessageHelper.printColoredMessage(RED, "S --> (): " + JsonUtils.toJson(parseError));
+        } else {
+            // If no handler exists for the command, send UNKNOWN_COMMAND
+            writer.println(UNKNOWN_COMMAND);
+            MessageHelper.printColoredMessage(RED, "S --> (): " + UNKNOWN_COMMAND);
         }
     }
 }
