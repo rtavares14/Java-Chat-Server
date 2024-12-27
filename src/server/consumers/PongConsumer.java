@@ -26,12 +26,12 @@ public class PongConsumer implements Consumer<String> {
             synchronized (this) {
                 if (clientInstance.isExpectingPong()) {
                     clientInstance.setExpectingPong(false);
-                    MessageHelper.printColoredMessage(PURPLE, clientInstance.getUsername()+ " heartbeat is still alive!");
+                    MessageHelper.printColoredMessage(PURPLE, clientInstance.getUsername() + " heartbeat is still alive!");
                 } else {
                     PongError pongError = new PongError(8000);
                     json = JsonUtils.toJson(pongError);
                     clientInstance.sendCommand(PONG_ERROR, json);
-                    MessageHelper.printColoredMessage(RED, "S --> (" + clientInstance.getUsername() + "): " + PONG_ERROR);
+                    MessageHelper.printServerMessage(RED, clientInstance, PONG_ERROR, PONG_ERROR.toString());
                 }
             }
         } catch (JsonProcessingException e) {

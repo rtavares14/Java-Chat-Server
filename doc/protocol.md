@@ -160,7 +160,7 @@ both players will send to the game room and the game will start.
 ### 5.1.2 Unhappy flow
 
 ```
-S -> C1: RPS_GAME_RESP {"status":"ERROR","code":<error code>}
+S -> C1: RPS_START_RESP {"status":"ERROR","code":<error code>}
 ```
 
 Possible `<error code>`:
@@ -201,8 +201,8 @@ Possible `<error code>`:
 | 6000       | User is not logged in      |
 | 9003       | Not playing the game       |
 | 9004       | Not rock paper or scissors |
-| 9005       | Answer not in time         |
-| 9006       | Cant chose twice           |
+| 9005       | Cant chose twice           |
+| 9006       | Answer not in time         |
 
 
 ## 5.3 End the game

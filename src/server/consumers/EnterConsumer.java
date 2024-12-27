@@ -14,8 +14,7 @@ import java.util.function.Consumer;
 
 import static shared.enumerations.CmdColors.GREEN;
 import static shared.enumerations.CmdColors.RED;
-import static shared.enumerations.ServerCommands.ENTER_RESP;
-import static shared.enumerations.ServerCommands.JOINED;
+import static shared.enumerations.ServerCommands.*;
 
 public class EnterConsumer implements Consumer<String> {
     private final ClientInstance clientInstance;
@@ -29,23 +28,23 @@ public class EnterConsumer implements Consumer<String> {
     public void accept(String jsonPayload) {
         try {
             Enter enter = JsonUtils.fromJson(jsonPayload, Enter.class);
-            EnterResp response = handleLogin(enter);
+            EnterResp response = handleLogin(enter, clientInstance);
             clientInstance.sendCommand(ENTER_RESP, JsonUtils.toJson(response));
 
             if (response.getStatus().equals("OK")) {
-                MessageHelper.printColoredMessage(GREEN, "S --> (" + clientInstance.getUsername() + "): " + JsonUtils.toJson(response));
+                MessageHelper.printServerMessage(GREEN,clientInstance,ENTER_RESP,JsonUtils.toJson(response));
                 Joined joined = new Joined(clientInstance.getUsername());
                 ServerLogger.getInstance().getClientUserCounts();
                 ServerLogger.getInstance().broadcastMessage(joined, clientInstance.getUsername(), JOINED);
                 HeartbeatHandler.getInstance().startHeartbeat(clientInstance);
-            } else {
-                MessageHelper.printColoredMessage(RED, "S --> (): " + JsonUtils.toJson(response));
+            }else {
+                MessageHelper.printServerMessage(RED,clientInstance,ENTER_RESP,JsonUtils.toJson(response));
             }
         } catch (Exception e) {
             try {
                 EnterResp response = new EnterResp("ERROR", 5001);
                 clientInstance.sendCommand(ENTER_RESP, JsonUtils.toJson(response));
-                MessageHelper.printColoredMessage(RED, "S --> (): " + JsonUtils.toJson(response));
+                MessageHelper.printServerMessage(RED,clientInstance,ENTER_RESP,JsonUtils.toJson(response));
             } catch (Exception ex) {
                 System.err.println("Failed to process ENTER message: " + e.getMessage());
             }
@@ -60,8 +59,12 @@ public class EnterConsumer implements Consumer<String> {
      * @param loginMessage the login message
      * @return the response to the login message
      */
-    private EnterResp handleLogin(Enter loginMessage) {
+    private EnterResp handleLogin(Enter loginMessage, ClientInstance clientInstance) {
         String username = loginMessage.getUsername();
+
+        if (clientInstance.getUsername() != null && !clientInstance.getUsername().isEmpty()) {
+            return new EnterResp("ERROR", 5002);
+        }
 
         if (ClientLogger.isUsernameValid(username) && ClientLogger.isUsernameAvailable(username) &&
                 clientInstance.getUsername().equals("")) {

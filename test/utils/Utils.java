@@ -3,6 +3,12 @@ package utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import shared.messages.*;
+import shared.messages.RPSGame.enter_game.GameMsg;
+import shared.messages.RPSGame.enter_game.GameStartReq;
+import shared.messages.RPSGame.enter_game.GameStartResp;
+import shared.messages.RPSGame.play_game.GameChoiceReq;
+import shared.messages.RPSGame.play_game.GameChoiceResp;
+import shared.messages.RPSGame.play_game.GameEnd;
 import shared.messages.broadcast.Broadcast;
 import shared.messages.broadcast.BroadcastReq;
 import shared.messages.broadcast.BroadcastResp;
@@ -54,6 +60,12 @@ public class Utils {
         objToNameMapping.put(Hangup.class, "HANGUP");
         objToNameMapping.put(UnknownError.class, "UNKNOWN_COMMAND");
         objToNameMapping.put(ByeResp.class, "BYE_RESP");
+        objToNameMapping.put(GameMsg.class , "RPS_MSG");
+        objToNameMapping.put(GameStartReq.class , "RPS_START_REQ");
+        objToNameMapping.put(GameStartResp.class , "RPS_START_RESP");
+        objToNameMapping.put(GameChoiceReq.class , "RPS_CHOICE_REQ");
+        objToNameMapping.put(GameChoiceResp.class , "RPS_CHOICE_RESP");
+        objToNameMapping.put(GameEnd.class , "RPS_END");
     }
 
     public static String objectToMessage(Object object) throws JsonProcessingException {

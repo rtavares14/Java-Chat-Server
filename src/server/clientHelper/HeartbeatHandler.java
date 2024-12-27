@@ -67,7 +67,7 @@ public class HeartbeatHandler {
                             Hangup hangup = new Hangup(7000);
                             String json = JsonUtils.toJson(hangup);
                             clientInstance.sendCommand(HANGUP, json);
-                            MessageHelper.printColoredMessage(PURPLE, "S --> C (" + clientInstance.getUsername() + ") : " + json);
+                            MessageHelper.printServerMessage(PURPLE,clientInstance,HANGUP,json);
 
                             // Cleanup the client and forcefully stop its thread
                             clientInstance.cleanup();
@@ -82,7 +82,7 @@ public class HeartbeatHandler {
                         // Send PING
                         clientInstance.getOut().println(PING);
                         clientInstance.setExpectingPong(true);
-                        MessageHelper.printColoredMessage(PURPLE, "S --> C (" + clientInstance.getUsername() + ") : " + PING);
+                        MessageHelper.printServerMessage(PURPLE,clientInstance,PING,PING.toString());
                     }
                 }
             }

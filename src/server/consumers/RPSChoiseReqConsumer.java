@@ -4,7 +4,6 @@ import server.clientHelper.ClientInstance;
 import server.clientHelper.RPSHandler;
 import shared.messages.RPSGame.play_game.GameChoiceReq;
 import shared.messages.RPSGame.play_game.GameChoiceResp;
-import shared.messages.broadcast.BroadcastResp;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
 
@@ -29,34 +28,40 @@ public class RPSChoiseReqConsumer implements Consumer<String> {
             String choice = sendToReq.choice();
 
             if (clientInstance.getUsername() == null || clientInstance.getUsername().isEmpty()) {
-                BroadcastResp response = new BroadcastResp("ERROR", 6000);
-                clientInstance.sendCommand(BROADCAST_RESP, JsonUtils.toJson(response));
-                MessageHelper.printColoredMessage(RED, "S --> (): " + JsonUtils.toJson(response));
-                return;
+                GameChoiceResp response = new GameChoiceResp("ERROR", 6000);
+                clientInstance.sendCommand(RPS_CHOICE_RESP, JsonUtils.toJson(response));
+                MessageHelper.printServerMessage(RED, clientInstance, RPS_CHOICE_RESP, JsonUtils.toJson(response));
             }
 
             //check if the player is in the game
             if (RPSHandler.getInstance().isPlayerInGame(clientInstance)) {
-                //check if the player choice is valid
-                if (choice.equals(ROCK.toString()) || choice.equals(PAPER.toString()) || choice.equals(SCISSORS.toString())) {
-                    RPSHandler.getInstance().addChoice(clientInstance, choice);
-                    GameChoiceResp response = new GameChoiceResp("OK", null);
+                if (RPSHandler.getInstance().didPlayerMakeChoice(clientInstance)) {
+                    GameChoiceResp response = new GameChoiceResp("ERROR", 9005);
                     clientInstance.sendCommand(RPS_CHOICE_RESP, JsonUtils.toJson(response));
-                    MessageHelper.printColoredMessage(OLIVE, "S --> (" + clientInstance.getUsername() + "): " + RPS_CHOICE_RESP + " " + JsonUtils.toJson(response));
+                    MessageHelper.printServerMessage(RED, clientInstance, RPS_CHOICE_RESP, JsonUtils.toJson(response));
+                } else {
+
+                    //check if the player choice is valid
+                    if (choice.equals(ROCK.toString()) || choice.equals(PAPER.toString()) || choice.equals(SCISSORS.toString())) {
+                        RPSHandler.getInstance().addChoice(clientInstance, choice);
+                        GameChoiceResp response = new GameChoiceResp("OK", null);
+                        clientInstance.sendCommand(RPS_CHOICE_RESP, JsonUtils.toJson(response));
+                        MessageHelper.printServerMessage(OLIVE, clientInstance, RPS_CHOICE_RESP, JsonUtils.toJson(response));
+                    }
+                    //if the player choice is not valid
+                    else {
+                        GameChoiceResp response = new GameChoiceResp("ERROR", 9004);
+                        clientInstance.sendCommand(RPS_CHOICE_RESP, JsonUtils.toJson(response));
+                        MessageHelper.printServerMessage(RED, clientInstance, RPS_CHOICE_RESP, JsonUtils.toJson(response));
+                    }
                 }
-                //if the player choice is not valid
-                else {
-                    GameChoiceResp response = new GameChoiceResp("ERROR", 9004);
-                    clientInstance.sendCommand(RPS_CHOICE_RESP, JsonUtils.toJson(response));
-                    MessageHelper.printColoredMessage(RED, "S --> (" + clientInstance.getUsername() + "): " + RPS_CHOICE_RESP + " " + JsonUtils.toJson(response));
-                }
-            }else {
+            } else {
                 GameChoiceResp response = new GameChoiceResp("ERROR", 9003);
                 clientInstance.sendCommand(RPS_CHOICE_RESP, JsonUtils.toJson(response));
-                MessageHelper.printColoredMessage(RED, "S --> (" + clientInstance.getUsername() + "): " + RPS_CHOICE_RESP + " " + JsonUtils.toJson(response));
+                MessageHelper.printServerMessage(RED, clientInstance, RPS_CHOICE_RESP, JsonUtils.toJson(response));
             }
         } catch (Exception e) {
-            System.err.println("Failed to process RPS_CHOISE message: " + e.getMessage());
+            System.err.println("Failed to process RPS_CHOICE message: " + e.getMessage());
         }
     }
 }

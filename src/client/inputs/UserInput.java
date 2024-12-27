@@ -68,9 +68,9 @@ public class UserInput implements Runnable {
                     case "play":
                         startGame(message);
                         break;
-                    case "rock", "paper", "scissors":
+                    case "choise rock", "choise paper", "choise scissors":
                         sendRPS(message);
-                        return;
+                        break;
                     case "help":
                         helperMenu();
                         break;
@@ -78,7 +78,6 @@ public class UserInput implements Runnable {
                         logout();
                         return;
                     default:
-                        MessageHelper.printColoredMessage(CmdColors.RED, "Invalid command. Please try again.");
                         writer.println(message);
                         break;
                 }
@@ -159,14 +158,13 @@ public class UserInput implements Runnable {
      *
      * @param message the message to be sent to the server
      */
-    private void sendRPS(String message) {
-        try {
-            GameChoiceReq gameStartReq = new GameChoiceReq(message);
-            String json = JsonUtils.toJson(gameStartReq);
-            sendCommand(RPS_CHOICE_REQ, json);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+    private void sendRPS(String message) throws JsonProcessingException {
+        String choice = message.substring("choice ".length());
+
+
+        GameChoiceReq gameChoiceReq = new GameChoiceReq(choice);
+        String json = JsonUtils.toJson(gameChoiceReq);
+        sendCommand(RPS_CHOICE_REQ, json);
     }
 
     /**

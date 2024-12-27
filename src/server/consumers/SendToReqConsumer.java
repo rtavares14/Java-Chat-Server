@@ -32,7 +32,7 @@ public class SendToReqConsumer implements Consumer<String> {
             if (clientInstance.getUsername() == "" || clientInstance.getUsername().isEmpty()) {
                 SendToResp response = new SendToResp("ERROR", 6000);
                 clientInstance.sendCommand(SENDTO_RESP, JsonUtils.toJson(response));
-                MessageHelper.printColoredMessage(RED, "S --> (): " + SENDTO_RESP + " " + JsonUtils.toJson(response));
+                MessageHelper.printServerMessage(RED, clientInstance, SENDTO_RESP, JsonUtils.toJson(response));
                 return;
             }
 
@@ -41,12 +41,14 @@ public class SendToReqConsumer implements Consumer<String> {
             if (receiverInstance == null) {
                 SendToResp response = new SendToResp("ERROR", 6006);
                 clientInstance.sendCommand(SENDTO_RESP, JsonUtils.toJson(response));
-                MessageHelper.printColoredMessage(RED, "S --> (" + clientInstance.getUsername() + "): " + SENDTO_RESP + " " + JsonUtils.toJson(response));
+                MessageHelper.printServerMessage(RED, clientInstance, SENDTO_RESP, JsonUtils.toJson(response));
+
             } else {
                 // Send confirmation to the sender
                 SendToResp response = new SendToResp("OK", null);
                 clientInstance.sendCommand(SENDTO_RESP, JsonUtils.toJson(response));
-                MessageHelper.printColoredMessage(WHITE, "S --> (" + clientInstance.getUsername() + "): " + SENDTO_RESP + " " + JsonUtils.toJson(response));
+                MessageHelper.printServerMessage(WHITE, clientInstance, SENDTO_RESP, JsonUtils.toJson(response));
+
 
                 // Send the message to the receiver
                 SendTo sendTo = new SendTo(clientInstance.getUsername(), content);

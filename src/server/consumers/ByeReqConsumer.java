@@ -34,7 +34,7 @@ public class ByeReqConsumer implements Consumer<String> {
             ClientLogger.getInstance().getAllClients().remove(this);
 
             clientInstance.cleanup();
-            MessageHelper.printColoredMessage(PURPLE, "S --> (" + clientInstance.getUsername() + "): " + JsonUtils.toJson(byeResp));
+            MessageHelper.printServerMessage(PURPLE,clientInstance,BYE_RESP,JsonUtils.toJson(byeResp));
             ServerLogger.getInstance().broadcastMessage(left, clientInstance.getUsername(), LEFT);
             ServerLogger.getInstance().getClientUserCounts();
 

@@ -1,5 +1,6 @@
 package server.clientHelper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import server.Server;
 import server.loggers.ClientLogger;
 import server.loggers.ServerLogger;
@@ -18,14 +19,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static shared.enumerations.CmdColors.PURPLE;
 import static shared.enumerations.CmdColors.RED;
-import static shared.enumerations.ServerCommands.PARSE_ERROR;
-import static shared.enumerations.ServerCommands.READY;
+import static shared.enumerations.ServerCommands.*;
 
 public class ClientInstance implements Runnable {
     private final Socket clientSocket;
     private final Server server;
     private final AtomicBoolean isRunning;
-    private final MessageHandler messageHandler;
+    private MessageHandler messageHandler;
     private final boolean normalDisconnection = true;
     private PrintWriter out;
     private BufferedReader in;
@@ -43,7 +43,6 @@ public class ClientInstance implements Runnable {
         this.clientSocket = socket;
         this.server = server;
         this.isRunning = new AtomicBoolean(true);
-        this.messageHandler = new MessageHandler(out, this);
     }
 
     /**
@@ -113,11 +112,13 @@ public class ClientInstance implements Runnable {
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
+            this.messageHandler = new MessageHandler(out, this);
+
             Ready ready = new Ready(server.getVersion());
             String json = JsonUtils.toJson(ready);
             sendCommand(READY, json);
 
-            MessageHelper.printColoredMessage(PURPLE, "S --> (): " + JsonUtils.toJson(ready));
+            MessageHelper.printServerMessage(PURPLE,this,READY,JsonUtils.toJson(ready));
 
             ServerLogger.getInstance().getClientUserCounts();
 
@@ -145,14 +146,28 @@ public class ClientInstance implements Runnable {
      */
     private void processUserMessage(String message) {
         try {
+            // Split the message into command and payload
             String[] parts = message.split(" ", 2);
-            ServerCommands command = ServerCommands.valueOf(parts[0]);
+            String commandString = parts[0];
+            String payload = parts.length > 1 ? parts[1] : "";
 
-            // Handle other commands
-            messageHandler.handleClientMessage(command, parts.length > 1 ? parts[1] : "");
-        } catch (Exception e) {
+            // Check if the command exists in ServerCommands enum
+            ServerCommands command;
+            try {
+                command = ServerCommands.valueOf(commandString);
+            } catch (IllegalArgumentException e) {
+                // Command is not recognized, send UNKNOWN_COMMAND
+                out.println(UNKNOWN_COMMAND);
+                MessageHelper.printServerMessage(PURPLE,this,UNKNOWN_COMMAND,UNKNOWN_COMMAND.toString());
+                return;
+            }
+
+            // Try to handle the command
+            messageHandler.handleClientMessage(command, payload);
+
+        } catch (JsonProcessingException e) {
             out.println(PARSE_ERROR);
-            MessageHelper.printColoredMessage(RED, "S --> (" + username + "): " + PARSE_ERROR);
+            MessageHelper.printServerMessage(RED,this,PARSE_ERROR,PARSE_ERROR.toString());
         }
     }
 

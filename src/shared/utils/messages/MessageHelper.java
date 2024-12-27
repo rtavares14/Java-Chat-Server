@@ -1,6 +1,8 @@
 package shared.utils.messages;
 
+import server.clientHelper.ClientInstance;
 import shared.enumerations.CmdColors;
+import shared.enumerations.ServerCommands;
 
 import static shared.enumerations.CmdColors.*;
 import static shared.enumerations.ServerCommands.*;
@@ -17,6 +19,10 @@ public class MessageHelper {
         System.out.println(color + message + RESET);
     }
 
+    public static void printServerMessage(CmdColors color, ClientInstance clientInstance, ServerCommands command, String response) {
+        printColoredMessage(color, "S --> (" + clientInstance.getUsername() + "): " + command + " " + response);
+    }
+
     /**
      * Display the help menu
      */
@@ -27,7 +33,7 @@ public class MessageHelper {
         printColoredMessage(PURPLE, "msg \"message\" - Send a global broadcast message");
         printColoredMessage(PURPLE, "pvm \"username\" \"message\" - Send a private message to a user");
         printColoredMessage(PURPLE, "play \"username\" - Send a play request to a user");
-        printColoredMessage(PURPLE, "In game commands: " + ROCK + "," + PAPER + " or " + SCISSORS);
+        printColoredMessage(PURPLE, "In game commands: rock, paper or scissors");
         printColoredMessage(PURPLE, "help - Display this help menu");
         printColoredMessage(PURPLE, "bye - Disconnect from the server");
     }
@@ -54,6 +60,8 @@ public class MessageHelper {
             case 9001 -> MessageHelper.printColoredMessage(RED, "Game room is full!");
             case 9003 -> MessageHelper.printColoredMessage(RED, "Not playing the game!");
             case 9004 -> MessageHelper.printColoredMessage(RED, "Not rock paper or scissors!");
+            case 9005 -> MessageHelper.printColoredMessage(RED, "Already made a choice!");
+            case 9006 -> MessageHelper.printColoredMessage(RED, "Not all players made a choice!");
             case 9009 -> MessageHelper.printColoredMessage(RED, "You cant play with yourself!");
             default -> MessageHelper.printColoredMessage(RED, "Unknown error code: " + code);
         }
