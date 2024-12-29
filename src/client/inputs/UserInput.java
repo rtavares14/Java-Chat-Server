@@ -159,6 +159,8 @@ public class UserInput implements Runnable {
      * @param message the message to be sent to the server
      */
     private void sendRPS(String message) throws JsonProcessingException {
+        message = message.toUpperCase();
+
         GameChoiceReq gameChoiceReq = new GameChoiceReq(message);
         String json = JsonUtils.toJson(gameChoiceReq);
         sendCommand(RPS_CHOICE_REQ, json);

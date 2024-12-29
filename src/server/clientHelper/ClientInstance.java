@@ -1,6 +1,5 @@
 package server.clientHelper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import server.Server;
 import server.loggers.ClientLogger;
 import server.loggers.ServerLogger;
@@ -158,7 +157,7 @@ public class ClientInstance implements Runnable {
             } catch (IllegalArgumentException e) {
                 // Command is not recognized, send UNKNOWN_COMMAND
                 out.println(UNKNOWN_COMMAND);
-                MessageHelper.printServerMessage(PURPLE,this,UNKNOWN_COMMAND,UNKNOWN_COMMAND.toString());
+                MessageHelper.printColoredMessage(RED, "S --> (" + username + "): " + UNKNOWN_COMMAND);
                 return;
             }
 
