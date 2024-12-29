@@ -15,6 +15,7 @@ import static shared.enumerations.ServerCommands.*;
 public class RPSHandler implements Runnable {
 
     private static RPSHandler instance;
+    private volatile boolean timerRunning = false;
     private ClientInstance player1 = null;
     private ClientInstance player2 = null;
     private String player1Choice = null;
@@ -70,11 +71,12 @@ public class RPSHandler implements Runnable {
         player2.sendCommand(INFO, JsonUtils.toJson(info));
         MessageHelper.printColoredMessage(OLIVE, "S --> ( players ): " + INFO + " " + JsonUtils.toJson(info));
 
-        // Start a 20-second timer
+        // Start a 15-second timer
+        timerRunning = true; // Set the flag to true
         new Thread(() -> {
             try {
                 int timeElapsed = 0;
-                while (timeElapsed < 20) {
+                while (timeElapsed < 20 && timerRunning) { // Check the flag
                     Thread.sleep(1000); // Wait for 1 second
                     timeElapsed++;
 
@@ -89,7 +91,7 @@ public class RPSHandler implements Runnable {
 
                 // Timeout: Cancel the game
                 synchronized (this) {
-                    if (player1Choice == null || player2Choice == null) {
+                    if (timerRunning && (player1Choice == null || player2Choice == null)) {
                         cancelGameDueToTimeout();
                     }
                 }
@@ -199,6 +201,7 @@ public class RPSHandler implements Runnable {
         player2 = null;
         player1Choice = null;
         player2Choice = null;
+
         MessageHelper.printColoredMessage(OLIVE, "Players have left the game.");
     }
 
@@ -215,6 +218,8 @@ public class RPSHandler implements Runnable {
      * Clear all players and reset the game
      */
     public synchronized void resetGame() {
+        timerRunning = false; // Stop the timer
+
         removePlayers();
         MessageHelper.printColoredMessage(OLIVE, "The game room has been reset.");
     }

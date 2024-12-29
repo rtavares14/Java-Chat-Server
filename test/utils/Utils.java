@@ -66,6 +66,7 @@ public class Utils {
         objToNameMapping.put(GameChoiceReq.class , "RPS_CHOICE_REQ");
         objToNameMapping.put(GameChoiceResp.class , "RPS_CHOICE_RESP");
         objToNameMapping.put(GameEnd.class , "RPS_END");
+        objToNameMapping.put(Info.class , "INFO");
     }
 
     public static String objectToMessage(Object object) throws JsonProcessingException {

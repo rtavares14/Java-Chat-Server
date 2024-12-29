@@ -68,7 +68,7 @@ public class UserInput implements Runnable {
                     case "play":
                         startGame(message);
                         break;
-                    case "choise rock", "choise paper", "choise scissors":
+                    case "rock", "paper", "scissors":
                         sendRPS(message);
                         break;
                     case "help":
@@ -159,10 +159,7 @@ public class UserInput implements Runnable {
      * @param message the message to be sent to the server
      */
     private void sendRPS(String message) throws JsonProcessingException {
-        String choice = message.substring("choice ".length());
-
-
-        GameChoiceReq gameChoiceReq = new GameChoiceReq(choice);
+        GameChoiceReq gameChoiceReq = new GameChoiceReq(message);
         String json = JsonUtils.toJson(gameChoiceReq);
         sendCommand(RPS_CHOICE_REQ, json);
     }
