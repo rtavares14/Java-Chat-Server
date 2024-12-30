@@ -2,7 +2,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import server.clientHelper.RPSHandler;
 import shared.messages.RPSGame.enter_game.GameStartReq;
 import shared.messages.RPSGame.enter_game.GameStartResp;
 import shared.messages.RPSGame.play_game.GameChoiceReq;
@@ -50,6 +49,7 @@ public class RPSGameTests {
 
     @AfterEach
     void cleanup() throws IOException, InterruptedException {
+        Thread.sleep(1000);
         for (Socket socket : sockets.values()) {
             socket.close();
         }
@@ -92,7 +92,7 @@ public class RPSGameTests {
     }
 
     @Test
-    public void tc59RPCGameRoomCreated() throws IOException {
+    public void tc59RPCGameRoomCreated() throws IOException, InterruptedException {
         setupUser("user1");
         setupUser("user2");
 
@@ -112,27 +112,45 @@ public class RPSGameTests {
         // Assert the GameStartResp is as expected
         GameStartResp gameStartResp = (GameStartResp) responseObj;
         assertEquals(new GameStartResp("OK", null), gameStartResp);
+
+        String user1Choice = Utils.objectToMessage(new GameChoiceReq("ROCK"));
+        writers.get("user1").println(user1Choice);
+        writers.get("user1").flush();
+
+        // User2 sends the losing choice
+        String user2Choice = Utils.objectToMessage(new GameChoiceReq("SCISSORS"));
+        writers.get("user2").println(user2Choice);
+        writers.get("user2").flush();
+
+        Thread.sleep(1000);
     }
 
 
     @Test
-    public void tc60RPCGameRoomFull() throws IOException {
+    public void tc60RPCGameRoomFull() throws IOException, InterruptedException {
         setupUser("user1");
         setupUser("user2");
         setupUser("user3");
 
+        // User1 sends a GameStartReq for user2
         String requestMessage1 = Utils.objectToMessage(new GameStartReq("user2"));
         writers.get("user1").println(requestMessage1);
         writers.get("user1").flush();
 
+        // Wait for GameStartResp or any intermediate message for user1
+        GameStartResp gameStartResp1 = waitForSpecificResponse(readers.get("user1"), GameStartResp.class);
+        assertEquals(new GameStartResp("OK", null), gameStartResp1);
+
+        // User3 tries to start a game with user2 (who is already in a game)
         String requestMessage2 = Utils.objectToMessage(new GameStartReq("user2"));
         writers.get("user3").println(requestMessage2);
         writers.get("user3").flush();
 
-        String serverResponse1 = receiveLineWithTimeout(readers.get("user3"));
-        GameStartResp gameStartResp1 = Utils.messageToObject(serverResponse1);
-        assertEquals(new GameStartResp("ERROR", 9001), gameStartResp1);
+        // Wait for the GameStartResp for user3, expecting an error
+        GameStartResp gameStartResp3 = waitForSpecificResponse(readers.get("user3"), GameStartResp.class);
+        assertEquals(new GameStartResp("ERROR", 9001), gameStartResp3);
     }
+
 
     @Test
     public void tc61RPCGameUserDoesNotExist() throws IOException {
@@ -164,9 +182,6 @@ public class RPSGameTests {
 
     @Test
     public void tc63RPCGameInvalidChoice() throws IOException, InterruptedException {
-        while (RPSHandler.getInstance().isGameInProgress() == true) {
-            Thread.sleep(1000);
-        }
         setupUser("user1");
         setupUser("user2");
 
@@ -185,100 +200,12 @@ public class RPSGameTests {
         receiveLineWithTimeout(readers.get("user1"));
 
         String serverResponse = receiveLineWithTimeout(readers.get("user1"));
-        Object responseObj = Utils.messageToObject(serverResponse);
+        Object gameChoiceResp = Utils.messageToObject(serverResponse);
 
         // Check the type of the response object
-        if (responseObj instanceof GameChoiceResp gameChoiceResp) {
-            assertEquals(new GameChoiceResp("ERROR", 9004), gameChoiceResp);
-            System.out.println("pintou ?");
-        }
-    }
+        assertEquals(new GameChoiceResp("ERROR", 9004), gameChoiceResp);
 
-    @Test
-    public void tc64RPCGameCannotChooseTwice() throws IOException, InterruptedException {
-        while (RPSHandler.getInstance().isGameInProgress() == true) {
-            Thread.sleep(1000);
-            System.out.println("pintou ?");
-        }
-        setupUser("user1");
-        setupUser("user2");
 
-        // Create the game room
-        String gameStartRequest = Utils.objectToMessage(new GameStartReq("user2"));
-        writers.get("user1").println(gameStartRequest);
-        writers.get("user1").flush();
-
-        // User1 sends the first choice
-        String firstChoice = Utils.objectToMessage(new GameChoiceReq("ROCK"));
-        writers.get("user1").println(firstChoice);
-        writers.get("user1").flush();
-
-        // Skip the valid choice response
-        receiveLineWithTimeout(readers.get("user1"));
-        receiveLineWithTimeout(readers.get("user1"));
-        receiveLineWithTimeout(readers.get("user1"));
-        receiveLineWithTimeout(readers.get("user1"));
-
-        // User1 sends the second choice
-        String secondChoice = Utils.objectToMessage(new GameChoiceReq("PAPER"));
-        writers.get("user1").println(secondChoice);
-        writers.get("user1").flush();
-
-        String serverResponse = receiveLineWithTimeout(readers.get("user1"));
-        Object responseObj = Utils.messageToObject(serverResponse);
-
-        // Check the type of the response object
-        if (responseObj instanceof GameChoiceResp gameChoiceResp) {
-            assertEquals(new GameChoiceResp("ERROR", 9005), gameChoiceResp);
-            System.out.println("pintou ?");
-        }
-    }
-
-    @Test
-    public void tc65RPCGameAnswerNotInTime() throws IOException, InterruptedException {
-        while (RPSHandler.getInstance().isGameInProgress() == true) {
-            Thread.sleep(1000);
-            System.out.println("pintou ?");
-        }
-        setupUser("user1");
-        setupUser("user2");
-
-        // Create the game room
-        String gameStartRequest = Utils.objectToMessage(new GameStartReq("user2"));
-        writers.get("user1").println(gameStartRequest);
-        writers.get("user1").flush();
-
-        // Simulate delay of more than 20 seconds before sending choice
-        Thread.sleep(14000);
-
-        String serverResponse = receiveLineWithTimeout(readers.get("user1"));
-        Object responseObj = Utils.messageToObject(serverResponse);
-
-        // Check the type of the response object
-        if (responseObj instanceof GameChoiceResp gameChoiceResp) {
-            System.out.println(gameChoiceResp);
-            assertEquals(new GameChoiceResp("ERROR", 9006), gameChoiceResp);
-            System.out.println("pintou ?");
-        }
-    }
-
-    @Test
-    public void tc66RPCGameClientWins() throws IOException, InterruptedException {
-        while (RPSHandler.getInstance().isGameInProgress() == true) {
-            Thread.sleep(1000);
-            System.out.println("pintou ?");
-        }
-        setupUser("user1");
-        setupUser("user2");
-
-        // Create the game room
-        String gameStartRequest = Utils.objectToMessage(new GameStartReq("user2"));
-        writers.get("user1").println(gameStartRequest);
-        writers.get("user1").flush();
-
-        // Skip intermediate messages (JOINED and GameStartResp)
-
-        // User1 sends the winning choice
         String user1Choice = Utils.objectToMessage(new GameChoiceReq("ROCK"));
         writers.get("user1").println(user1Choice);
         writers.get("user1").flush();
@@ -288,23 +215,133 @@ public class RPSGameTests {
         writers.get("user2").println(user2Choice);
         writers.get("user2").flush();
 
-        // Receive the game end response
-        String serverResponse1 = receiveLineWithTimeout(readers.get("user1"));
-        Object responseObj1 = Utils.messageToObject(serverResponse1);
+        Thread.sleep(1000);
+    }
 
-        String serverResponse2 = receiveLineWithTimeout(readers.get("user2"));
-        Object responseObj2 = Utils.messageToObject(serverResponse2);
+    @Test
+    public void tc64RPCGameCannotChooseTwice() throws IOException, InterruptedException {
+        setupUser("user1");
+        setupUser("user2");
 
-        // Check the type of the response object
-        if (responseObj1 instanceof GameChoiceResp gameEnd1) {
-            assertEquals(new GameEnd("user1", "user1", "user2", "ROCK", "SCISSORS"), gameEnd1);
-            System.out.println("pintou ?");
+        // Create the game room
+        writers.get("user1").println(Utils.objectToMessage(new GameStartReq("user2")));
+        writers.get("user1").flush();
+
+        // Wait for GameStartResp
+        GameStartResp gameStartResp = waitForSpecificResponse(readers.get("user1"), GameStartResp.class);
+        assertEquals(new GameStartResp("OK", null), gameStartResp);
+
+        // User1 sends the first choice
+        String firstChoice = Utils.objectToMessage(new GameChoiceReq("ROCK"));
+        writers.get("user1").println(firstChoice);
+        writers.get("user1").flush();
+
+        // Wait for response to the first choice
+        GameChoiceResp firstChoiceResp = waitForSpecificResponse(readers.get("user1"), GameChoiceResp.class);
+        assertEquals(new GameChoiceResp("OK", null), firstChoiceResp);
+
+        // User1 sends the second choice
+        String secondChoice = Utils.objectToMessage(new GameChoiceReq("PAPER"));
+        writers.get("user1").println(secondChoice);
+        writers.get("user1").flush();
+
+        // Wait for error response for the second choice
+        GameChoiceResp secondChoiceResp = waitForSpecificResponse(readers.get("user1"), GameChoiceResp.class);
+        assertEquals(new GameChoiceResp("ERROR", 9005), secondChoiceResp);
+
+        // User2 sends a valid choice
+        String user2Choice = Utils.objectToMessage(new GameChoiceReq("SCISSORS"));
+        writers.get("user2").println(user2Choice);
+        writers.get("user2").flush();
+
+        Thread.sleep(1000); // Allow for game completion
+    }
+
+
+    @Test
+    public void tc65RPCGameAnswerNotInTime() throws IOException, InterruptedException {
+        setupUser("user1");
+        setupUser("user2");
+
+        // Create the game room
+        writers.get("user1").println(Utils.objectToMessage(new GameStartReq("user2")));
+        writers.get("user1").flush();
+
+        // Wait for GameStartResp
+        GameStartResp gameStartResp = waitForSpecificResponse(readers.get("user1"), GameStartResp.class);
+        assertEquals(new GameStartResp("OK", null), gameStartResp);
+
+        // Simulate timeout by delaying User1's choice
+        Thread.sleep(20000);// Assuming timeout limit on the server is 5 seconds
+
+        // Wait for timeout error response
+        GameChoiceResp timeoutResponse = waitForSpecificResponse(readers.get("user1"), GameChoiceResp.class);
+        assertEquals(new GameChoiceResp("ERROR", 9006), timeoutResponse);
+    }
+
+    @Test
+    public void tc66RPCGameClientWins() throws IOException, InterruptedException {
+        setupUser("user1");
+        setupUser("user2");
+
+        // Create the game room
+        writers.get("user1").println(Utils.objectToMessage(new GameStartReq("user2")));
+        writers.get("user1").flush();
+
+        // Wait for GameStartResp
+        GameStartResp gameStartResp = waitForSpecificResponse(readers.get("user1"), GameStartResp.class);
+        assertEquals(new GameStartResp("OK", null), gameStartResp);
+
+        // User1 sends the winning choice
+        writers.get("user1").println(Utils.objectToMessage(new GameChoiceReq("ROCK")));
+        writers.get("user1").flush();
+
+        // User2 sends the losing choice
+        writers.get("user2").println(Utils.objectToMessage(new GameChoiceReq("SCISSORS")));
+        writers.get("user2").flush();
+
+        // Wait for GameEnd messages
+        GameEnd gameEnd1 = waitForGameEnd(readers.get("user1"));
+        GameEnd gameEnd2 = waitForGameEnd(readers.get("user2"));
+
+        // Validate the results
+        assertEquals(new GameEnd("user1", "user1", "user2", "ROCK", "SCISSORS"), gameEnd1);
+        assertEquals(new GameEnd("user1", "user1", "user2", "ROCK", "SCISSORS"), gameEnd2);
+    }
+
+
+    private GameEnd waitForGameEnd(BufferedReader reader) throws IOException {
+        long timeoutMillis = 3000; // Increase timeout
+        long startTime = System.currentTimeMillis();
+
+        while ((System.currentTimeMillis() - startTime) < timeoutMillis) {
+            if (reader.ready()) {
+                String serverResponse = reader.readLine();
+
+                Object responseObj = Utils.messageToObject(serverResponse);
+                if (responseObj instanceof GameEnd) {
+                    return (GameEnd) responseObj;
+                }
+            }
         }
+        throw new IOException("Timed out waiting for GameEnd message.");
+    }
 
-        if (responseObj2 instanceof GameChoiceResp gameEnd2) {
-            assertEquals(new GameEnd("user1", "user1", "user2", "ROCK", "SCISSORS"), gameEnd2);
-            System.out.println("pintou ?");
+    private <T> T waitForSpecificResponse(BufferedReader reader, Class<T> expectedClass) throws IOException {
+        long timeoutMillis = 3000;
+        long startTime = System.currentTimeMillis();
+
+        while ((System.currentTimeMillis() - startTime) < timeoutMillis) {
+            if (reader.ready()) {
+                String serverResponse = reader.readLine();
+
+                Object responseObj = Utils.messageToObject(serverResponse);
+                if (expectedClass.isInstance(responseObj)) {
+                    return expectedClass.cast(responseObj);
+                }
+            }
         }
+        throw new IOException("Timed out waiting for response of type: " + expectedClass.getSimpleName());
     }
 
     private String receiveLineWithTimeout(BufferedReader reader) {

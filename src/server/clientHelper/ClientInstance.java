@@ -1,5 +1,6 @@
 package server.clientHelper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import server.Server;
 import server.loggers.ClientLogger;
 import server.loggers.ServerLogger;
@@ -30,7 +31,7 @@ public class ClientInstance implements Runnable {
     private BufferedReader in;
     private String username = "";
     private boolean expectingPong = false;
-    private boolean pingPongEnabled = false;
+    private boolean pingPongEnabled = true;
 
     /**
      * Constructor for the ClientInstance class
