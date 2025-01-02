@@ -49,7 +49,6 @@ public class RPSGameTests {
 
     @AfterEach
     void cleanup() throws IOException, InterruptedException {
-        Thread.sleep(1000);
         for (Socket socket : sockets.values()) {
             socket.close();
         }

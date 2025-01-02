@@ -24,6 +24,15 @@ public enum ServerCommands {
     ROCK("ROCK"), // Rock command
     PAPER("PAPER"), // Paper command
     SCISSORS("SCISSORS"), // Scissors command
+    FILET_REQ("FILET_REQ"), // Request to send a file
+    FILET_RESP("FILET_RESP"), // Response to sent to sender
+    FILET("FILET"), // File message received from receiver
+    FILET_ACP_REQ("FILET_ACP"), // File accepted by receiver
+    FILET_ACP_RESP("FILET_ACP_RESP"), // Response to file accepted by receiver
+    FILET_REJ("FILET_REJ"), // File rejected by receiver
+    FILET_REJ_RESP("FILET_REJ_RESP"), // Response to file rejected by receiver
+    FILET_START("FILET_START"), // Start sending file
+    FILET_END("FILET_END"), // End sending file
     INFO("INFO"), // Info command
     PING("PING"), // Ping command to check if server is alive need to respond with PONG
     PONG("PONG"), // Pong command to respond to PING

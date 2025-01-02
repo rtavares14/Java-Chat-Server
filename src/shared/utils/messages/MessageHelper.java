@@ -63,6 +63,11 @@ public class MessageHelper {
             case 9005 -> MessageHelper.printColoredMessage(RED, "Already made a choice!");
             case 9006 -> MessageHelper.printColoredMessage(RED, "Not all players made a choice!");
             case 9009 -> MessageHelper.printColoredMessage(RED, "You cant play with yourself!");
+            case 10000 -> MessageHelper.printColoredMessage(RED, "File not found!");
+            case 10001 -> MessageHelper.printColoredMessage(RED, "Sender rejected the file!");
+            case 10002 -> MessageHelper.printColoredMessage(RED, "Sender left the server!");
+            case 10003 -> MessageHelper.printColoredMessage(RED, "Receiver left the server!");
+            case 10004 -> MessageHelper.printColoredMessage(RED, "Checksum failed!");
             default -> MessageHelper.printColoredMessage(RED, "Unknown error code: " + code);
         }
     }

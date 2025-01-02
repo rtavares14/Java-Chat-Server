@@ -4,7 +4,7 @@ import server.clientHelper.ClientInstance;
 import server.clientHelper.RPSHandler;
 import server.loggers.ClientLogger;
 import server.loggers.ServerLogger;
-import shared.messages.Info;
+import shared.messages.general.Info;
 import shared.messages.RPSGame.enter_game.GameMsg;
 import shared.messages.RPSGame.enter_game.GameStartReq;
 import shared.messages.private_message.SendToResp;

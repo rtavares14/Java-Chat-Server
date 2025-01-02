@@ -2,7 +2,6 @@ package utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import shared.messages.*;
 import shared.messages.RPSGame.enter_game.GameMsg;
 import shared.messages.RPSGame.enter_game.GameStartReq;
 import shared.messages.RPSGame.enter_game.GameStartResp;
@@ -15,7 +14,9 @@ import shared.messages.broadcast.BroadcastResp;
 import shared.messages.enter.Enter;
 import shared.messages.enter.EnterReq;
 import shared.messages.enter.EnterResp;
-import shared.messages.errors.ParseError;
+import shared.messages.general.Info;
+import shared.messages.general.ParseError;
+import shared.messages.general.Ready;
 import shared.messages.list.List;
 import shared.messages.list.ListReq;
 import shared.messages.list.ListResp;

@@ -7,6 +7,7 @@ import shared.messages.RPSGame.enter_game.GameStartReq;
 import shared.messages.RPSGame.play_game.GameChoiceReq;
 import shared.messages.broadcast.BroadcastReq;
 import shared.messages.enter.Enter;
+import shared.messages.file_transfer.FileTransferReq;
 import shared.messages.private_message.SendToReq;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
@@ -14,7 +15,12 @@ import shared.utils.messages.MessageHelper;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.math.BigInteger;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
 import static shared.enumerations.ServerCommands.*;
@@ -70,6 +76,9 @@ public class UserInput implements Runnable {
                         break;
                     case "rock", "paper", "scissors":
                         sendRPS(message);
+                        break;
+                    case "filet":
+                        fileTransfer(message);
                         break;
                     case "help":
                         helperMenu();
@@ -166,6 +175,22 @@ public class UserInput implements Runnable {
         sendCommand(RPS_CHOICE_REQ, json);
     }
 
+    private void fileTransfer(String message) throws IOException, NoSuchAlgorithmException {
+        //username , filepath , size ,checksum
+        String[] parts = message.split(" ", 3);
+        if (parts.length < 3) {
+            MessageHelper.printColoredMessage(CmdColors.RED, "To send a private message type pvm <username> <message>");
+        }
+        String receiver = parts[1];
+        System.out.println(receiver);
+        String filepath = parts[2];
+
+        FileTransferReq fileTransferReq = new FileTransferReq(receiver, filepath, (double) getFileSize(filepath), createChecksum(filepath));
+
+        String json = JsonUtils.toJson(fileTransferReq);
+        sendCommand(FILET_REQ, json);
+    }
+
     /**
      * Helper menu for the user
      */
@@ -192,5 +217,17 @@ public class UserInput implements Runnable {
         } else {
             System.err.println("Invalid command or payload. Cannot send to server.");
         }
+    }
+
+    private String createChecksum(String filepath) throws IOException, NoSuchAlgorithmException {
+        byte[] data = Files.readAllBytes(Paths.get(filepath));
+        byte[] hash = MessageDigest.getInstance("MD5").digest(data);
+        return new BigInteger(1, hash).toString(16);
+    }
+
+    private long getFileSize(String filepath) throws IOException {
+        // Get the size of the file in bytes and convert it to gigabytes (GB)
+        long bytes = Files.size(Paths.get(filepath));
+        return (long) (bytes / 1024.0);
     }
 }

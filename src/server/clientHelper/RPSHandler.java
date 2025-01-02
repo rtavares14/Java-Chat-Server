@@ -2,7 +2,7 @@ package server.clientHelper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import server.loggers.ServerLogger;
-import shared.messages.Info;
+import shared.messages.general.Info;
 import shared.messages.RPSGame.play_game.GameChoiceResp;
 import shared.messages.RPSGame.play_game.GameEnd;
 import shared.utils.JsonUtils;

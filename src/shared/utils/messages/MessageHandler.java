@@ -3,9 +3,9 @@ package shared.utils.messages;
 import client.consumers.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import server.clientHelper.ClientInstance;
+import server.consumers.FileTransferReqConsumer;
 import server.consumers.*;
 import shared.enumerations.ServerCommands;
-import shared.messages.errors.ParseError;
 import shared.utils.JsonUtils;
 
 import java.io.PrintWriter;
@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static shared.enumerations.CmdColors.PURPLE;
-import static shared.enumerations.CmdColors.RED;
 import static shared.enumerations.ServerCommands.*;
 
 public class MessageHandler {
@@ -61,8 +59,8 @@ public class MessageHandler {
         handlersS.put(SENDTO_REQ, new SendToReqConsumer(clientInstance));
         handlersS.put(LIST_REQ, new ListReqConsumer(clientInstance));
         handlersS.put(RPS_START_REQ, new RPSStartReqConsumer(clientInstance));
-
         handlersS.put(RPS_CHOICE_REQ, new RPSChoiseReqConsumer(clientInstance));
+        handlersS.put(FILET_REQ, new FileTransferReqConsumer(clientInstance));
         handlersS.put(PONG, new PongConsumer(clientInstance));
         handlersS.put(BYE, new ByeReqConsumer(clientInstance));
     }

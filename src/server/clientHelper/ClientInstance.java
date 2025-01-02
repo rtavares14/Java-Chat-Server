@@ -5,7 +5,7 @@ import server.Server;
 import server.loggers.ClientLogger;
 import server.loggers.ServerLogger;
 import shared.enumerations.ServerCommands;
-import shared.messages.Ready;
+import shared.messages.general.Ready;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHandler;
 import shared.utils.messages.MessageHelper;

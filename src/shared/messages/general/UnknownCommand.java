@@ -1,4 +1,4 @@
-package shared.messages.errors;
+package shared.messages.general;
 
 public record UnknownCommand() {
 }

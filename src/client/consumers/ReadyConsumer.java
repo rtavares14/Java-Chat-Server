@@ -1,6 +1,6 @@
 package client.consumers;
 
-import shared.messages.Ready;
+import shared.messages.general.Ready;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
 

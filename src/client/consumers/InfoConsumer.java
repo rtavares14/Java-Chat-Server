@@ -1,6 +1,6 @@
 package client.consumers;
 
-import shared.messages.Info;
+import shared.messages.general.Info;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
 

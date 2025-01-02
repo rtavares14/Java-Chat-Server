@@ -231,13 +231,14 @@ My sender will send a request to another client, as he will send the request to 
 ### 6.1.1 Happy flow
 
 ```
-C1 -> S: FILET_REQ {"username":"<reciever>","filename":"<filename>","checksum":"<checksum>","uuid":"<uuid>"}
+C1 -> S: FILET_REQ {"username":"<reciever>","filepath":"<filepath>","filesize":"<filesize>","checksum":"<checksum>"}
 S -> C1: FILET_RESP {"status":"OK" , "error":<error code>}
-S -> C2: FILET {"username":"<sender>","filename":"<filename>","checksum":"<checksum>","uuid":"<uuid>"}
+S -> C2: FILET {"username":"<sender>","filepath":"<filepath>","filesize":"<filesize>","checksum":"<checksum>"}
 ```
 - `<reciever>`: the username of the chosen client to send the file to.
 - `<sender>`: the username of the chosen client to receive the file.
-- `<filename>`: the name of the file that must be sent.
+- `<filepath>`: the name of the file that must be sent.
+- `<filesize>`: the size of the file that must be sent.
 - `<checksum>`: the checksum of the file that must be sent.
 - `<uuid>`: the uuid of the file transfer.
 
@@ -253,14 +254,14 @@ Possible `<error code>`:
 |------------|---------------------------|
 | 6000       | User is not logged in     |
 | 6006       | User not found            |
-| 1000       | File not found            |
+| 10000      | File not found            |
 
 ## 6.2 Accepting the file transfer
 
 ### 6.2.1 Happy flow
 
 ```
-C2 -> S: FILET_ACP 
+C2 -> S: FILET_ACP_REQ 
 S -> C2: FILET_ACP_RESP {"status":"OK"}
 ```
 
@@ -296,9 +297,9 @@ S -> C2: FILET_END {"status":"OK","uuid":"<uuid>"}
 Example when the receiver does not accept the file transfer:
 
 ````
-C2 -> S: FILET_DCL_REQ
-S -> C2: FILET_DCL_RESP {"status":"OK"}
-S -> C1: FILET_DCL {"status":"OK"}
+C2 -> S: FILET_REJ_REQ
+S -> C2: FILET_REJ_RESP {"status":"OK"}
+S -> C1: FILET_REJ {"status":"OK"}
 ````
 
 ```
@@ -307,11 +308,12 @@ S -> C2 or C1: FILET_RESP {"status":"ERROR","code":<error code>}
 
 Possible `<error code>`:
 
-| Error code | Description     |
-|------------|-----------------|
-| 1001       | Sender left     |
-| 1002       | Receiver left   |
-| 1003       | Checksum bad    |
+| Error code | Description         |
+|------------|---------------------|
+| 10001      | Sender refused file |
+| 10002      | Sender left         |
+| 10003      | Receiver left       |
+| 10004      | Checksum bad        |
 
 
 # 7.Heartbeat message

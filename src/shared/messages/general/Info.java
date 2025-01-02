@@ -1,4 +1,4 @@
-package shared.messages;
+package shared.messages.general;
 
 public record Info(String message) {
 
