@@ -1,4 +1,5 @@
 GREEN - user login success
+RED - error messages
 BLUE - other user login
 CYAN - user list
 ORANGE - global message
@@ -7,6 +8,7 @@ YELLOW - user left
 RED - error messages
 PURPLE - server stuff
 OLIVE - RPS
+TEAL - File Transfer
 
 TODO:
  # 1. Login
@@ -27,12 +29,19 @@ TODO:
  # 9. Error messages
  # close and open the server before each test
  # all tests from old protocol
-    # 10. Test RPC
+ # 10. Test RPC
  # 11. Test private messages
  # 12. Test list
-    # 13. Do Protocol File Transfer
-    # 14. Received ok from protocol FileTransfer
+ # 13. Do Protocol File Transfer
+ # 14. Received ok from protocol FileTransfer
     # 15. FileTransfer
+    # send request
+    # start timer
+        # accept request
+        # deny request
+    #open thread to send file
+    #start sending file
+    # end sending file
     # 16. Test FileTransfer
     # all tests from new protocol
  # when unknown command is sent Parse error is recieved

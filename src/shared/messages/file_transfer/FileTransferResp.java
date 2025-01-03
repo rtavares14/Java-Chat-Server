@@ -1,4 +1,4 @@
 package shared.messages.file_transfer;
 
-public record FileTransferResp(String status, Integer error) {
+public record FileTransferResp(String status, Integer code) {
 }

@@ -1,6 +1,6 @@
 package shared.messages.file_transfer;
 
-public record FileTransferReq(String receiver, String filepath, Integer size, String checkSum) {
+public record FileTransferReq(String receiver, String filepath, Double size, String checkSum) {
 
     public String getReceiver() {
         return receiver;
@@ -10,7 +10,7 @@ public record FileTransferReq(String receiver, String filepath, Integer size, St
         return filepath;
     }
 
-    public Integer getSize() {
+    public Double getSize() {
         return size;
     }
 

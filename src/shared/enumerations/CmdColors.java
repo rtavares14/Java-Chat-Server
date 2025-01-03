@@ -10,7 +10,9 @@ public enum CmdColors {
     PURPLE("\u001B[35m"),
     CYAN("\u001B[36m"),
     WHITE("\u001B[37m"),
-    OLIVE("\u001B[38;5;100m");
+    OLIVE("\u001B[38;5;100m"),
+    TEAL("\u001B[38;5;44m"),
+    MAGENTA("\u001B[35;1m");
 
     private final String color;
 

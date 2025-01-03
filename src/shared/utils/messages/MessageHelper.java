@@ -52,7 +52,7 @@ public class MessageHelper {
             case 5000 -> MessageHelper.printColoredMessage(RED, "User with this name already exists!");
             case 5001 -> MessageHelper.printColoredMessage(RED, "Username has an invalid format or length!");
             case 5002 -> MessageHelper.printColoredMessage(RED, "Already logged in!");
-            case 6000 -> MessageHelper.printColoredMessage(RED, "User is not logged in!");
+            case 6000 -> MessageHelper.printColoredMessage(RED, "Not logged in. Use login <\"username\">!");
             case 6006 -> MessageHelper.printColoredMessage(RED, "User is not login atm!");
             case 7000 -> MessageHelper.printColoredMessage(RED, "No pong received!");
             case 8000 -> MessageHelper.printColoredMessage(RED, "Pong without ping!");
@@ -63,11 +63,12 @@ public class MessageHelper {
             case 9005 -> MessageHelper.printColoredMessage(RED, "Already made a choice!");
             case 9006 -> MessageHelper.printColoredMessage(RED, "Not all players made a choice!");
             case 9009 -> MessageHelper.printColoredMessage(RED, "You cant play with yourself!");
-            case 10000 -> MessageHelper.printColoredMessage(RED, "File not found!");
-            case 10001 -> MessageHelper.printColoredMessage(RED, "Sender rejected the file!");
-            case 10002 -> MessageHelper.printColoredMessage(RED, "Sender left the server!");
-            case 10003 -> MessageHelper.printColoredMessage(RED, "Receiver left the server!");
-            case 10004 -> MessageHelper.printColoredMessage(RED, "Checksum failed!");
+            case 10000 -> MessageHelper.printColoredMessage(RED, "You cant send a file to yourself!");
+            case 10001 -> MessageHelper.printColoredMessage(RED, "File not found!");
+            case 10002 -> MessageHelper.printColoredMessage(RED, "Sender rejected the file!");
+            case 10003 -> MessageHelper.printColoredMessage(RED, "Sender left the server!");
+            case 10004 -> MessageHelper.printColoredMessage(RED, "Receiver left the server!");
+            case 10005 -> MessageHelper.printColoredMessage(RED, "Checksum failed!");
             default -> MessageHelper.printColoredMessage(RED, "Unknown error code: " + code);
         }
     }

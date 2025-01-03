@@ -12,6 +12,7 @@ import shared.messages.private_message.SendToReq;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -181,11 +182,18 @@ public class UserInput implements Runnable {
         if (parts.length < 3) {
             MessageHelper.printColoredMessage(CmdColors.RED, "To send a private message type pvm <username> <message>");
         }
+
         String receiver = parts[1];
-        System.out.println(receiver);
         String filepath = parts[2];
 
-        FileTransferReq fileTransferReq = new FileTransferReq(receiver, filepath, (double) getFileSize(filepath), createChecksum(filepath));
+        // Check if the file exists
+        File file = new File(filepath);
+        if (!file.exists()) {
+            MessageHelper.printColoredMessage(CmdColors.RED, "The file does not exist: " + filepath);
+            return; // Exit the method if the file doesn't exist
+        }
+
+        FileTransferReq fileTransferReq = new FileTransferReq(receiver, filepath, getFileSize(filepath), createChecksum(filepath));
 
         String json = JsonUtils.toJson(fileTransferReq);
         sendCommand(FILET_REQ, json);
@@ -225,9 +233,9 @@ public class UserInput implements Runnable {
         return new BigInteger(1, hash).toString(16);
     }
 
-    private long getFileSize(String filepath) throws IOException {
+    private double getFileSize(String filepath) throws IOException {
         // Get the size of the file in bytes and convert it to gigabytes (GB)
         long bytes = Files.size(Paths.get(filepath));
-        return (long) (bytes / 1024.0);
+        return  bytes / 1024.0;
     }
 }
