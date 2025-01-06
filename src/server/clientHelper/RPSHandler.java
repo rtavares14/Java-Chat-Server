@@ -14,7 +14,7 @@ import static shared.enumerations.ServerCommands.*;
 
 public class RPSHandler implements Runnable {
 
-    private static RPSHandler instance;
+    private static RPSHandler handler;
     private volatile boolean timerRunning = false;
     private ClientInstance player1 = null;
     private ClientInstance player2 = null;
@@ -35,11 +35,11 @@ public class RPSHandler implements Runnable {
      *
      * @return RPSHandler
      */
-    public static synchronized RPSHandler getInstance() {
-        if (instance == null) {
-            instance = new RPSHandler();
+    public static synchronized RPSHandler getHandler() {
+        if (handler == null) {
+            handler = new RPSHandler();
         }
-        return instance;
+        return handler;
     }
 
     /**
@@ -76,7 +76,7 @@ public class RPSHandler implements Runnable {
         new Thread(() -> {
             try {
                 int timeElapsed = 0;
-                while (timeElapsed < 20 && timerRunning) { // Check the flag
+                while (timeElapsed < 12 && timerRunning) { // Check the flag
                     Thread.sleep(1000); // Wait for 1 second
                     timeElapsed++;
 

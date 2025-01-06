@@ -49,7 +49,7 @@ public class Server {
             MessageHelper.printColoredMessage(PURPLE, "Starting server version (" + VERSION + ") on port: " + SERVER_PORT);
 
             // Initialize the RPS game handler
-            RPSHandler.getInstance().startGameRoom();
+            RPSHandler.getHandler().startGameRoom();
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
@@ -76,7 +76,7 @@ public class Server {
             serverSocket.close();
 
             // Stop the RPSHandler
-            RPSHandler.getInstance().stopGameRoom();
+            RPSHandler.getHandler().stopGameRoom();
 
             ClientLogger.getInstance().closeAllClients();
         } catch (Exception e) {

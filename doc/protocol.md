@@ -303,7 +303,7 @@ Possible `<error code>`:
 ### 6.2.1 Happy flow
 
 ```
-C2 -> S: FILET_ACP_REQ 
+C2 -> S: FILET_ACP_REQ {"sender":"username"}
 S -> C2: FILET_ACP_RESP {"status":"OK"}
 ```
 
@@ -340,7 +340,7 @@ S -> C2: FILET_END {"status":"OK","uuid":"<uuid>"}
 Example when the receiver does not accept the file transfer:
 
 ````
-C2 -> S: FILET_REJ_REQ
+C2 -> S: FILET_REJ_REQ {"sender":"username"}
 S -> C2: FILET_REJ_RESP {"status":"OK"}
 S -> C1: FILET_REJ {"status":"OK"}
 ````

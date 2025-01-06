@@ -271,7 +271,7 @@ public class RPSGameTests {
         assertEquals(new GameStartResp("OK", null), gameStartResp);
 
         // Simulate timeout by delaying User1's choice
-        Thread.sleep(20000);// Assuming timeout limit on the server is 5 seconds
+        Thread.sleep(12000);
 
         // Wait for timeout error response
         GameChoiceResp timeoutResponse = waitForSpecificResponse(readers.get("user1"), GameChoiceResp.class);

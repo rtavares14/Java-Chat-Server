@@ -47,7 +47,7 @@ public class RPSStartReqConsumer implements Consumer<String> {
                 SendToResp response = new SendToResp("ERROR", 9009);
                 clientInstance.sendCommand(RPS_START_RESP, JsonUtils.toJson(response));
                 MessageHelper.printServerMessage(RED, clientInstance, RPS_START_RESP, JsonUtils.toJson(response));
-            } else if (RPSHandler.getInstance().isGameInProgress()) {
+            } else if (RPSHandler.getHandler().isGameInProgress()) {
                 SendToResp response = new SendToResp("ERROR", 9001);
                 clientInstance.sendCommand(RPS_START_RESP, JsonUtils.toJson(response));
                 MessageHelper.printServerMessage(RED, clientInstance, RPS_START_RESP, JsonUtils.toJson(response));
@@ -63,7 +63,7 @@ public class RPSStartReqConsumer implements Consumer<String> {
                 receiverInstance.sendCommand(RPS_MSG, json);
                 MessageHelper.printServerMessage(OLIVE, ClientLogger.getInstance().getClient(player2), RPS_MSG, JsonUtils.toJson(response));
 
-                RPSHandler.getInstance().addPlayers(clientInstance, receiverInstance);
+                RPSHandler.getHandler().addPlayers(clientInstance, receiverInstance);
 
                 // Inform all users
                 Info info = new Info("A Rock Paper Scissors game has been started by " + clientInstance.getUsername() + " and " + player2);

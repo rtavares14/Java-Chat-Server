@@ -81,6 +81,9 @@ public class UserInput implements Runnable {
                     case "filet":
                         fileTransfer(message);
                         break;
+                    case "accpet":
+                        fileTransferChoice(message);
+                        break;
                     case "help":
                         helperMenu();
                         break;
@@ -176,6 +179,11 @@ public class UserInput implements Runnable {
         sendCommand(RPS_CHOICE_REQ, json);
     }
 
+    /**
+     * Method to handle the file transfer command
+     *
+     * @param message the message to be sent to the server
+     */
     private void fileTransfer(String message) throws IOException, NoSuchAlgorithmException {
         //username , filepath , size ,checksum
         String[] parts = message.split(" ", 3);
@@ -190,13 +198,17 @@ public class UserInput implements Runnable {
         File file = new File(filepath);
         if (!file.exists()) {
             MessageHelper.printColoredMessage(CmdColors.RED, "The file does not exist: " + filepath);
-            return; // Exit the method if the file doesn't exist
+            return;
         }
 
         FileTransferReq fileTransferReq = new FileTransferReq(receiver, filepath, getFileSize(filepath), createChecksum(filepath));
 
         String json = JsonUtils.toJson(fileTransferReq);
         sendCommand(FILET_REQ, json);
+    }
+
+    private void fileTransferChoice(String message) throws JsonProcessingException {
+
     }
 
     /**
@@ -227,12 +239,24 @@ public class UserInput implements Runnable {
         }
     }
 
+    /**
+     * Helper method to create a checksum for a file
+     *
+     * @param filepath the path to the file
+     * @return the checksum of the file
+     */
     private String createChecksum(String filepath) throws IOException, NoSuchAlgorithmException {
         byte[] data = Files.readAllBytes(Paths.get(filepath));
         byte[] hash = MessageDigest.getInstance("MD5").digest(data);
         return new BigInteger(1, hash).toString(16);
     }
 
+    /**
+     * Helper method to get the size of a file in gigabytes
+     *
+     * @param filepath the path to the file
+     * @return the size of the file
+     */
     private double getFileSize(String filepath) throws IOException {
         // Get the size of the file in bytes and convert it to gigabytes (GB)
         long bytes = Files.size(Paths.get(filepath));

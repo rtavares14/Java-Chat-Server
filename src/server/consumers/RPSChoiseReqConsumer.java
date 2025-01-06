@@ -34,8 +34,8 @@ public class RPSChoiseReqConsumer implements Consumer<String> {
             }
 
             //check if the player is in the game
-            if (RPSHandler.getInstance().isPlayerInGame(clientInstance)) {
-                if (RPSHandler.getInstance().didPlayerMakeChoice(clientInstance)) {
+            if (RPSHandler.getHandler().isPlayerInGame(clientInstance)) {
+                if (RPSHandler.getHandler().didPlayerMakeChoice(clientInstance)) {
                     GameChoiceResp response = new GameChoiceResp("ERROR", 9005);
                     clientInstance.sendCommand(RPS_CHOICE_RESP, JsonUtils.toJson(response));
                     MessageHelper.printServerMessage(RED, clientInstance, RPS_CHOICE_RESP, JsonUtils.toJson(response));
@@ -43,7 +43,7 @@ public class RPSChoiseReqConsumer implements Consumer<String> {
 
                     //check if the player choice is valid
                     if (choice.equals(ROCK.toString()) || choice.equals(PAPER.toString()) || choice.equals(SCISSORS.toString())) {
-                        RPSHandler.getInstance().addChoice(clientInstance, choice);
+                        RPSHandler.getHandler().addChoice(clientInstance, choice);
                         GameChoiceResp response = new GameChoiceResp("OK", null);
                         clientInstance.sendCommand(RPS_CHOICE_RESP, JsonUtils.toJson(response));
                         MessageHelper.printServerMessage(OLIVE, clientInstance, RPS_CHOICE_RESP, JsonUtils.toJson(response));

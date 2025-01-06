@@ -64,7 +64,7 @@ public class FileTransferReqConsumer implements Consumer<String> {
                         String json = JsonUtils.toJson(fileTransferReq1);
 
                         receiverInstance.sendCommand(FILET, json);
-                        MessageHelper.printColoredMessage(TEAL, "C (" + clientInstance.getUsername() + ") --> C (" + receiver + "): " + FILET_RESP + " : " + jsonPayload);
+                        MessageHelper.printColoredMessage(TEAL, "C (" + clientInstance.getUsername() + ") --> C (" + receiver + "): " + FILET + " : " + json);
                     }
                 }
             }

@@ -47,6 +47,11 @@ TODO:
  # when unknown command is sent Parse error is recieved
 
 
+ initialise the transfer
+ store the file
+ accept the file with the user that is sending
+
+
 
 transfer to method that will connect the downloader and receiver
 d- download
