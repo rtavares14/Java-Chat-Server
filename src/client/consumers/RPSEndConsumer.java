@@ -11,14 +11,12 @@ import static shared.enumerations.CmdColors.OLIVE;
 public class RPSEndConsumer implements Consumer<String> {
 
     @Override
-    public void accept(String jsonPayload) {
+    public void accept(String json) {
         try {
-            GameEnd message = JsonUtils.fromJson(jsonPayload, GameEnd.class);
+            GameEnd message = JsonUtils.fromJson(json, GameEnd.class);
             if (message.winner() == null) {
                 MessageHelper.printColoredMessage(OLIVE, "The game is a tie! Both players chose " + message.choiceC1());
-                return;
             } else {
-
                 MessageHelper.printColoredMessage(OLIVE, message.winner() + " has won the game! " + message.player1() + " chose " + message.choiceC1() + " and " + message.player2() + " chose " + message.choiceC2());
             }
         } catch (Exception e) {

@@ -8,6 +8,7 @@ import java.net.Socket;
 
 public class ServerInput implements Runnable {
 
+    private final MessageHandler messageHandler;
     /**
      * The socket to connect to the server
      * The writer to send messages to the server
@@ -15,7 +16,6 @@ public class ServerInput implements Runnable {
      */
     private Socket socket;
     private PrintWriter writer;
-    private final MessageHandler messageHandler;
 
     /**
      * Constructs a new ServerInput object.

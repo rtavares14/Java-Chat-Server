@@ -11,9 +11,9 @@ import static shared.enumerations.CmdColors.TEAL;
 public class FileTRespConsumer implements Consumer<String> {
 
     @Override
-    public void accept(String JsonPayload) {
+    public void accept(String json) {
         try {
-            FileTransferResp resp = JsonUtils.fromJson(JsonPayload, FileTransferResp.class);
+            FileTransferResp resp = JsonUtils.fromJson(json, FileTransferResp.class);
             if ("OK".equalsIgnoreCase(resp.status())) {
                 MessageHelper.printColoredMessage(TEAL, "Message sent!");
             } else {

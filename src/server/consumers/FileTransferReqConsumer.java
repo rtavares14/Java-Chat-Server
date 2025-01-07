@@ -10,7 +10,8 @@ import shared.utils.messages.MessageHelper;
 
 import java.util.function.Consumer;
 
-import static shared.enumerations.CmdColors.*;
+import static shared.enumerations.CmdColors.RED;
+import static shared.enumerations.CmdColors.TEAL;
 import static shared.enumerations.ServerCommands.FILET;
 import static shared.enumerations.ServerCommands.FILET_RESP;
 
@@ -59,6 +60,16 @@ public class FileTransferReqConsumer implements Consumer<String> {
                         clientInstance.sendCommand(FILET_RESP, JsonUtils.toJson(response));
                         MessageHelper.printServerMessage(TEAL, clientInstance, FILET_RESP, JsonUtils.toJson(response));
 
+                        // Put both sender and receiver in the same file transfer session (i can have multiple file transfer sessions at the same time)
+                        // I need to create one that will handle this file transfer session
+                        // add the users as sender and receiver (roles R and S)
+                        // add the file path, size and checksum
+                        // create a new thread that will handle the file transfer
+                        // start a timer for the receiver to accept or reject the file transfer
+                        // if the receiver accepts the file transfer, the file transfer will start
+                        // if the receiver rejects the file transfer, the file transfer will be cancelled
+                        // if the receiver does not respond in time, the file transfer will be cancelled
+
                         // Send the message to the receiver
                         FileTransfer fileTransferReq1 = new FileTransfer(clientInstance.getUsername(), filepath, size, checkSum);
                         String json = JsonUtils.toJson(fileTransferReq1);
@@ -69,7 +80,7 @@ public class FileTransferReqConsumer implements Consumer<String> {
                 }
             }
         } catch (Exception e) {
-            System.err.println("Failed to process FILIET_REQ message: " + e.getMessage());
+            System.err.println("Failed to process FILET_REQ message: " + e.getMessage());
         }
     }
 }

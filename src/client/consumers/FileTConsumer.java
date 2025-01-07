@@ -16,6 +16,7 @@ public class FileTConsumer implements Consumer<String> {
             FileTransfer message = JsonUtils.fromJson(json, FileTransfer.class);
             String formattedSize = String.format("%.2f", message.size());
             MessageHelper.printColoredMessage(TEAL, message.sender() + " wants to send you " + message.getFileNameFromPath() + " with size " + formattedSize + " KB");
+            MessageHelper.printColoredMessage(TEAL, "Do you want to accept? (accept <\"username\"> / decline <\"username\">)");
         } catch (Exception e) {
             System.err.println("Failed to process FILET message: " + e.getMessage());
         }

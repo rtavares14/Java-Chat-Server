@@ -11,9 +11,9 @@ import static shared.enumerations.CmdColors.OLIVE;
 public class RPSChoiceRespConsumer implements Consumer<String> {
 
     @Override
-    public void accept(String jsonPayload) {
+    public void accept(String json) {
         try {
-            GameChoiceResp message = JsonUtils.fromJson(jsonPayload, GameChoiceResp.class);
+            GameChoiceResp message = JsonUtils.fromJson(json, GameChoiceResp.class);
             if ("OK".equalsIgnoreCase(message.status())) {
                 MessageHelper.printColoredMessage(OLIVE, "Message sent!");
             } else {

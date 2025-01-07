@@ -5,7 +5,6 @@ import shared.enumerations.CmdColors;
 import shared.enumerations.ServerCommands;
 
 import static shared.enumerations.CmdColors.*;
-import static shared.enumerations.ServerCommands.*;
 
 public class MessageHelper {
 

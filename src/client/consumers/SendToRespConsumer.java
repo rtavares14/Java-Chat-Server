@@ -6,7 +6,7 @@ import shared.utils.messages.MessageHelper;
 
 import java.util.function.Consumer;
 
-import static shared.enumerations.CmdColors.*;
+import static shared.enumerations.CmdColors.WHITE;
 
 public class SendToRespConsumer implements Consumer<String> {
 

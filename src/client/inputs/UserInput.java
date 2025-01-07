@@ -260,6 +260,6 @@ public class UserInput implements Runnable {
     private double getFileSize(String filepath) throws IOException {
         // Get the size of the file in bytes and convert it to gigabytes (GB)
         long bytes = Files.size(Paths.get(filepath));
-        return  bytes / 1024.0;
+        return bytes / 1024.0;
     }
 }

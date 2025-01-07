@@ -14,7 +14,8 @@ import java.util.function.Consumer;
 
 import static shared.enumerations.CmdColors.GREEN;
 import static shared.enumerations.CmdColors.RED;
-import static shared.enumerations.ServerCommands.*;
+import static shared.enumerations.ServerCommands.ENTER_RESP;
+import static shared.enumerations.ServerCommands.JOINED;
 
 public class EnterConsumer implements Consumer<String> {
     private final ClientInstance clientInstance;
@@ -32,19 +33,19 @@ public class EnterConsumer implements Consumer<String> {
             clientInstance.sendCommand(ENTER_RESP, JsonUtils.toJson(response));
 
             if (response.getStatus().equals("OK")) {
-                MessageHelper.printServerMessage(GREEN,clientInstance,ENTER_RESP,JsonUtils.toJson(response));
+                MessageHelper.printServerMessage(GREEN, clientInstance, ENTER_RESP, JsonUtils.toJson(response));
                 Joined joined = new Joined(clientInstance.getUsername());
                 ServerLogger.getInstance().getClientUserCounts();
                 ServerLogger.getInstance().broadcastMessage(joined, clientInstance.getUsername(), JOINED);
                 HeartbeatHandler.getInstance().startHeartbeat(clientInstance);
-            }else {
-                MessageHelper.printServerMessage(RED,clientInstance,ENTER_RESP,JsonUtils.toJson(response));
+            } else {
+                MessageHelper.printServerMessage(RED, clientInstance, ENTER_RESP, JsonUtils.toJson(response));
             }
         } catch (Exception e) {
             try {
                 EnterResp response = new EnterResp("ERROR", 5001);
                 clientInstance.sendCommand(ENTER_RESP, JsonUtils.toJson(response));
-                MessageHelper.printServerMessage(RED,clientInstance,ENTER_RESP,JsonUtils.toJson(response));
+                MessageHelper.printServerMessage(RED, clientInstance, ENTER_RESP, JsonUtils.toJson(response));
             } catch (Exception ex) {
                 System.err.println("Failed to process ENTER message: " + e.getMessage());
             }

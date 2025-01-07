@@ -25,8 +25,8 @@ public class ClientInstance implements Runnable {
     private final Socket clientSocket;
     private final Server server;
     private final AtomicBoolean isRunning;
-    private MessageHandler messageHandler;
     private final boolean normalDisconnection = true;
+    private MessageHandler messageHandler;
     private PrintWriter out;
     private BufferedReader in;
     private String username = "";
@@ -118,7 +118,7 @@ public class ClientInstance implements Runnable {
             String json = JsonUtils.toJson(ready);
             sendCommand(READY, json);
 
-            MessageHelper.printServerMessage(PURPLE,this,READY,JsonUtils.toJson(ready));
+            MessageHelper.printServerMessage(PURPLE, this, READY, JsonUtils.toJson(ready));
 
             ServerLogger.getInstance().getClientUserCounts();
 
@@ -167,7 +167,7 @@ public class ClientInstance implements Runnable {
 
         } catch (JsonProcessingException e) {
             out.println(PARSE_ERROR);
-            MessageHelper.printServerMessage(RED,this,PARSE_ERROR,PARSE_ERROR.toString());
+            MessageHelper.printServerMessage(RED, this, PARSE_ERROR, PARSE_ERROR.toString());
         }
     }
 

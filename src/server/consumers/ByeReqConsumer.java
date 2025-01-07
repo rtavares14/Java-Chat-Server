@@ -22,7 +22,7 @@ public class ByeReqConsumer implements Consumer<String> {
     }
 
     @Override
-    public void accept(String string) {
+    public void accept(String jsonPayload) {
         try {
             ByeResp byeResp = new ByeResp("OK");
             clientInstance.sendCommand(BYE_RESP, JsonUtils.toJson(byeResp));
@@ -34,7 +34,7 @@ public class ByeReqConsumer implements Consumer<String> {
             ClientLogger.getInstance().getAllClients().remove(this);
 
             clientInstance.cleanup();
-            MessageHelper.printServerMessage(PURPLE,clientInstance,BYE_RESP,JsonUtils.toJson(byeResp));
+            MessageHelper.printServerMessage(PURPLE, clientInstance, BYE_RESP, JsonUtils.toJson(byeResp));
             ServerLogger.getInstance().broadcastMessage(left, clientInstance.getUsername(), LEFT);
             ServerLogger.getInstance().getClientUserCounts();
 

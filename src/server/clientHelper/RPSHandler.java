@@ -2,9 +2,9 @@ package server.clientHelper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import server.loggers.ServerLogger;
-import shared.messages.general.Info;
 import shared.messages.RPSGame.play_game.GameChoiceResp;
 import shared.messages.RPSGame.play_game.GameEnd;
+import shared.messages.general.Info;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
 
@@ -14,7 +14,7 @@ import static shared.enumerations.ServerCommands.*;
 
 public class RPSHandler implements Runnable {
 
-    private static RPSHandler handler;
+    private static RPSHandler instance;
     private volatile boolean timerRunning = false;
     private ClientInstance player1 = null;
     private ClientInstance player2 = null;
@@ -35,11 +35,11 @@ public class RPSHandler implements Runnable {
      *
      * @return RPSHandler
      */
-    public static synchronized RPSHandler getHandler() {
-        if (handler == null) {
-            handler = new RPSHandler();
+    public static synchronized RPSHandler getInstance() {
+        if (instance == null) {
+            instance = new RPSHandler();
         }
-        return handler;
+        return instance;
     }
 
     /**
@@ -147,6 +147,10 @@ public class RPSHandler implements Runnable {
         player1.sendCommand(RPS_CHOICE_RESP, JsonUtils.toJson(response));
         player2.sendCommand(RPS_CHOICE_RESP, JsonUtils.toJson(response));
         MessageHelper.printColoredMessage(RED, "S --> ( players ): " + RPS_CHOICE_RESP + " " + JsonUtils.toJson(response));
+
+        // Inform all users
+        Info info = new Info("The game between " + player1.getUsername() + " and " + player2.getUsername() + " has been canceled due to timeout.");
+        ServerLogger.getInstance().informAllUsers(info, INFO, player1, player2);
 
         // Reset the game
         resetGame();

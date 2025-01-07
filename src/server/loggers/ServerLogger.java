@@ -41,7 +41,7 @@ public class ServerLogger {
         MessageHelper.printColoredMessage(GREEN, ClientLogger.getInstance().getLoggedInUsers().size() + " client(s) / " + ClientLogger.getInstance().getAllClients().size() + " user(s)");
     }
 
-    public void informAllUsers(Object message, ServerCommands command,ClientInstance player1, ClientInstance player2) throws JsonProcessingException {
+    public void informAllUsers(Object message, ServerCommands command, ClientInstance player1, ClientInstance player2) throws JsonProcessingException {
 
         String jsonMessage = JsonUtils.toJson(message);
         for (ClientInstance client : ClientLogger.getInstance().getLoggedInUsers().values()) {

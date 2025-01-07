@@ -11,11 +11,10 @@ import static shared.enumerations.CmdColors.OLIVE;
 public class RPSMsgConsumer implements Consumer<String> {
 
     @Override
-    public void accept(String jsonPayload) {
+    public void accept(String json) {
         try {
-            GameMsg message = JsonUtils.fromJson(jsonPayload, GameMsg.class);
+            GameMsg message = JsonUtils.fromJson(json, GameMsg.class);
             MessageHelper.printColoredMessage(OLIVE, message.getPlayer1() + " wants to play with you!");
-
         } catch (Exception e) {
             System.err.println("Failed to process ENTER_RESP message: " + e.getMessage());
         }

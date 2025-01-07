@@ -11,9 +11,9 @@ import static shared.enumerations.CmdColors.OLIVE;
 public class RPSStartRespConsumer implements Consumer<String> {
 
     @Override
-    public void accept(String jsonPayload) {
+    public void accept(String json) {
         try {
-            GameStartResp message = JsonUtils.fromJson(jsonPayload, GameStartResp.class);
+            GameStartResp message = JsonUtils.fromJson(json, GameStartResp.class);
             if ("OK".equalsIgnoreCase(message.status())) {
                 MessageHelper.printColoredMessage(OLIVE, "Invite sent!");
             } else {

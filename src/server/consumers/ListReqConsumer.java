@@ -22,7 +22,7 @@ public class ListReqConsumer implements Consumer<String> {
     }
 
     @Override
-    public void accept(String string) {
+    public void accept(String jsonPayload) {
         try {
             if (clientInstance.getUsername() == "" || clientInstance.getUsername().isEmpty()) {
                 ListResp response = new ListResp("ERROR", 6000);

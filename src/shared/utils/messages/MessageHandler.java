@@ -3,7 +3,6 @@ package shared.utils.messages;
 import client.consumers.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import server.clientHelper.ClientInstance;
-import server.consumers.FileTransferReqConsumer;
 import server.consumers.*;
 import shared.enumerations.ServerCommands;
 import shared.utils.JsonUtils;

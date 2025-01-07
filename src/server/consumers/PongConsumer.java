@@ -20,7 +20,7 @@ public class PongConsumer implements Consumer<String> {
     }
 
     @Override
-    public void accept(String json) {
+    public void accept(String jsonPayload) {
         try {
 
             synchronized (this) {
@@ -29,8 +29,8 @@ public class PongConsumer implements Consumer<String> {
                     MessageHelper.printColoredMessage(PURPLE, clientInstance.getUsername() + " heartbeat is still alive!");
                 } else {
                     PongError pongError = new PongError(8000);
-                    json = JsonUtils.toJson(pongError);
-                    clientInstance.sendCommand(PONG_ERROR, json);
+                    jsonPayload = JsonUtils.toJson(pongError);
+                    clientInstance.sendCommand(PONG_ERROR, jsonPayload);
                     MessageHelper.printServerMessage(RED, clientInstance, PONG_ERROR, PONG_ERROR.toString());
                 }
             }
