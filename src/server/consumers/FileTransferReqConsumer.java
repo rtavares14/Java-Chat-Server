@@ -72,18 +72,20 @@ public class FileTransferReqConsumer implements Consumer<String> {
                         // if the receiver rejects the file transfer, the file transfer will be cancelled
                         // if the receiver does not respond in time, the file transfer will be cancelled
 
-                        // Send the message to the receiver
-                        FileTransfer fileTransferReq1 = new FileTransfer(clientInstance.getUsername(), filepath, size, checkSum,transferUuid);
-                        String json = JsonUtils.toJson(fileTransferReq1);
 
                         // Create a new file transfer session
                         String transferUuid = createUUID();
                         FileTransferHandler fileTransferHandler = new FileTransferHandler(clientInstance, receiverInstance, filepath, size, checkSum, transferUuid);
-                        fileTransferHandler.startTransfer();
-                        FileTransferRegistry.getInstance().addSession(transferUuid, fileTransferHandler);
+
+                        // Send the message to the receiver
+                        FileTransfer fileTransferReq1 = new FileTransfer(clientInstance.getUsername(), filepath, size, checkSum, transferUuid);
+                        String json = JsonUtils.toJson(fileTransferReq1);
 
                         receiverInstance.sendCommand(FILET, json);
                         MessageHelper.printColoredMessage(TEAL, "C (" + clientInstance.getUsername() + ") --> C (" + receiver + "): " + FILET + " : " + json);
+
+                        fileTransferHandler.startTransfer();
+                        FileTransferRegistry.getInstance().addSession(transferUuid, fileTransferHandler);
                     }
                 }
             }

@@ -359,6 +359,8 @@ Possible `<error code>`:
 | 10005      | Checksum bad                          |
 | 10006      | No file transfer found                |
 | 10007      | This user did not send a file to you  |
+| 10008      | File transfer already started         |
+| 10009      | Receiver did not respond in time      |
 
 # 7.Heartbeat message
 

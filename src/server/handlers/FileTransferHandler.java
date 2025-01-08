@@ -1,13 +1,19 @@
 package server.handlers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import server.clientInstance.ClientInstance;
+import shared.messages.file_transfer.choises.FileTransferChoiceResp;
+import shared.utils.JsonUtils;
 
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static shared.enumerations.ServerCommands.FILET_CHOICE_RESP;
+
 public class FileTransferHandler {
 
+    private final Object transferLock = new Object(); //monitor for this transfer
     private ClientInstance sender;
     private ClientInstance receiver;
     private String fileName;
@@ -15,7 +21,6 @@ public class FileTransferHandler {
     private String checksum;
     private String uuid;
     private AtomicBoolean isAccepted = new AtomicBoolean(false);
-    private final Object transferLock = new Object(); //monitor for this transfer
 
     public FileTransferHandler(ClientInstance sender, ClientInstance receiver, String fileName, Double fileSize, String checksum, String uuid) {
         this.sender = sender;
@@ -39,8 +44,16 @@ public class FileTransferHandler {
                         public void run() {
                             synchronized (transferLock) {
                                 if (!isAccepted.get()) {
-                                    System.out.println("File transfer cancelled: Receiver did not accept within 12 seconds.");
-                                    transferLock.notify();
+                                    try {
+
+                                        System.out.println("File transfer cancelled: Receiver did not accept within 12 seconds.");
+                                        transferLock.notify();
+                                        FileTransferChoiceResp response = new FileTransferChoiceResp("ERROR", 10009);
+                                        sender.sendCommand(FILET_CHOICE_RESP, JsonUtils.toJson(response));
+                                    } catch (JsonProcessingException e) {
+                                        throw new RuntimeException(e);
+                                    }
+
                                 }
                             }
                         }

@@ -70,6 +70,8 @@ public class MessageHelper {
             case 10005 -> MessageHelper.printColoredMessage(RED, "Checksum failed!");
             case 10006 -> MessageHelper.printColoredMessage(RED, "File transfer not found! Wrong ID!");
             case 10007 -> MessageHelper.printColoredMessage(RED, "This user did not send a file to you!");
+            case 10008 -> MessageHelper.printColoredMessage(RED, "!");
+            case 10009 -> MessageHelper.printColoredMessage(RED, "Receiver did not respond in time!");
             default -> MessageHelper.printColoredMessage(RED, "Unknown error code: " + code);
         }
     }
