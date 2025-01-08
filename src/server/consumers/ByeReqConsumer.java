@@ -1,6 +1,6 @@
 package server.consumers;
 
-import server.clientHelper.ClientInstance;
+import server.clientInstance.ClientInstance;
 import server.loggers.ClientLogger;
 import server.loggers.ServerLogger;
 import shared.messages.login_logout.ByeResp;

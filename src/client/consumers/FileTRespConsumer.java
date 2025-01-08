@@ -1,6 +1,6 @@
 package client.consumers;
 
-import shared.messages.file_transfer.FileTransferResp;
+import shared.messages.file_transfer.request.FileTransferResp;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
 
@@ -20,7 +20,7 @@ public class FileTRespConsumer implements Consumer<String> {
                 MessageHelper.handleErrorMessage(resp.code());
             }
         } catch (Exception e) {
-            System.err.println("Failed to process BROADCAST_RESP message: " + e.getMessage());
+            System.err.println("Failed to process FILET_RESP message: " + e.getMessage());
         }
     }
 }

@@ -1,6 +1,7 @@
-package server.clientHelper;
+package server.handlers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import server.clientInstance.ClientInstance;
 import server.loggers.ServerLogger;
 import shared.messages.ping_pong.Hangup;
 import shared.utils.JsonUtils;

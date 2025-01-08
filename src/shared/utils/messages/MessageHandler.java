@@ -2,7 +2,7 @@ package shared.utils.messages;
 
 import client.consumers.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import server.clientHelper.ClientInstance;
+import server.clientInstance.ClientInstance;
 import server.consumers.*;
 import shared.enumerations.ServerCommands;
 import shared.utils.JsonUtils;
@@ -30,7 +30,6 @@ public class MessageHandler {
         this.writer = writer;
 
         // User consumers commands that the server can send
-
         handlersC.put(READY, new ReadyConsumer());
         handlersC.put(ENTER_RESP, new EnterRespConsumer());
         handlersC.put(JOINED, new JoinedConsumer());
@@ -46,6 +45,7 @@ public class MessageHandler {
         handlersC.put(RPS_END, new RPSEndConsumer());
         handlersC.put(FILET_RESP, new FileTRespConsumer());
         handlersC.put(FILET, new FileTConsumer());
+        handlersC.put(FILET_CHOICE_RESP, new FileTChoiceRespConsumer());
 
         handlersC.put(PING, new PingConsumer(writer));
         handlersC.put(HANGUP, new HangupConsumer());
@@ -63,6 +63,7 @@ public class MessageHandler {
         handlersS.put(RPS_START_REQ, new RPSStartReqConsumer(clientInstance));
         handlersS.put(RPS_CHOICE_REQ, new RPSChoiseReqConsumer(clientInstance));
         handlersS.put(FILET_REQ, new FileTransferReqConsumer(clientInstance));
+        handlersS.put(FILET_ACP_REQ, new FileTransferACPReqConsumer(clientInstance));
         handlersS.put(PONG, new PongConsumer(clientInstance));
         handlersS.put(BYE, new ByeReqConsumer(clientInstance));
     }

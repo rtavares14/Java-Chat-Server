@@ -1,10 +1,12 @@
 package server.consumers;
 
-import server.clientHelper.ClientInstance;
+import server.clientInstance.ClientInstance;
+import server.handlers.FileTransferHandler;
+import server.handlers.FileTransferRegistry;
 import server.loggers.ClientLogger;
-import shared.messages.file_transfer.FileTransfer;
-import shared.messages.file_transfer.FileTransferReq;
-import shared.messages.file_transfer.FileTransferResp;
+import shared.messages.file_transfer.request.FileTransfer;
+import shared.messages.file_transfer.request.FileTransferReq;
+import shared.messages.file_transfer.request.FileTransferResp;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
 
@@ -71,8 +73,14 @@ public class FileTransferReqConsumer implements Consumer<String> {
                         // if the receiver does not respond in time, the file transfer will be cancelled
 
                         // Send the message to the receiver
-                        FileTransfer fileTransferReq1 = new FileTransfer(clientInstance.getUsername(), filepath, size, checkSum);
+                        FileTransfer fileTransferReq1 = new FileTransfer(clientInstance.getUsername(), filepath, size, checkSum,transferUuid);
                         String json = JsonUtils.toJson(fileTransferReq1);
+
+                        // Create a new file transfer session
+                        String transferUuid = createUUID();
+                        FileTransferHandler fileTransferHandler = new FileTransferHandler(clientInstance, receiverInstance, filepath, size, checkSum, transferUuid);
+                        fileTransferHandler.startTransfer();
+                        FileTransferRegistry.getInstance().addSession(transferUuid, fileTransferHandler);
 
                         receiverInstance.sendCommand(FILET, json);
                         MessageHelper.printColoredMessage(TEAL, "C (" + clientInstance.getUsername() + ") --> C (" + receiver + "): " + FILET + " : " + json);
@@ -82,5 +90,17 @@ public class FileTransferReqConsumer implements Consumer<String> {
         } catch (Exception e) {
             System.err.println("Failed to process FILET_REQ message: " + e.getMessage());
         }
+    }
+
+    /**
+     * Create a UUID
+     * This method is used to create a UUID
+     *
+     * @return the UUID
+     */
+    private String createUUID() {
+        // Create a random UUID
+        // make it 7 characters long
+        return java.util.UUID.randomUUID().toString().substring(0, 7);
     }
 }

@@ -1,6 +1,6 @@
 package server.consumers;
 
-import server.clientHelper.ClientInstance;
+import server.clientInstance.ClientInstance;
 import server.loggers.ServerLogger;
 import shared.messages.broadcast.Broadcast;
 import shared.messages.broadcast.BroadcastReq;

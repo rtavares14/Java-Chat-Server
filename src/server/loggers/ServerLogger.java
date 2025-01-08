@@ -1,7 +1,7 @@
 package server.loggers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import server.clientHelper.ClientInstance;
+import server.clientInstance.ClientInstance;
 import shared.enumerations.ServerCommands;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;

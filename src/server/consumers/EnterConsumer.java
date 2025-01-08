@@ -1,7 +1,7 @@
 package server.consumers;
 
-import server.clientHelper.ClientInstance;
-import server.clientHelper.HeartbeatHandler;
+import server.clientInstance.ClientInstance;
+import server.handlers.HeartbeatHandler;
 import server.loggers.ClientLogger;
 import server.loggers.ServerLogger;
 import shared.messages.enter.Enter;

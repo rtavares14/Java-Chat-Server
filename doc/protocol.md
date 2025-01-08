@@ -291,12 +291,12 @@ S -> C1: FILET_RESP {"status":"ERROR","code":<error code>}
 
 Possible `<error code>`:
 
-| Error code | Description                   |
-|------------|-------------------------------|
-| 6000       | User is not logged in         |
-| 6006       | User not found                |
-| 10000      | Cant send a file to yourself  |
-| 10001      | File not found                |
+| Error code | Description                  |
+|------------|------------------------------|
+| 6000       | User is not logged in        |
+| 6006       | User not found               |
+| 10000      | Cant send a file to yourself |
+| 10001      | File not found               |
 
 ## 6.2 Accepting the file transfer
 
@@ -304,7 +304,7 @@ Possible `<error code>`:
 
 ```
 C2 -> S: FILET_ACP_REQ {"sender":"username"}
-S -> C2: FILET_ACP_RESP {"status":"OK"}
+S -> C2: FILET_CHOICE_RESP {"status":"OK"}
 ```
 
 The downloader will open a new socket connection to start the file transfer. The downloader will get file in the folder
@@ -341,8 +341,8 @@ Example when the receiver does not accept the file transfer:
 
 ````
 C2 -> S: FILET_REJ_REQ {"sender":"username"}
-S -> C2: FILET_REJ_RESP {"status":"OK"}
-S -> C1: FILET_REJ {"status":"OK"}
+S -> C2: FILET_CHOICE_RESP {"status":"OK"}
+S -> C1: FILET_REJ {"status":"error","code":<error code>}
 ````
 
 ```
@@ -351,12 +351,14 @@ S -> C2 or C1: FILET_RESP {"status":"ERROR","code":<error code>}
 
 Possible `<error code>`:
 
-| Error code | Description         |
-|------------|---------------------|
-| 10002      | Sender refused file |
-| 10003      | Sender left         |
-| 10004      | Receiver left       |
-| 10005      | Checksum bad        |
+| Error code | Description                           |
+|------------|---------------------------------------|
+| 10002      | Sender refused file (only for sender) |
+| 10003      | Sender left                           |
+| 10004      | Receiver left                         |
+| 10005      | Checksum bad                          |
+| 10006      | No file transfer found                |
+| 10007      | This user did not send a file to you  |
 
 # 7.Heartbeat message
 

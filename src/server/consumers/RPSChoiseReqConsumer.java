@@ -1,7 +1,7 @@
 package server.consumers;
 
-import server.clientHelper.ClientInstance;
-import server.clientHelper.RPSHandler;
+import server.clientInstance.ClientInstance;
+import server.handlers.RPSHandler;
 import shared.messages.RPSGame.play_game.GameChoiceReq;
 import shared.messages.RPSGame.play_game.GameChoiceResp;
 import shared.utils.JsonUtils;

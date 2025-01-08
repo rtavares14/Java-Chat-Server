@@ -1,6 +1,6 @@
 package server.loggers;
 
-import server.clientHelper.ClientInstance;
+import server.clientInstance.ClientInstance;
 
 import java.util.ArrayList;
 import java.util.List;

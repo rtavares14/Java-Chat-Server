@@ -1,7 +1,7 @@
 package server;
 
-import server.clientHelper.ClientInstance;
-import server.clientHelper.RPSHandler;
+import server.clientInstance.ClientInstance;
+import server.handlers.RPSHandler;
 import server.loggers.ClientLogger;
 import shared.utils.messages.MessageHelper;
 

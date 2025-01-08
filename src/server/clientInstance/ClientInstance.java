@@ -1,7 +1,8 @@
-package server.clientHelper;
+package server.clientInstance;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import server.Server;
+import server.handlers.HeartbeatHandler;
 import server.loggers.ClientLogger;
 import server.loggers.ServerLogger;
 import shared.enumerations.ServerCommands;

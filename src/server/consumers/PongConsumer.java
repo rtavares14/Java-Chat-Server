@@ -1,7 +1,7 @@
 package server.consumers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import server.clientHelper.ClientInstance;
+import server.clientInstance.ClientInstance;
 import shared.messages.ping_pong.PongError;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;

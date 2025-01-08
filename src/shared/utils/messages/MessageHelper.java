@@ -1,6 +1,6 @@
 package shared.utils.messages;
 
-import server.clientHelper.ClientInstance;
+import server.clientInstance.ClientInstance;
 import shared.enumerations.CmdColors;
 import shared.enumerations.ServerCommands;
 
@@ -68,6 +68,8 @@ public class MessageHelper {
             case 10003 -> MessageHelper.printColoredMessage(RED, "Sender left the server!");
             case 10004 -> MessageHelper.printColoredMessage(RED, "Receiver left the server!");
             case 10005 -> MessageHelper.printColoredMessage(RED, "Checksum failed!");
+            case 10006 -> MessageHelper.printColoredMessage(RED, "File transfer not found! Wrong ID!");
+            case 10007 -> MessageHelper.printColoredMessage(RED, "This user did not send a file to you!");
             default -> MessageHelper.printColoredMessage(RED, "Unknown error code: " + code);
         }
     }

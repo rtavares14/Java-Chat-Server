@@ -7,7 +7,8 @@ import shared.messages.RPSGame.enter_game.GameStartReq;
 import shared.messages.RPSGame.play_game.GameChoiceReq;
 import shared.messages.broadcast.BroadcastReq;
 import shared.messages.enter.Enter;
-import shared.messages.file_transfer.FileTransferReq;
+import shared.messages.file_transfer.choises.FileTransferACPReq;
+import shared.messages.file_transfer.request.FileTransferReq;
 import shared.messages.private_message.SendToReq;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
@@ -29,8 +30,8 @@ import static shared.enumerations.ServerCommands.*;
 public class UserInput implements Runnable {
 
     private Socket socket;
-    private PrintWriter writer;
-    private Scanner scanner = new Scanner(System.in);
+    private final PrintWriter writer;
+    private final Scanner scanner = new Scanner(System.in);
 
     /**
      * Constructs a new UserInputHandler object.
@@ -81,7 +82,7 @@ public class UserInput implements Runnable {
                     case "filet":
                         fileTransfer(message);
                         break;
-                    case "accpet":
+                    case "accept", "decline":
                         fileTransferChoice(message);
                         break;
                     case "help":
@@ -208,7 +209,12 @@ public class UserInput implements Runnable {
     }
 
     private void fileTransferChoice(String message) throws JsonProcessingException {
-
+        String[] parts = message.split(" ", 3);
+        String sender = parts[1];
+        String uuid = parts[2];
+        FileTransferACPReq fileTransferChoiceReq = new FileTransferACPReq(sender, uuid);
+        String json = JsonUtils.toJson(fileTransferChoiceReq);
+        sendCommand(FILET_ACP_REQ, json);
     }
 
     /**
