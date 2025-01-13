@@ -273,12 +273,13 @@ request the file transfer will not start and the uuid will be deleted.
 ```
 C1 -> S: FILET_REQ {"username":"<reciever>","filepath":"<filepath>","filesize":"<filesize>","checksum":"<checksum>"}
 S -> C1: FILET_RESP {"status":"OK" , "error":<error code>}
-S -> C2: FILET {"username":"<sender>","filepath":"<filepath>","filesize":"<filesize>","checksum":"<checksum>"}
+S -> C2: FILET {"username":"<sender>","filename":"<filename>","filesize":"<filesize>","checksum":"<checksum>"}
 ```
 
 - `<reciever>`: the username of the chosen client to send the file to.
 - `<sender>`: the username of the chosen client to receive the file.
 - `<filepath>`: the name of the file that must be sent.
+- `<filename>`: the name of the file that must be sent.
 - `<filesize>`: the size of the file that must be sent.
 - `<checksum>`: the checksum of the file that must be sent.
 - `<uuid>`: the uuid of the file transfer.
@@ -312,9 +313,11 @@ The downloader will open a new socket connection to start the file transfer. The
 
 ```
 C2_Downloader -> S (Opens the fileT socket)
-S -> C1 : FILET_START {"status":"OK","username":"<reciever>","uuid":"<uuid>"}
-C1_Uploader -> S (Opens the fileT socket)
+S -> C1 : FILET_START {"reciever":"<reciever>","sender":"<sender>","fileName":"<fileName>",uuid":"<uuid>","checksum":"<checksum>"}
+S -> C2 : FILET_START {"reciever":"<reciever>","sender":"<sender>","fileName":"<fileName>",uuid":"<uuid>","checksum":"<checksum>"}
 ```
+
+C1_Uploader -> S (Opens the fileT socket)
 
 The file transfer will start and the file will be sent in chunks of bytes.
 
@@ -323,15 +326,17 @@ C1_Uploader -> S <<uuid> + <bytes>>
 S -> C2_Downloader <<uuid> + <bytes>>
 ```
 
-After the file transfer is done, the server will send a message to both clients that the file transfer is done and the
-socket will be closed.
+After the file transfer is done, the receiver will check the checksum of the file. If the checksum is correct the reciever will send a FILET_END to the server and the server will send a FILET_END to the sender. After that the
+socket will be closed and both clients will be disconnected from port 1338.
 
 ```
+C2 (sender) -> S: FILET_END {"status":"OK","uuid":"<uuid>"}
 S -> C1: FILET_END {"status":"OK","uuid":"<uuid>"}
-S -> C2: FILET_END {"status":"OK","uuid":"<uuid>"}
 ```
-
+- `<sender>`: the username of the chosen client to receive the file.
 - `<reciever>`: the username of the chosen client to send the file to.
+- `<fileName>`: the name of the file that must be sent.
+- `<checksum>`: the checksum of the file that must be sent.
 - `<uuid>`: the uuid of the file transfer.
 - `<bytes>`: the bytes of the file that must be sent.
 

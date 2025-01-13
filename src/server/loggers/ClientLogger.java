@@ -25,11 +25,7 @@ public class ClientLogger {
      */
     public static ClientLogger getInstance() {
         if (instance == null) {
-            synchronized (ClientLogger.class) {
-                if (instance == null) {
-                    instance = new ClientLogger();
-                }
-            }
+            instance = new ClientLogger();
         }
         return instance;
     }

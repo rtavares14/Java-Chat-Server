@@ -18,6 +18,14 @@ public class MessageHelper {
         System.out.println(color + message + RESET);
     }
 
+    /**
+     * Prints a message in the specified color and then resets the color.
+     *
+     * @param color   the color to print the message in
+     * @param clientInstance the client instance
+     * @param command the command to be printed
+     * @param response the response to be printed
+     */
     public static void printServerMessage(CmdColors color, ClientInstance clientInstance, ServerCommands command, String response) {
         printColoredMessage(color, "S --> (" + clientInstance.getUsername() + "): " + command + " " + response);
     }
@@ -72,6 +80,8 @@ public class MessageHelper {
             case 10007 -> MessageHelper.printColoredMessage(RED, "This user did not send a file to you!");
             case 10008 -> MessageHelper.printColoredMessage(RED, "!");
             case 10009 -> MessageHelper.printColoredMessage(RED, "Receiver did not respond in time!");
+            case 10010 -> MessageHelper.printColoredMessage(RED, "You did not answer in time! File transfer cancelled!");
+            case 10011 -> MessageHelper.printColoredMessage(RED, "File transfer already accepted!");
             default -> MessageHelper.printColoredMessage(RED, "Unknown error code: " + code);
         }
     }

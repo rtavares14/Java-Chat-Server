@@ -22,17 +22,14 @@ public class PongConsumer implements Consumer<String> {
     @Override
     public void accept(String jsonPayload) {
         try {
-
-            synchronized (this) {
-                if (clientInstance.isExpectingPong()) {
-                    clientInstance.setExpectingPong(false);
-                    MessageHelper.printColoredMessage(PURPLE, clientInstance.getUsername() + " heartbeat is still alive!");
-                } else {
-                    PongError pongError = new PongError(8000);
-                    jsonPayload = JsonUtils.toJson(pongError);
-                    clientInstance.sendCommand(PONG_ERROR, jsonPayload);
-                    MessageHelper.printServerMessage(RED, clientInstance, PONG_ERROR, PONG_ERROR.toString());
-                }
+            if (clientInstance.isExpectingPong()) {
+                clientInstance.setExpectingPong(false);
+                MessageHelper.printColoredMessage(PURPLE, clientInstance.getUsername() + " heartbeat is still alive!");
+            } else {
+                PongError pongError = new PongError(8000);
+                jsonPayload = JsonUtils.toJson(pongError);
+                clientInstance.sendCommand(PONG_ERROR, jsonPayload);
+                MessageHelper.printServerMessage(RED, clientInstance, PONG_ERROR, PONG_ERROR.toString());
             }
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

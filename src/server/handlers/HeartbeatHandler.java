@@ -3,6 +3,7 @@ package server.handlers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import server.clientInstance.ClientInstance;
 import server.loggers.ServerLogger;
+import shared.messages.login_logout.Left;
 import shared.messages.ping_pong.Hangup;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
@@ -13,8 +14,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static shared.enumerations.CmdColors.PURPLE;
-import static shared.enumerations.ServerCommands.HANGUP;
-import static shared.enumerations.ServerCommands.PING;
+import static shared.enumerations.ServerCommands.*;
 
 public class HeartbeatHandler {
 
@@ -36,11 +36,7 @@ public class HeartbeatHandler {
      */
     public static HeartbeatHandler getInstance() {
         if (instance == null) {
-            synchronized (HeartbeatHandler.class) {
-                if (instance == null) {
-                    instance = new HeartbeatHandler();
-                }
-            }
+            instance = new HeartbeatHandler();
         }
         return instance;
     }
@@ -61,30 +57,31 @@ public class HeartbeatHandler {
         TimerTask heartbeatTask = new TimerTask() {
             @Override
             public void run() {
-                synchronized (clientInstance) {
-                    if (clientInstance.isExpectingPong()) {
-                        try {
-                            // Send HANGUP message
-                            Hangup hangup = new Hangup(7000);
-                            String json = JsonUtils.toJson(hangup);
-                            clientInstance.sendCommand(HANGUP, json);
-                            MessageHelper.printServerMessage(PURPLE, clientInstance, HANGUP, json);
 
-                            // Cleanup the client and forcefully stop its thread
-                            clientInstance.cleanup();
-                            MessageHelper.printColoredMessage(PURPLE, "Client " + clientInstance.getUsername() + " has been disconnected");
-                            ServerLogger.getInstance().getClientUserCounts();
+                if (clientInstance.isExpectingPong()) {
+                    try {
+                        // Send HANGUP message
+                        Hangup hangup = new Hangup(7000);
+                        String json = JsonUtils.toJson(hangup);
+                        clientInstance.sendCommand(HANGUP, json);
+                        MessageHelper.printServerMessage(PURPLE, clientInstance, HANGUP, json);
 
-                            heartbeatTimer.cancel();
-                        } catch (JsonProcessingException e) {
-                            throw new RuntimeException(e);
-                        }
-                    } else {
-                        // Send PING
-                        clientInstance.getOut().println(PING);
-                        clientInstance.setExpectingPong(true);
-                        MessageHelper.printServerMessage(PURPLE, clientInstance, PING, PING.toString());
+                        // Cleanup the client and forcefully stop its thread
+                        clientInstance.cleanup();
+                        MessageHelper.printColoredMessage(PURPLE, "Client " + clientInstance.getUsername() + " has been disconnected");
+                        Left left = new Left(clientInstance.getUsername());
+                        ServerLogger.getInstance().broadcastMessage(left, clientInstance.getUsername(), LEFT);
+                        ServerLogger.getInstance().getClientUserCounts();
+
+                        heartbeatTimer.cancel();
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
                     }
+                } else {
+                    // Send PING
+                    clientInstance.getOut().println(PING);
+                    clientInstance.setExpectingPong(true);
+                    MessageHelper.printServerMessage(PURPLE, clientInstance, PING, PING.toString());
                 }
             }
         };

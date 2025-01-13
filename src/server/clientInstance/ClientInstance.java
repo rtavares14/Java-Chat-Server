@@ -32,7 +32,7 @@ public class ClientInstance implements Runnable {
     private BufferedReader in;
     private String username = "";
     private boolean expectingPong = false;
-    private boolean pingPongEnabled = false;
+    private boolean pingPongEnabled = true;
 
     /**
      * Constructor for the ClientInstance class
@@ -69,7 +69,7 @@ public class ClientInstance implements Runnable {
      *
      * @return the expecting pong status
      */
-    public synchronized boolean isExpectingPong() {
+    public boolean isExpectingPong() {
         return expectingPong;
     }
 
@@ -78,7 +78,7 @@ public class ClientInstance implements Runnable {
      *
      * @param expectingPong the expecting pong status
      */
-    public synchronized void setExpectingPong(boolean expectingPong) {
+    public void setExpectingPong(boolean expectingPong) {
         this.expectingPong = expectingPong;
     }
 
@@ -98,6 +98,15 @@ public class ClientInstance implements Runnable {
      */
     public boolean isPingPongEnabled() {
         return pingPongEnabled;
+    }
+
+    /**
+     * Return the client socket
+     *
+     * @return the client socket
+     */
+    public Socket getSocket() {
+        return clientSocket;
     }
 
     /**
@@ -191,7 +200,7 @@ public class ClientInstance implements Runnable {
 
     /**
      * Cleanup the client instance
-     * This method is used to cleanup the client instance
+     * This method is used to clean up the client instance
      * It closes the input and output streams and the client socket
      * If an exception occurs, the method prints an error message
      */

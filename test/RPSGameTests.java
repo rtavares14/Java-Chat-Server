@@ -2,6 +2,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.handlers.RPSHandler;
 import shared.messages.RPSGame.enter_game.GameStartReq;
 import shared.messages.RPSGame.enter_game.GameStartResp;
 import shared.messages.RPSGame.play_game.GameChoiceReq;
@@ -18,8 +19,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import static java.time.Duration.ofMillis;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RPSGameTests {
 
@@ -124,7 +124,6 @@ public class RPSGameTests {
         Thread.sleep(1000);
     }
 
-
     @Test
     public void tc60RPCGameRoomFull() throws IOException, InterruptedException {
         setupUser("user1");
@@ -148,8 +147,18 @@ public class RPSGameTests {
         // Wait for the GameStartResp for user3, expecting an error
         GameStartResp gameStartResp3 = waitForSpecificResponse(readers.get("user3"), GameStartResp.class);
         assertEquals(new GameStartResp("ERROR", 9001), gameStartResp3);
-    }
 
+        String user1Choice = Utils.objectToMessage(new GameChoiceReq("ROCK"));
+        writers.get("user1").println(user1Choice);
+        writers.get("user1").flush();
+
+        // User2 sends the losing choice
+        String user2Choice = Utils.objectToMessage(new GameChoiceReq("SCISSORS"));
+        writers.get("user2").println(user2Choice);
+        writers.get("user2").flush();
+
+        Thread.sleep(1000);
+    }
 
     @Test
     public void tc61RPCGameUserDoesNotExist() throws IOException {
@@ -253,9 +262,8 @@ public class RPSGameTests {
         writers.get("user2").println(user2Choice);
         writers.get("user2").flush();
 
-        Thread.sleep(1000); // Allow for game completion
+        Thread.sleep(1000);
     }
-
 
     @Test
     public void tc65RPCGameAnswerNotInTime() throws IOException, InterruptedException {
