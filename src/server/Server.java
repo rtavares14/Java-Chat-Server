@@ -8,7 +8,7 @@ import shared.utils.messages.MessageHelper;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import static shared.enumerations.CmdColors.PURPLE;
+import static shared.enumerations.CmdColors.*;
 
 public class Server {
 
@@ -46,7 +46,9 @@ public class Server {
     public void startingServer() {
         try {
             serverSocket = new ServerSocket(SERVER_PORT);
+            fileServerSocket = new ServerSocket(FILE_PORT);
             MessageHelper.printColoredMessage(PURPLE, "Starting server version (" + VERSION + ") on port: " + SERVER_PORT);
+            MessageHelper.printColoredMessage(PURPLE, "Starting file server on port: " + FILE_PORT);
 
             // Initialize the RPS game handler
             RPSHandler.getInstance().startGameRoom();
@@ -74,6 +76,7 @@ public class Server {
         try {
             MessageHelper.printColoredMessage(PURPLE, "Stopping server...");
             serverSocket.close();
+            fileServerSocket.close();
 
             // Stop the RPSHandler
             RPSHandler.getInstance().stopGameRoom();

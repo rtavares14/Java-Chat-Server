@@ -104,7 +104,6 @@ public class MessageHandler {
                 } catch (JsonProcessingException e) {
                     // JSON is invalid, send PARSING_ERROR
                     writer.println(PARSE_ERROR); // Send PARSE_ERROR
-                    //MessageHelper.printColoredMessage(RED, "S --> (123): " + PARSE_ERROR);
                     return;
                 }
             }
@@ -115,7 +114,6 @@ public class MessageHandler {
         } else {
             // If no handler exists for the command, send UNKNOWN_COMMAND
             writer.println(UNKNOWN_COMMAND);
-            //MessageHelper.printColoredMessage(RED, "S --> (123): " + UNKNOWN_COMMAND);
         }
     }
 }

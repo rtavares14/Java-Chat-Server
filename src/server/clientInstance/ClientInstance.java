@@ -32,7 +32,7 @@ public class ClientInstance implements Runnable {
     private BufferedReader in;
     private String username = "";
     private boolean expectingPong = false;
-    private boolean pingPongEnabled = true;
+    private boolean pingPongEnabled = false;
 
     /**
      * Constructor for the ClientInstance class

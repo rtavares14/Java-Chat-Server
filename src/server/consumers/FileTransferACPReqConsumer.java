@@ -35,22 +35,31 @@ public class FileTransferACPReqConsumer implements Consumer<String> {
                 FileTransferChoiceResp response = new FileTransferChoiceResp("ERROR", 6000);
                 clientInstance.sendCommand(FILET_CHOICE_RESP, JsonUtils.toJson(response));
                 MessageHelper.printServerMessage(RED, clientInstance, FILET_CHOICE_RESP, JsonUtils.toJson(response));
+                return;
             }
 
             if (handler == null) {
                 FileTransferChoiceResp response = new FileTransferChoiceResp("ERROR", 10006);
                 clientInstance.sendCommand(FILET_CHOICE_RESP, JsonUtils.toJson(response));
                 MessageHelper.printServerMessage(RED, clientInstance, FILET_CHOICE_RESP, JsonUtils.toJson(response));
-            } else {
-                if (!handler.getSender().getUsername().equals(sender)) {
-                    FileTransferChoiceResp response = new FileTransferChoiceResp("ERROR", 10007);
-                    clientInstance.sendCommand(FILET_CHOICE_RESP, JsonUtils.toJson(response));
-                    MessageHelper.printServerMessage(RED, clientInstance, FILET_CHOICE_RESP, JsonUtils.toJson(response));
-                } else {
-                    handler.acceptTransfer();
-                    System.out.println("File transfer started");
-                }
+                return;
             }
+
+            if (!handler.getSender().getUsername().equals(sender)) {
+                FileTransferChoiceResp response = new FileTransferChoiceResp("ERROR", 10007);
+                clientInstance.sendCommand(FILET_CHOICE_RESP, JsonUtils.toJson(response));
+                MessageHelper.printServerMessage(RED, clientInstance, FILET_CHOICE_RESP, JsonUtils.toJson(response));
+                return;
+            }
+
+            handler.acceptTransfer();
+            FileTransferChoiceResp response = new FileTransferChoiceResp("OK", null);
+            clientInstance.sendCommand(FILET_CHOICE_RESP, JsonUtils.toJson(response));
+            MessageHelper.printServerMessage(TEAL, clientInstance, FILET_CHOICE_RESP, JsonUtils.toJson(response));
+            System.out.println("File transfer accepted, starting transfer...");
+
+            // Notify the sender to start the file transfer
+            handler.getSender().sendCommand(FILET_START, JsonUtils.toJson(response));
         } catch (Exception e) {
             System.err.println("Failed to process FILET_CHOICE_REQ message: " + e.getMessage());
         }

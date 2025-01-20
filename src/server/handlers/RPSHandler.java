@@ -36,7 +36,7 @@ public class RPSHandler implements Runnable {
      *
      * @return RPSHandler
      */
-    public static synchronized RPSHandler getInstance() {
+    public static RPSHandler getInstance() {
         if (instance == null) {
             instance = new RPSHandler();
         }
@@ -49,7 +49,7 @@ public class RPSHandler implements Runnable {
      * @param player1 the first player
      * @param player2 the second player
      */
-    public synchronized void addPlayers(ClientInstance player1, ClientInstance player2) throws JsonProcessingException {
+    public void addPlayers(ClientInstance player1, ClientInstance player2) throws JsonProcessingException {
         if (!isGameInProgress) {
             this.player1 = player1;
             this.player2 = player2;
@@ -81,20 +81,20 @@ public class RPSHandler implements Runnable {
                     Thread.sleep(1000); // Wait for 1 second
                     timeElapsed++;
 
-                    synchronized (this) {
-                        // Check if both players made their choices
-                        if (player1Choice != null && player2Choice != null) {
-                            determineWinner();
-                            return;
-                        }
+
+                    // Check if both players made their choices
+                    if (player1Choice != null && player2Choice != null) {
+                        determineWinner();
+                        return;
                     }
+
                 }
 
                 // Timeout: Cancel the game
-                synchronized (this) {
-                    if (timerRunning && (player1Choice == null || player2Choice == null)) {
-                        cancelGameDueToTimeout();
-                    }
+
+                if (timerRunning && (player1Choice == null || player2Choice == null)) {
+                    cancelGameDueToTimeout();
+
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -110,7 +110,7 @@ public class RPSHandler implements Runnable {
      *
      * @throws JsonProcessingException if an error occurs while processing JSON
      */
-    private synchronized void determineWinner() throws JsonProcessingException {
+    private void determineWinner() throws JsonProcessingException {
         // Determine the winner based on player choices
         String winner;
         if (player1Choice.equals(player2Choice)) {
@@ -137,7 +137,7 @@ public class RPSHandler implements Runnable {
      *
      * @throws JsonProcessingException if an error occurs while processing JSON
      */
-    private synchronized void cancelGameDueToTimeout() throws JsonProcessingException {
+    private void cancelGameDueToTimeout() throws JsonProcessingException {
         // Notify players of timeout
         Info timeoutInfo = new Info("Game canceled due to timeout. Please try again.");
         player1.sendCommand(INFO, JsonUtils.toJson(timeoutInfo));
@@ -164,7 +164,7 @@ public class RPSHandler implements Runnable {
      * @param player the player to check
      * @return boolean true if the player is in the game, false otherwise
      */
-    public synchronized boolean isPlayerInGame(ClientInstance player) {
+    public boolean isPlayerInGame(ClientInstance player) {
         return player1 == player || player2 == player;
     }
 
@@ -174,7 +174,7 @@ public class RPSHandler implements Runnable {
      * @param player the player
      * @param choice the player's choice
      */
-    public synchronized void addChoice(ClientInstance player, String choice) {
+    public void addChoice(ClientInstance player, String choice) {
         if (player1 == player) {
             player1Choice = choice;
         } else if (player2 == player) {
@@ -200,7 +200,7 @@ public class RPSHandler implements Runnable {
     /**
      * Remove a players from the game
      */
-    public synchronized void removePlayers() {
+    public void removePlayers() {
         isGameInProgress = false;
         player1 = null;
         player2 = null;
@@ -215,14 +215,14 @@ public class RPSHandler implements Runnable {
      *
      * @return boolean true if the game is in progress, false otherwise
      */
-    public synchronized boolean isGameInProgress() {
+    public boolean isGameInProgress() {
         return isGameInProgress;
     }
 
     /**
      * Clear all players and reset the game
      */
-    public synchronized void resetGame() {
+    public void resetGame() {
         timerRunning = false; // Stop the timer
 
         removePlayers();
@@ -232,7 +232,7 @@ public class RPSHandler implements Runnable {
     /**
      * Start the game room thread
      */
-    public synchronized void startGameRoom() {
+    public void startGameRoom() {
         if (isRoomOpen) {
             MessageHelper.printColoredMessage(RED, "Game room is already running.");
             return;
@@ -246,7 +246,7 @@ public class RPSHandler implements Runnable {
     /**
      * Stop the game room thread
      */
-    public synchronized void stopGameRoom() {
+    public void stopGameRoom() {
         if (!isRoomOpen) {
             MessageHelper.printColoredMessage(RED, "Game room is not running.");
             return;

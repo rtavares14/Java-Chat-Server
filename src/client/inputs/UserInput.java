@@ -208,13 +208,24 @@ public class UserInput implements Runnable {
         sendCommand(FILET_REQ, json);
     }
 
+    /**
+     * Method to handle the file transfer choice command
+     *
+     * @param message the message to be sent to the server
+     */
     private void fileTransferChoice(String message) throws JsonProcessingException {
         String[] parts = message.split(" ", 3);
+        String choice = parts[0];
         String sender = parts[1];
         String uuid = parts[2];
         FileTransferACPReq fileTransferChoiceReq = new FileTransferACPReq(sender, uuid);
         String json = JsonUtils.toJson(fileTransferChoiceReq);
-        sendCommand(FILET_ACP_REQ, json);
+
+        if (choice.equals("accept")) {
+            sendCommand(FILET_ACP_REQ, json);
+        } else {
+            sendCommand(FILET_REJ_REQ, json);
+        }
     }
 
     /**

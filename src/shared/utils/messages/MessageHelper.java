@@ -34,15 +34,20 @@ public class MessageHelper {
      * Display the help menu
      */
     public static void menu() {
-        printColoredMessage(PURPLE, "Commands:");
-        printColoredMessage(PURPLE, "login \"username\" - Login to the server");
-        printColoredMessage(PURPLE, "ulist - Request a list of all login users");
-        printColoredMessage(PURPLE, "msg \"message\" - Send a global broadcast message");
-        printColoredMessage(PURPLE, "pvm \"username\" \"message\" - Send a private message to a user");
-        printColoredMessage(PURPLE, "play \"username\" - Send a play request to a user");
+        printColoredMessage(PURPLE, "-----------------------------COMMANDS-----------------------------");
+        printColoredMessage(PURPLE, "LOGIN \"username\" - Login to the server");
+        printColoredMessage(PURPLE, "ULIST - Request a list of all login users");
+        printColoredMessage(PURPLE, "MSG \"message\" - Send a global broadcast message");
+        printColoredMessage(PURPLE, "PVM \"username\" \"message\" - Send a private message to a user");
+        printColoredMessage(PURPLE, "PLAY \"username\" - Send a play request to a user");
         printColoredMessage(PURPLE, "In game commands: rock, paper or scissors");
-        printColoredMessage(PURPLE, "help - Display this help menu");
-        printColoredMessage(PURPLE, "bye - Disconnect from the server");
+        printColoredMessage(PURPLE, "FILET \"username\" \"file-path\" - Send a file to a user");
+        printColoredMessage(PURPLE, "ACCEPT OR DECLINE \"username\" \"uuid\"- Accept a file transfer");
+        printColoredMessage(PURPLE, "HELP - Display this help menu");
+        printColoredMessage(PURPLE, "BYE - Disconnect from the server");
+        printColoredMessage(PURPLE, "------------------------------------------------------------------");
+        printColoredMessage(PURPLE, "Disclaimer: Any command can be written in lower or upper case.");
+        printColoredMessage(PURPLE, "------------------------------------------------------------------");
     }
 
     /**
