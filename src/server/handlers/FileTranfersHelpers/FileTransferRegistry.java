@@ -1,4 +1,4 @@
-package server.handlers;
+package server.handlers.FileTranfersHelpers;
 
 import shared.utils.messages.MessageHelper;
 
@@ -8,11 +8,11 @@ import static shared.enumerations.CmdColors.*;
 
 public class FileTransferRegistry {
     private static FileTransferRegistry instance;
-    private final ConcurrentHashMap<String, FileTransferHandler> activeTransfers;
+    private final ConcurrentHashMap<String, FileTransferTimer> activeSessions;
     private static int totalTransfers;
 
     private FileTransferRegistry() {
-        activeTransfers = new ConcurrentHashMap<>();
+        activeSessions = new ConcurrentHashMap<>();
     }
 
     public static synchronized FileTransferRegistry getInstance() {
@@ -20,10 +20,6 @@ public class FileTransferRegistry {
             instance = new FileTransferRegistry();
         }
         return instance;
-    }
-
-    public static int getTT() {
-        return totalTransfers;
     }
 
     public static void addToTT() {
@@ -34,19 +30,19 @@ public class FileTransferRegistry {
         totalTransfers--;
     }
 
-    public void addSession(String uuid, FileTransferHandler handler) {
-        activeTransfers.put(uuid, handler);
+    public void addSession(String uuid, FileTransferTimer handler) {
+        activeSessions.put(uuid, handler);
     }
 
-    public FileTransferHandler getSession(String uuid) {
-        return activeTransfers.get(uuid);
+    public FileTransferTimer getSession(String uuid) {
+        return activeSessions.get(uuid);
     }
 
     public void removeSession(String uuid) {
-        activeTransfers.remove(uuid);
+        activeSessions.remove(uuid);
     }
 
     public void printSessions() {
-        MessageHelper.printColoredMessage(WHITE ,"Active file transfers: " + activeTransfers.size() + ". Total transfers: " + totalTransfers);
+        MessageHelper.printColoredMessage(WHITE ,"Active file transfers: " + activeSessions.size() + ". Total transfers: " + totalTransfers);
     }
 }

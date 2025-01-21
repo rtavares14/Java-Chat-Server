@@ -1,8 +1,8 @@
 package server.consumers;
 
 import server.clientInstance.ClientInstance;
-import server.handlers.FileTransferHandler;
-import server.handlers.FileTransferRegistry;
+import server.handlers.FileTranfersHelpers.FileTransferTimer;
+import server.handlers.FileTranfersHelpers.FileTransferRegistry;
 import shared.messages.file_transfer.choises.FileTransferACPReq;
 import shared.messages.file_transfer.choises.FileTransferChoiceResp;
 import shared.utils.JsonUtils;
@@ -29,7 +29,7 @@ public class FileTransferACPReqConsumer implements Consumer<String> {
             String uuid = fileTransferChoiceReq.uuid();
 
             FileTransferRegistry registry = FileTransferRegistry.getInstance();
-            FileTransferHandler handler = registry.getSession(uuid);
+            FileTransferTimer handler = registry.getSession(uuid);
 
             if (clientInstance.getUsername() == null || clientInstance.getUsername().isEmpty()) {
                 FileTransferChoiceResp response = new FileTransferChoiceResp("ERROR", 6000);

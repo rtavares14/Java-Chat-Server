@@ -35,9 +35,9 @@ TODO:
  # 13. Do Protocol File Transfer
  # 14. Received ok from protocol FileTransfer
     # 15. FileTransfer
-    # send request
-    # start timer
-        # accept request
+ # send request
+ # start timer
+ # accept request
         # deny request
     #open thread to send file
     #start sending file
@@ -58,3 +58,14 @@ d- download
 r- receive
 
 need to have some kind of a way to know if the file is being sent or received
+
+
+// Put both sender and receiver in the same file transfer session (i can have multiple file transfer sessions at the same time)
+                        // I need to create one that will handle this file transfer session
+                        // add the users as sender and receiver (roles R and S)
+                        // add the file path, size and checksum
+                        // create a new thread that will handle the file transfer
+                        // start a timer for the receiver to accept or reject the file transfer
+                        // if the receiver accepts the file transfer, the file transfer will start
+                        // if the receiver rejects the file transfer, the file transfer will be cancelled
+                        // if the receiver does not respond in time, the file transfer will be cancelled

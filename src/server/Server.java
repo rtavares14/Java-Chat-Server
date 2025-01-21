@@ -1,6 +1,7 @@
 package server;
 
 import server.clientInstance.ClientInstance;
+import server.handlers.FileTranfersHelpers.FileTransferRegistry;
 import server.handlers.RPSHandler;
 import server.loggers.ClientLogger;
 import shared.utils.messages.MessageHelper;
@@ -49,6 +50,7 @@ public class Server {
             fileServerSocket = new ServerSocket(FILE_PORT);
             MessageHelper.printColoredMessage(PURPLE, "Starting server version (" + VERSION + ") on port: " + SERVER_PORT);
             MessageHelper.printColoredMessage(PURPLE, "Starting file server on port: " + FILE_PORT);
+            FileTransferRegistry.getInstance().printSessions();
 
             // Initialize the RPS game handler
             RPSHandler.getInstance().startGameRoom();

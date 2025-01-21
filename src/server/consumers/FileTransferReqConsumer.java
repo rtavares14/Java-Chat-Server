@@ -1,8 +1,8 @@
 package server.consumers;
 
 import server.clientInstance.ClientInstance;
-import server.handlers.FileTransferHandler;
-import server.handlers.FileTransferRegistry;
+import server.handlers.FileTranfersHelpers.FileTransferTimer;
+import server.handlers.FileTranfersHelpers.FileTransferRegistry;
 import server.loggers.ClientLogger;
 import shared.messages.file_transfer.request.FileTransfer;
 import shared.messages.file_transfer.request.FileTransferReq;
@@ -10,6 +10,7 @@ import shared.messages.file_transfer.request.FileTransferResp;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
 
+import java.io.File;
 import java.util.function.Consumer;
 
 import static shared.enumerations.CmdColors.RED;
@@ -29,10 +30,10 @@ public class FileTransferReqConsumer implements Consumer<String> {
     public void accept(String jsonPayload) {
         try {
             FileTransferReq fileTransferReq = JsonUtils.fromJson(jsonPayload, FileTransferReq.class);
-            String receiver = fileTransferReq.getReceiver();
-            String filepath = fileTransferReq.getFilepath();
-            Double size = fileTransferReq.getSize();
-            String checkSum = fileTransferReq.getCheckSum();
+            String receiver = fileTransferReq.receiver();
+            String filepath = fileTransferReq.filepath();
+            Double size = fileTransferReq.size();
+            String checkSum = fileTransferReq.checkSum();
 
             if (clientInstance.getUsername() == null || clientInstance.getUsername().isEmpty()) {
                 FileTransferResp response = new FileTransferResp("ERROR", 6000);
@@ -53,7 +54,7 @@ public class FileTransferReqConsumer implements Consumer<String> {
                     MessageHelper.printServerMessage(RED, clientInstance, FILET_RESP, JsonUtils.toJson(response));
                 } else {
                     if (filepath.isEmpty() || size == 0 || checkSum.isEmpty()) {
-                        FileTransferResp response = new FileTransferResp("ERROR", 10000);
+                        FileTransferResp response = new FileTransferResp("ERROR", 10001);
                         clientInstance.sendCommand(FILET_RESP, JsonUtils.toJson(response));
                         MessageHelper.printServerMessage(RED, clientInstance, FILET_RESP, JsonUtils.toJson(response));
                     } else {
@@ -62,30 +63,21 @@ public class FileTransferReqConsumer implements Consumer<String> {
                         clientInstance.sendCommand(FILET_RESP, JsonUtils.toJson(response));
                         MessageHelper.printServerMessage(TEAL, clientInstance, FILET_RESP, JsonUtils.toJson(response));
 
-                        // Put both sender and receiver in the same file transfer session (i can have multiple file transfer sessions at the same time)
-                        // I need to create one that will handle this file transfer session
-                        // add the users as sender and receiver (roles R and S)
-                        // add the file path, size and checksum
-                        // create a new thread that will handle the file transfer
-                        // start a timer for the receiver to accept or reject the file transfer
-                        // if the receiver accepts the file transfer, the file transfer will start
-                        // if the receiver rejects the file transfer, the file transfer will be cancelled
-                        // if the receiver does not respond in time, the file transfer will be cancelled
-
-
                         // Create a new file transfer session
                         String transferUuid = createUUID();
-                        FileTransferHandler fileTransferHandler = new FileTransferHandler(clientInstance, receiverInstance, filepath, size, checkSum, transferUuid);
+                        File transferFile = new File(filepath);
+                        String fileName = transferFile.getName();
+                        FileTransferTimer fileTransferTimer = new FileTransferTimer(clientInstance, receiverInstance, transferFile,checkSum, transferUuid);
 
                         // Send the message to the receiver
-                        FileTransfer fileTransferReq1 = new FileTransfer(clientInstance.getUsername(), filepath, size, checkSum, transferUuid);
+                        FileTransfer fileTransferReq1 = new FileTransfer(clientInstance.getUsername(), fileName, size, checkSum, transferUuid);
                         String json = JsonUtils.toJson(fileTransferReq1);
 
                         receiverInstance.sendCommand(FILET, json);
-                        MessageHelper.printColoredMessage(TEAL, "C (" + clientInstance.getUsername() + ") --> C (" + receiver + "): " + FILET + " : " + json);
+                        MessageHelper.printColoredMessage(TEAL, "S --> C (" + receiver + "): " + FILET + " : " + json);
 
-                        fileTransferHandler.startTransfer();
-                        FileTransferRegistry.getInstance().addSession(transferUuid, fileTransferHandler);
+                        fileTransferTimer.startTransfer();
+                        FileTransferRegistry.getInstance().addSession(transferUuid, fileTransferTimer);
                     }
                 }
             }
