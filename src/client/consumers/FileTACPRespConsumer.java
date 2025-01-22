@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 
 import static shared.enumerations.CmdColors.TEAL;
 
-public class FileTChoiceRespConsumer implements Consumer<String> {
+public class FileTACPRespConsumer implements Consumer<String> {
 
 
     @Override
@@ -16,12 +16,12 @@ public class FileTChoiceRespConsumer implements Consumer<String> {
         try {
             BroadcastResp message = JsonUtils.fromJson(json, BroadcastResp.class);
             if ("OK".equalsIgnoreCase(message.status())) {
-                MessageHelper.printColoredMessage(TEAL, "File transfer will start as soon as possible.!");
+                MessageHelper.printColoredMessage(TEAL, "File transfer will start as soon as possible.");
             } else {
                 MessageHelper.handleErrorMessage(message.code());
             }
         } catch (Exception e) {
-            System.err.println("Failed to process FILET_CHOICE_RESP message: " + e.getMessage());
+            System.err.println("Failed to process FILET_ACP_RESP message: " + e.getMessage());
         }
     }
 }

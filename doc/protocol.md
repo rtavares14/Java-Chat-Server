@@ -313,17 +313,17 @@ The downloader will open a new socket connection to start the file transfer. The
 
 ```
 C2_Downloader -> S (Opens the fileT socket)
-S -> C1 : FILET_START {"reciever":"<reciever>","sender":"<sender>","fileName":"<fileName>",uuid":"<uuid>","checksum":"<checksum>"}
-S -> C2 : FILET_START {"reciever":"<reciever>","sender":"<sender>","fileName":"<fileName>",uuid":"<uuid>","checksum":"<checksum>"}
+S -> C1 : FILET_START {"reciever":"<reciever>","sender":"<sender>","fileName":"<fileName>",uuid":"<uuid>+S","checksum":"<checksum>"}
+S -> C2 : FILET_START {"reciever":"<reciever>","sender":"<sender>","fileName":"<fileName>",uuid":"<uuid>+R""checksum":"<checksum>"}
 ```
 
-C1_Uploader -> S (Opens the fileT socket)
+Both clients will receive a FILET_START message. After that they will connect to the fileT socket (port 1338) and be assigned to their role (sender or receiver) depending on the last letter added on the uuid.
 
-The file transfer will start and the file will be sent in chunks of bytes.
+The file transfer will start as soon as both clients connects to the socket and the file will be sent in chunks of bytes.
 
 ```
-C1_Uploader -> S <<uuid> + <bytes>>
-S -> C2_Downloader <<uuid> + <bytes>>
+C1_Uploader -> S <<uuid>+S + <bytes>>
+S -> C2_Downloader <<uuid>+R + <bytes>>
 ```
 
 After the file transfer is done, the receiver will check the checksum of the file. If the checksum is correct the reciever will send a FILET_END to the server and the server will send a FILET_END to the sender. After that the
@@ -356,16 +356,17 @@ S -> C2 or C1: FILET_RESP {"status":"ERROR","code":<error code>}
 
 Possible `<error code>`:
 
-| Error code | Description                           |
-|------------|---------------------------------------|
-| 10002      | Sender refused file (only for sender) |
-| 10003      | Sender left                           |
-| 10004      | Receiver left                         |
-| 10005      | Checksum bad                          |
-| 10006      | No file transfer found                |
-| 10007      | This user did not send a file to you  |
-| 10008      | File transfer already started         |
-| 10009      | Receiver did not respond in time      |
+| Error code | Description                               |
+|------------|-------------------------------------------|
+| 10002      | Sender refused file (only for sender)     |
+| 10003      | Sender left                               |
+| 10004      | Receiver left                             |
+| 10005      | Checksum bad                              |
+| 10006      | No file transfer found                    |
+| 10007      | This user did not send a file to you      |
+| 10008      | File transfer already started             |
+| 10009      | Receiver did not respond in time (sender) |
+| 10010      | You did not answer in time (receiver)     |
 
 # 7.Heartbeat message
 

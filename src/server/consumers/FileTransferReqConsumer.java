@@ -89,12 +89,11 @@ public class FileTransferReqConsumer implements Consumer<String> {
     /**
      * Create a UUID
      * This method is used to create a UUID
+     * Only the first 7 characters are used
      *
      * @return the UUID
      */
     private String createUUID() {
-        // Create a random UUID
-        // make it 7 characters long
         return java.util.UUID.randomUUID().toString().substring(0, 7);
     }
 }

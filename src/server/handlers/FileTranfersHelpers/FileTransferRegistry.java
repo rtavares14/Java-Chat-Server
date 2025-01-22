@@ -1,5 +1,6 @@
 package server.handlers.FileTranfersHelpers;
 
+import server.handlers.FileTransferHandler;
 import shared.utils.messages.MessageHelper;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,10 +10,12 @@ import static shared.enumerations.CmdColors.*;
 public class FileTransferRegistry {
     private static FileTransferRegistry instance;
     private final ConcurrentHashMap<String, FileTransferTimer> activeSessions;
+    private final ConcurrentHashMap<String, FileTransferHandler> activeHandlers;
     private static int totalTransfers;
 
     private FileTransferRegistry() {
         activeSessions = new ConcurrentHashMap<>();
+        activeHandlers = new ConcurrentHashMap<>();
     }
 
     public static synchronized FileTransferRegistry getInstance() {
@@ -32,6 +35,10 @@ public class FileTransferRegistry {
 
     public void addSession(String uuid, FileTransferTimer handler) {
         activeSessions.put(uuid, handler);
+    }
+
+    public void addHandler(String uuid, FileTransferHandler handler) {
+        activeHandlers.put(uuid, handler);
     }
 
     public FileTransferTimer getSession(String uuid) {

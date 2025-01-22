@@ -28,8 +28,9 @@ public enum ServerCommands {
     FILET_RESP("FILET_RESP"), // Response to sent to sender
     FILET("FILET"), // File message received from receiver
     FILET_ACP_REQ("FILET_ACP_REQ"), // Request to accept the file
-    FILET_REJ_REQ("FILET_REJ"), // Request to reject the file
-    FILET_CHOICE_RESP("FILET_CHOICE_RESP"), // Response to accept or reject the file
+    FILET_REJ_REQ("FILET_REJ_REQ"), // Request to reject the file
+    FILET_ACP_RESP("FILET_ACP_RESP"), // Response to accept the file
+    FILET_REJ_RESP("FILET_REJ_RESP"), // Response to reject the file
     FILET_REJ("FILET_REJ"), // File rejected
     FILET_START("FILET_START"), // Start sending file
     FILET_END("FILET_END"), // End sending file

@@ -45,7 +45,10 @@ public class MessageHandler {
         handlersC.put(RPS_END, new RPSEndConsumer());
         handlersC.put(FILET_RESP, new FileTRespConsumer());
         handlersC.put(FILET, new FileTConsumer());
-        handlersC.put(FILET_CHOICE_RESP, new FileTChoiceRespConsumer());
+        handlersC.put(FILET_ACP_RESP, new FileTACPRespConsumer());
+        handlersC.put(FILET_REJ_RESP, new FileTRejRespConsumer());
+        handlersC.put(FILET_START, new FileTStartConsumer());
+        handlersC.put(FILET_REJ, new FileTRejConsumer());
 
         handlersC.put(PING, new PingConsumer(writer));
         handlersC.put(HANGUP, new HangupConsumer());
@@ -64,6 +67,7 @@ public class MessageHandler {
         handlersS.put(RPS_CHOICE_REQ, new RPSChoiseReqConsumer(clientInstance));
         handlersS.put(FILET_REQ, new FileTransferReqConsumer(clientInstance));
         handlersS.put(FILET_ACP_REQ, new FileTransferACPReqConsumer(clientInstance));
+        handlersS.put(FILET_REJ_REQ, new FileTransferRJReqConsumer(clientInstance));
         handlersS.put(PONG, new PongConsumer(clientInstance));
         handlersS.put(BYE, new ByeReqConsumer(clientInstance));
     }
