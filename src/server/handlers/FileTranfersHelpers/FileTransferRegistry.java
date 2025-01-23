@@ -18,7 +18,7 @@ public class FileTransferRegistry {
         activeHandlers = new ConcurrentHashMap<>();
     }
 
-    public static synchronized FileTransferRegistry getInstance() {
+    public static FileTransferRegistry getInstance() {
         if (instance == null) {
             instance = new FileTransferRegistry();
         }
@@ -41,12 +41,20 @@ public class FileTransferRegistry {
         activeHandlers.put(uuid, handler);
     }
 
+    public FileTransferHandler getHandler(String uuid) {
+        return activeHandlers.get(uuid);
+    }
+
     public FileTransferTimer getSession(String uuid) {
         return activeSessions.get(uuid);
     }
 
     public void removeSession(String uuid) {
         activeSessions.remove(uuid);
+    }
+
+    public void removeHandler(String uuid) {
+        activeHandlers.remove(uuid);
     }
 
     public void printSessions() {

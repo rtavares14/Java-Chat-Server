@@ -1,6 +1,23 @@
 package shared.utils.messages;
 
-import client.consumers.*;
+import client.consumers.broadcast.BroadcastConsumer;
+import client.consumers.broadcast.BroadcastRespConsumer;
+import client.consumers.fileTransfer.*;
+import client.consumers.general.InfoConsumer;
+import client.consumers.general.ParseConsumer;
+import client.consumers.general.ReadyConsumer;
+import client.consumers.general.UnknownConsumer;
+import client.consumers.login_logout.ByeConsumer;
+import client.consumers.login_logout.EnterRespConsumer;
+import client.consumers.login_logout.JoinedConsumer;
+import client.consumers.login_logout.LeftConsumer;
+import client.consumers.pingPong.HangupConsumer;
+import client.consumers.pingPong.PingConsumer;
+import client.consumers.privateMessage.SendToConsumer;
+import client.consumers.privateMessage.SendToRespConsumer;
+import client.consumers.rps.*;
+import client.consumers.userList.ListConsumer;
+import client.consumers.userList.ListRespConsumer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import server.clientInstance.ClientInstance;
 import server.consumers.*;

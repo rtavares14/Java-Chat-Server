@@ -19,11 +19,9 @@ public class FileTransferSv implements Runnable{
     @Override
     public void run(){
         try(ServerSocket fileTransferSocket = new ServerSocket(FILE_PORT)){
-            while(true){
+            FileTransferRegistry.getInstance().printSessions();
+            while(fileTransferSocket.isBound()){
                 Socket fileTransferClient = fileTransferSocket.accept();
-                MessageHelper.printColoredMessage(PURPLE, "File transfer connection established: " + fileTransferSocket.getInetAddress().getHostAddress());
-                FileTransferRegistry.getInstance().printSessions();
-
                 new Thread(new FileTransferHandler(fileTransferClient)).start();
             }
         }catch(Exception e){
