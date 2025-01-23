@@ -1,4 +1,4 @@
-package client.consumers;
+package client.consumers.general;
 
 import shared.messages.general.Ready;
 import shared.utils.JsonUtils;

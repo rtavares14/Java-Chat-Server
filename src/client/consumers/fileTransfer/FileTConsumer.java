@@ -1,4 +1,4 @@
-package client.consumers;
+package client.consumers.fileTransfer;
 
 import shared.messages.file_transfer.request.FileTransfer;
 import shared.utils.JsonUtils;

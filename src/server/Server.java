@@ -45,11 +45,12 @@ public class Server {
      * This method is used to start the server
      */
     public void startingServer() {
-        new Thread(new FileTransferSv(FILE_PORT)).start();
-
         try {
             serverSocket = new ServerSocket(SERVER_PORT);
             MessageHelper.printColoredMessage(PURPLE, "Starting server version (" + VERSION + ") on port: " + SERVER_PORT);
+
+            new Thread(new FileTransferSv(FILE_PORT)).start();
+            MessageHelper.printColoredMessage(PURPLE, "Starting file transfer 'server' on port: " + FILE_PORT);
 
             // Initialize the RPS game handler
             RPSHandler.getInstance().startGameRoom();

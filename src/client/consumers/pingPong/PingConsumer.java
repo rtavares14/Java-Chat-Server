@@ -1,4 +1,4 @@
-package client.consumers;
+package client.consumers.pingPong;
 
 import java.io.PrintWriter;
 import java.util.function.Consumer;

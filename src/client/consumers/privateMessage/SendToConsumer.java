@@ -1,4 +1,4 @@
-package client.consumers;
+package client.consumers.privateMessage;
 
 import shared.messages.private_message.SendTo;
 import shared.utils.JsonUtils;

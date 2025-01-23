@@ -1,4 +1,4 @@
-package client.consumers;
+package client.consumers.login_logout;
 
 import shared.messages.login_logout.ByeResp;
 import shared.utils.JsonUtils;

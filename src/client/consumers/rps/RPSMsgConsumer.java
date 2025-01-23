@@ -1,4 +1,4 @@
-package client.consumers;
+package client.consumers.rps;
 
 import shared.messages.RPSGame.enter_game.GameMsg;
 import shared.utils.JsonUtils;

@@ -1,4 +1,4 @@
-package client.consumers;
+package client.consumers.pingPong;
 
 import shared.utils.messages.MessageHelper;
 

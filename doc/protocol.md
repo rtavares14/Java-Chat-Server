@@ -260,7 +260,7 @@ S -> C2: RPS_END {"winner":"<username>" , "resultC1":"<choice>" , "resultC2":"<c
 The user will request to send a file to the chosen client. When the first client request to send a file, a message will
 be sent to the chosen client. When the second client accepts to receive the file, they both will enter the *file
 transfer room* that is just a term for the new thread that will open for the transfer of the file. The file will be sent
-in chunks of 1024 bytes. The file will be saved in the folder `files` in the root of the project.
+in chunks of 1024 bytes. The file will be saved in the folder `transferredFiles` in the root of the project.
 
 My sender will send a request to another client, as he will send the request to another client an uuid will be
 generated. The receiver will accept the request and the file transfer will start. If the receiver does not accept the
@@ -309,7 +309,7 @@ S -> C2: FILET_CHOICE_RESP {"status":"OK"}
 ```
 
 The downloader will open a new socket connection to start the file transfer. The downloader will get file in the folder
-`files` in the root of the project.
+`transferredFiles` in the root of the project.
 
 ```
 C2_Downloader -> S (Opens the fileT socket)

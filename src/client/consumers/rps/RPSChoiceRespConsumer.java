@@ -1,6 +1,6 @@
-package client.consumers;
+package client.consumers.rps;
 
-import shared.messages.RPSGame.enter_game.GameStartResp;
+import shared.messages.RPSGame.play_game.GameChoiceResp;
 import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
 
@@ -8,19 +8,20 @@ import java.util.function.Consumer;
 
 import static shared.enumerations.CmdColors.OLIVE;
 
-public class RPSStartRespConsumer implements Consumer<String> {
+public class RPSChoiceRespConsumer implements Consumer<String> {
 
     @Override
     public void accept(String json) {
         try {
-            GameStartResp message = JsonUtils.fromJson(json, GameStartResp.class);
+            GameChoiceResp message = JsonUtils.fromJson(json, GameChoiceResp.class);
             if ("OK".equalsIgnoreCase(message.status())) {
-                MessageHelper.printColoredMessage(OLIVE, "Invite sent!");
+                MessageHelper.printColoredMessage(OLIVE, "Message sent!");
             } else {
                 MessageHelper.handleErrorMessage(message.code());
             }
         } catch (Exception e) {
-            System.err.println("Failed to process RPS_START_RESP message: " + e.getMessage());
+            System.err.println("Failed to process BROADCAST_RESP message: " + e.getMessage());
         }
+
     }
 }

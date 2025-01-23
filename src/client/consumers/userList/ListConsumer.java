@@ -1,4 +1,4 @@
-package client.consumers;
+package client.consumers.userList;
 
 import shared.messages.list.List;
 import shared.utils.JsonUtils;

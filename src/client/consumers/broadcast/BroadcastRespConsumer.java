@@ -1,4 +1,4 @@
-package client.consumers;
+package client.consumers.broadcast;
 
 import shared.messages.broadcast.BroadcastResp;
 import shared.utils.JsonUtils;
@@ -6,22 +6,21 @@ import shared.utils.messages.MessageHelper;
 
 import java.util.function.Consumer;
 
-import static shared.enumerations.CmdColors.TEAL;
+import static shared.enumerations.CmdColors.ORANGE;
 
-public class FileTRejRespConsumer implements Consumer<String> {
-
+public class BroadcastRespConsumer implements Consumer<String> {
 
     @Override
     public void accept(String json) {
         try {
             BroadcastResp message = JsonUtils.fromJson(json, BroadcastResp.class);
             if ("OK".equalsIgnoreCase(message.status())) {
-                MessageHelper.printColoredMessage(TEAL, "File transfer was rejected");
+                MessageHelper.printColoredMessage(ORANGE, "Message sent!");
             } else {
                 MessageHelper.handleErrorMessage(message.code());
             }
         } catch (Exception e) {
-            System.err.println("Failed to process FILET_REJ_RESP message: " + e.getMessage());
+            System.err.println("Failed to process BROADCAST_RESP message: " + e.getMessage());
         }
     }
 }

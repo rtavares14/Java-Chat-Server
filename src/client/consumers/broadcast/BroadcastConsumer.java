@@ -1,4 +1,4 @@
-package client.consumers;
+package client.consumers.broadcast;
 
 import shared.messages.broadcast.Broadcast;
 import shared.utils.JsonUtils;
