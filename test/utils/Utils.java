@@ -14,6 +14,17 @@ import shared.messages.broadcast.BroadcastResp;
 import shared.messages.enter.Enter;
 import shared.messages.enter.EnterReq;
 import shared.messages.enter.EnterResp;
+import shared.messages.file_transfer.choises.FileTransferACPReq;
+import shared.messages.file_transfer.choises.FileTransferACPResp;
+import shared.messages.file_transfer.choises.FileTransferRJReq;
+import shared.messages.file_transfer.choises.FileTransferRJResp;
+import shared.messages.file_transfer.request.FileTransfer;
+import shared.messages.file_transfer.request.FileTransferReq;
+import shared.messages.file_transfer.request.FileTransferResp;
+import shared.messages.file_transfer.status.FileTransferCheckReq;
+import shared.messages.file_transfer.status.FileTransferEnd;
+import shared.messages.file_transfer.status.FileTransferRejected;
+import shared.messages.file_transfer.status.FileTransferStart;
 import shared.messages.general.Info;
 import shared.messages.general.ParseError;
 import shared.messages.general.Ready;
@@ -66,6 +77,19 @@ public class Utils {
         objToNameMapping.put(GameStartResp.class , "RPS_START_RESP");
         objToNameMapping.put(GameChoiceReq.class , "RPS_CHOICE_REQ");
         objToNameMapping.put(GameChoiceResp.class , "RPS_CHOICE_RESP");
+
+        objToNameMapping.put(FileTransferReq.class , "FILET_REQ");
+        objToNameMapping.put(FileTransferResp.class , "FILET_RESP");
+        objToNameMapping.put(FileTransfer.class , "FILET");
+        objToNameMapping.put(FileTransferACPReq.class , "FILET_ACP_REQ");
+        objToNameMapping.put(FileTransferRJReq.class , "FILET_REJ_REQ");
+        objToNameMapping.put(FileTransferACPResp.class , "FILET_ACP_RESP");
+        objToNameMapping.put(FileTransferRJResp.class , "FILET_REJ_RESP");
+        objToNameMapping.put(FileTransferRejected.class , "FILET_REJ");
+        objToNameMapping.put(FileTransferStart.class , "FILET_START");
+        objToNameMapping.put(FileTransferCheckReq.class , "FILET_CHECK_REQ");
+        objToNameMapping.put(FileTransferEnd.class , "FILET_END");
+
         objToNameMapping.put(GameEnd.class , "RPS_END");
         objToNameMapping.put(Info.class , "INFO");
     }
