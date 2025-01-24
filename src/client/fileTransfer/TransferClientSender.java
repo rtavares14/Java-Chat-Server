@@ -16,37 +16,29 @@ public class TransferClientSender implements Runnable {
     @Override
     public void run() {
         try {
+            Thread.sleep(1000);
             socket = new Socket("localhost", 1338);
             filetStart();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                socket.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 
     public void filetStart() {
-        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
-             OutputStream outputStream = new BufferedOutputStream(socket.getOutputStream())) {
+        try (InputStream inputStream = new FileInputStream(file);
+             OutputStream outputStream = socket.getOutputStream()) {
             outputStream.write((uuid + "S").getBytes());
             outputStream.flush();
 
             inputStream.transferTo(outputStream);
-            outputStream.flush();
+
+            inputStream.close();
+            outputStream.close();
+            socket.close();
+
+            System.out.println("File transfer complete!");
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (socket != null) {
-                    socket.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 }

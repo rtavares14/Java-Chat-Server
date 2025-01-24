@@ -9,8 +9,8 @@ import static shared.enumerations.CmdColors.*;
 
 public class FileTransferRegistry {
     private static FileTransferRegistry instance;
-    private final ConcurrentHashMap<String, FileTransferTimer> activeSessions;
-    private final ConcurrentHashMap<String, FileTransferHandler> activeHandlers;
+    private final ConcurrentHashMap<String, FileTransferTimer> activeSessions; //timer with info
+    private final ConcurrentHashMap<String, FileTransferHandler> activeHandlers; //session for transfer
     private static int totalTransfers;
 
     private FileTransferRegistry() {

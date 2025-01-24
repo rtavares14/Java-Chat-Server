@@ -25,40 +25,32 @@ public class TransferClientReceiver implements Runnable {
             filetStart();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                socket.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 
 
     public void filetStart() {
-        try (InputStream inputStream = new BufferedInputStream(socket.getInputStream());
-             OutputStream outputStream = new BufferedOutputStream(socket.getOutputStream())) {
+        try (InputStream inputStream = socket.getInputStream();
+             OutputStream outputStream = socket.getOutputStream()) {
+            OutputStream fileOutputStream = new FileOutputStream(file);
             // Send UUID and role to server
             outputStream.write((uuid + "R").getBytes());
             outputStream.flush();
 
             // Start receiving file
-            inputStream.transferTo(new FileOutputStream(file));
+            inputStream.transferTo(fileOutputStream);
             System.out.println("File transfer complete!");
-
             // Generate checksum
+
+            fileOutputStream.close();
+            inputStream.close();
+            outputStream.close();
+            socket.close();
+
             String checksum = createChecksum(file);
             System.out.println("Checksum: " + checksum);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (socket != null) {
-                    socket.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
