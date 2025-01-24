@@ -9,13 +9,13 @@ import shared.utils.JsonUtils;
 import shared.utils.messages.MessageHelper;
 
 import java.io.File;
-import java.net.Socket;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static shared.enumerations.CmdColors.RED;
-import static shared.enumerations.ServerCommands.*;
+import static shared.enumerations.ServerCommands.FILET_REJ_RESP;
+import static shared.enumerations.ServerCommands.FILET_START;
 
 public class FileTransferTimer {
 
@@ -34,73 +34,60 @@ public class FileTransferTimer {
         this.uuid = uuid;
     }
 
-    public void startTransfer() {
+    /**
+     * Start the timer for the file transfer
+     * This method is used to start the timer for the file session
+     * It waits for the receiver to accept the file transfer
+     * If the receiver does not accept within 30 seconds, the method cancels the transfer
+     * And sends a rejection response to both the sender and the receiver
+     */
+
+    public void startTimer() {
         Timer timer = new Timer();
         try {
             MessageHelper.printColoredMessage(CmdColors.TEAL, "Waiting for receiver to accept the file transfer...");
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if (!isAccepted.get()) {
+                    if (isAccepted.compareAndSet(false, true)) {
                         try {
-                            MessageHelper.printColoredMessage(RED, "File transfer cancelled: Receiver did not accept within 30 seconds.");
+                            MessageHelper.printColoredMessage(RED, "File transfer cancelled: Receiver did not accept within 15 seconds.");
 
                             FileTransferACPResp responseToReceiver = new FileTransferACPResp("ERROR", 10010);
                             receiver.sendCommand(FILET_REJ_RESP, JsonUtils.toJson(responseToReceiver));
-                            MessageHelper.printServerMessage(RED, receiver, FILET_REJ_RESP, JsonUtils.toJson(responseToReceiver));
+                            MessageHelper.printServerMessage(CmdColors.RED, receiver, FILET_REJ_RESP, JsonUtils.toJson(responseToReceiver));
 
                             FileTransferACPResp responseToSender = new FileTransferACPResp("ERROR", 10009);
                             sender.sendCommand(FILET_REJ_RESP, JsonUtils.toJson(responseToSender));
-                            MessageHelper.printServerMessage(RED, sender, FILET_REJ_RESP, JsonUtils.toJson(responseToSender));
-
+                            MessageHelper.printServerMessage(CmdColors.RED, sender, FILET_REJ_RESP, JsonUtils.toJson(responseToSender));
 
                             cancelTransfer();
                         } catch (JsonProcessingException e) {
                             throw new RuntimeException(e);
+                        } finally {
+                            timer.cancel();
                         }
                     }
                 }
-
-            }, 30000);
-
-        } finally {
-            timer.cancel();
-        }
-    }
-
-
-    private void transferToLogic() {
-        //connect the 2 clients to port 1338
-        //send bytes to that port
-        //S or R as a role
-        //uuid as a session id
-        //and the file
-
-        // Call file transfer handler
-        // loop thought the all sessions
-
-        try {
-            // BIMBAMBUM connect the 2 clients to port 1338
-            Socket senderSocket = new Socket(sender.getSocket().getInetAddress(), 1338);
-            Socket receiverSocket = new Socket(receiver.getSocket().getInetAddress(), 1338);
-
-            // BIMBAMBUM send bytes to that port
-            senderSocket.getOutputStream().write(("S," + uuid).getBytes());
-            receiverSocket.getOutputStream().write(("R," + uuid).getBytes());
-
+            }, 15000); // 30 seconds timeout
 
         } catch (Exception e) {
-            e.printStackTrace();
-            MessageHelper.printColoredMessage(RED, "Failed to establish file transfer connection for session " + uuid);
+            MessageHelper.printColoredMessage(CmdColors.RED, "An error occurred while starting the timer: " + e.getMessage());
         }
     }
 
+    /**
+     * Accept the file transfer
+     * This method is used to accept the file transfer
+     * It sends a start message to both the sender and the receiver
+     * If an error occurs, the method prints the stack trace
+     */
     public void acceptTransfer() throws JsonProcessingException {
         isAccepted.set(true);
         MessageHelper.printColoredMessage(CmdColors.TEAL, "Receiver accepted the file transfer, starting transfer...");
-        FileTransferStart fileTransferStartS = new FileTransferStart(sender.getUsername(), receiver.getUsername(), file, uuid+"S", checksum);
+        FileTransferStart fileTransferStartS = new FileTransferStart(sender.getUsername(), receiver.getUsername(), file, uuid + "S", checksum);
         String jsonPayloadSender = JsonUtils.toJson(fileTransferStartS);
-        FileTransferStart fileTransferStartR = new FileTransferStart(sender.getUsername(), receiver.getUsername(), file, uuid+"R", checksum);
+        FileTransferStart fileTransferStartR = new FileTransferStart(sender.getUsername(), receiver.getUsername(), file, uuid + "R", checksum);
         String jsonPayloadReceiver = JsonUtils.toJson(fileTransferStartR);
         sender.sendCommand(FILET_START, jsonPayloadSender);
         receiver.sendCommand(FILET_START, jsonPayloadReceiver);
@@ -108,6 +95,12 @@ public class FileTransferTimer {
         MessageHelper.printServerMessage(CmdColors.TEAL, receiver, FILET_START, jsonPayloadReceiver);
     }
 
+    /**
+     * Cancel the file transfer
+     * This method is used to cancel the file transfer
+     * It removes the session from the registry
+     * And prints a message to the console
+     */
     public void cancelTransfer() {
         FileTransferRegistry.getInstance().removeSession(uuid);
         isAccepted.set(false);
@@ -115,14 +108,29 @@ public class FileTransferTimer {
         MessageHelper.printColoredMessage(RED, "File transfer cancelled, removing session " + uuid);
     }
 
+    /**
+     * Get the sender
+     *
+     * @return the sender
+     */
     public ClientInstance getSender() {
         return sender;
     }
 
+    /**
+     * Get the receiver
+     *
+     * @return the receiver
+     */
     public ClientInstance getReceiver() {
         return receiver;
     }
 
+    /**
+     * Get the uuid
+     *
+     * @return the uuid
+     */
     public String getUuid() {
         return uuid;
     }

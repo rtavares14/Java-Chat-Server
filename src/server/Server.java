@@ -1,6 +1,7 @@
 package server;
 
 import server.clientInstance.ClientInstance;
+import server.handlers.FileTranfersHelpers.FileTransferSv;
 import server.handlers.RPSHandler;
 import server.loggers.ClientLogger;
 import shared.utils.messages.MessageHelper;

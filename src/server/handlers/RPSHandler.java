@@ -72,12 +72,12 @@ public class RPSHandler implements Runnable {
         player2.sendCommand(INFO, JsonUtils.toJson(info));
         MessageHelper.printColoredMessage(OLIVE, "S --> ( players ): " + INFO + " " + JsonUtils.toJson(info));
 
-        // Start a 15-second timer
+        // timer 12
         timerRunning = true; // Set the flag to true
         new Thread(() -> {
             try {
                 int timeElapsed = 0;
-                while (timeElapsed < 12 && timerRunning) { // Check the flag
+                while (timeElapsed < 12 && timerRunning) { // Check the "flag"
                     Thread.sleep(1000); // Wait for 1 second
                     timeElapsed++;
 
@@ -91,7 +91,6 @@ public class RPSHandler implements Runnable {
                 }
 
                 // Timeout: Cancel the game
-
                 if (timerRunning && (player1Choice == null || player2Choice == null)) {
                     cancelGameDueToTimeout();
 

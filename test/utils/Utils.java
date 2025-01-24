@@ -42,6 +42,12 @@ import shared.messages.private_message.SendTo;
 import shared.messages.private_message.SendToReq;
 import shared.messages.private_message.SendToResp;
 
+import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -125,5 +131,29 @@ public class Utils {
                 .map(Map.Entry::getKey)
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Cannot find class belonging to header " + header));
+    }
+
+    /**
+     * Helper method to create a checksum for a file
+     *
+     * @param filepath the path to the file
+     * @return the checksum of the file
+     */
+    public static String createChecksum(String filepath) throws IOException, NoSuchAlgorithmException {
+        byte[] data = Files.readAllBytes(Paths.get(filepath));
+        byte[] hash = MessageDigest.getInstance("MD5").digest(data);
+        return new BigInteger(1, hash).toString(16);
+    }
+
+    /**
+     * Helper method to get the size of a file in gigabytes
+     *
+     * @param filepath the path to the file
+     * @return the size of the file
+     */
+    public static double getFileSize(String filepath) throws IOException {
+        // Get the size of the file in bytes and convert it to gigabytes (GB)
+        long bytes = Files.size(Paths.get(filepath));
+        return bytes / 1024.0;
     }
 }

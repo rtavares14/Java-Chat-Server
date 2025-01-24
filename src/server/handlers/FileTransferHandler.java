@@ -24,10 +24,21 @@ public class FileTransferHandler implements Runnable {
 
     @Override
     public void run() {
-        startTransfer(clientSocket);
+        startTransferLogic(clientSocket);
     }
 
-    public void startTransfer(Socket socket) {
+    /**
+     * Start the file transfer logic
+     * This method is used to start the file transfer logic
+     * It reads the UUID and role from the socket and assigns the role to the session
+     * If the session does not exist, it creates a new session
+     * If the session exists, it assigns the role to the existing session
+     * And starts the file transfer
+     * If an error occurs, the method prints the stack trace
+     *
+     * @param socket the client socket
+     */
+    public void startTransferLogic(Socket socket) {
         try {
             InputStream inputStream = socket.getInputStream();
 
@@ -80,7 +91,12 @@ public class FileTransferHandler implements Runnable {
         }
     }
 
-    // Transfer logic
+    /**
+     * Transfer the file
+     * This method is used to transfer the file from the sender to the receiver
+     * It reads the file from the sender and writes it to the receiver
+     * If an error occurs, the method prints the stack trace
+     */
     private void transferFile() {
         try (InputStream inputStream = sender.getInputStream();
              OutputStream outputStream = receiver.getOutputStream()) {
@@ -93,10 +109,20 @@ public class FileTransferHandler implements Runnable {
         }
     }
 
+    /**
+     * Set the sender socket
+     *
+     * @param sender the sender socket
+     */
     public void setSender(Socket sender) {
         this.sender = sender;
     }
 
+    /**
+     * Set the receiver socket
+     *
+     * @param receiver the receiver socket
+     */
     public void setReceiver(Socket receiver) {
         this.receiver = receiver;
     }
