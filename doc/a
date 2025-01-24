@@ -34,31 +34,14 @@ TODO:
  # 12. Test list
  # 13. Do Protocol File Transfer
  # 14. Received ok from protocol FileTransfer
-    # 15. FileTransfer
+ # 15. FileTransfer
  # send request
  # start timer
  # accept request
-        # deny request
-    #open thread to send file
-    #start sending file
-    # end sending file
+ # deny request
+ #open thread to send file
+ #start sending file
+ # end sending file
     # 16. Test FileTransfer
     # all tests from new protocol
- # when unknown command is sent Parse error is recieved
-
-
- initialise the transfer
- store the file
- accept the file with the user that is sending
-
-
-
-transfer to method that will connect the downloader and receiver
-d- download
-r- receive
-
-need to have some kind of a way to know if the file is being sent or received
-
-filet start - signal to both clients --> go connect to server(1338) and start sending stuff
-
-code 1008
+ # when unknown command is sent Parse error is received

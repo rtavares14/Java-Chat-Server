@@ -30,7 +30,7 @@ import static shared.enumerations.ServerCommands.*;
 public class UserInput implements Runnable {
 
     private Socket socket;
-    private final PrintWriter writer;
+    private static PrintWriter writer = null;
     private final Scanner scanner = new Scanner(System.in);
 
     /**
@@ -42,7 +42,7 @@ public class UserInput implements Runnable {
     public UserInput(Socket socket) throws IOException {
         this.socket = socket;
         OutputStream out = socket.getOutputStream();
-        this.writer = new PrintWriter(out, true);
+        writer = new PrintWriter(out, true);
     }
 
     /**
@@ -248,7 +248,7 @@ public class UserInput implements Runnable {
      * @param command     the server command to be sent
      * @param jsonPayload the JSON payload associated with the command
      */
-    private void sendCommand(ServerCommands command, String jsonPayload) {
+    public static void sendCommand(ServerCommands command, String jsonPayload) {
         if (command != null && jsonPayload != null && !jsonPayload.isEmpty()) {
             writer.println(command + " " + jsonPayload);
         } else {

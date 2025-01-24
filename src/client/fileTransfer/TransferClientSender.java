@@ -24,6 +24,10 @@ public class TransferClientSender implements Runnable {
         }
     }
 
+    /**
+     * Sends the file to the server
+     * Send file with method transferTo
+     */
     public void filetStart() {
         try (InputStream inputStream = new FileInputStream(file);
              OutputStream outputStream = socket.getOutputStream()) {
@@ -36,7 +40,6 @@ public class TransferClientSender implements Runnable {
             outputStream.close();
             socket.close();
 
-            System.out.println("File transfer complete!");
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -33,6 +33,7 @@ public enum ServerCommands {
     FILET_REJ_RESP("FILET_REJ_RESP"), // Response to reject the file
     FILET_REJ("FILET_REJ"), // File rejected
     FILET_START("FILET_START"), // Start sending file
+    FILET_CHECK_REQ("FILET_CHECK_REQ"), // Response to check file
     FILET_END("FILET_END"), // End sending file
     INFO("INFO"), // Info command
     PING("PING"), // Ping command to check if server is alive need to respond with PONG
@@ -44,7 +45,6 @@ public enum ServerCommands {
     LEFT("LEFT"), // Response to all clients when a client leaves
     PARSE_ERROR("PARSE_ERROR"), // Error parsing command received from client - invalid format
     UNKNOWN_COMMAND("UNKNOWN_COMMAND"); // Unknown command received
-
 
     private final String command;
 

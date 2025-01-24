@@ -66,7 +66,7 @@ public class MessageHandler {
         handlersC.put(FILET_REJ_RESP, new FileTRejRespConsumer());
         handlersC.put(FILET_START, new FileTStartConsumer());
         handlersC.put(FILET_REJ, new FileTRejConsumer());
-
+        handlersC.put(FILET_END, new FileTEndConsumer());
         handlersC.put(PING, new PingConsumer(writer));
         handlersC.put(HANGUP, new HangupConsumer());
         handlersC.put(UNKNOWN_COMMAND, new UnknownConsumer());
@@ -85,6 +85,7 @@ public class MessageHandler {
         handlersS.put(FILET_REQ, new FileTransferReqConsumer(clientInstance));
         handlersS.put(FILET_ACP_REQ, new FileTransferACPReqConsumer(clientInstance));
         handlersS.put(FILET_REJ_REQ, new FileTransferRJReqConsumer(clientInstance));
+        handlersS.put(FILET_CHECK_REQ, new FileTransferCheckReqConsumer(clientInstance));
         handlersS.put(PONG, new PongConsumer(clientInstance));
         handlersS.put(BYE, new ByeReqConsumer(clientInstance));
     }

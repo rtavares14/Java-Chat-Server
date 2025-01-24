@@ -58,6 +58,6 @@ public class FileTransferRegistry {
     }
 
     public void printSessions() {
-        MessageHelper.printColoredMessage(WHITE ,"Active file transfers: " + activeSessions.size() + ". Total transfers: " + totalTransfers);
+        MessageHelper.printColoredMessage(WHITE ,"Total successful transfers: " + totalTransfers);
     }
 }

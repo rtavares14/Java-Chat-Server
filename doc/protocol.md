@@ -330,7 +330,8 @@ After the file transfer is done, the receiver will check the checksum of the fil
 socket will be closed and both clients will be disconnected from port 1338.
 
 ```
-C2 (sender) -> S: FILET_END {"status":"OK","uuid":"<uuid>"}
+C2 (reciever) -> S: FILET_CHECK_REQ {"status":"OK","uuid":"<uuid>"}
+S -> C2: FILET_END {"status":"OK","uuid":"<uuid>"}
 S -> C1: FILET_END {"status":"OK","uuid":"<uuid>"}
 ```
 - `<sender>`: the username of the chosen client to receive the file.
@@ -347,12 +348,22 @@ Example when the receiver does not accept the file transfer:
 ````
 C2 -> S: FILET_REJ_REQ {"sender":"username"}
 S -> C2: FILET_CHOICE_RESP {"status":"OK"}
-S -> C1: FILET_REJ {"status":"error","code":<error code>}
+S -> C1: FILET_REJ {"status":"OK"}
 ````
 
 ```
 S -> C2 or C1: FILET_RESP {"status":"ERROR","code":<error code>}
 ```
+
+Example when the checksum is bad:
+````
+C2 -> S: FILET_CHECK_REQ {"Cstatus":"ERROR"}
+
+S -> C1: FILET_REJ {"status":"ERROR","code":<error>}
+S -> C2: FILET_REJ {"status":"ERROR","code":<error>}
+````
+
+- `<Cstatus>`: the status of the checksum.
 
 Possible `<error code>`:
 
@@ -364,7 +375,6 @@ Possible `<error code>`:
 | 10005      | Checksum bad                              |
 | 10006      | No file transfer found                    |
 | 10007      | This user did not send a file to you      |
-| 10008      | File transfer already started             |
 | 10009      | Receiver did not respond in time (sender) |
 | 10010      | You did not answer in time (receiver)     |
 

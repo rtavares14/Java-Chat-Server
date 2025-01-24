@@ -1,18 +1,28 @@
 package client.fileTransfer;
 
+import client.inputs.UserInput;
+import shared.messages.file_transfer.request.FileTransferResp;
+import shared.messages.file_transfer.status.FileTransferCheckReq;
+import shared.utils.JsonUtils;
+
 import java.io.*;
 import java.math.BigInteger;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import static shared.enumerations.ServerCommands.FILET_CHECK_REQ;
+
 public class TransferClientReceiver implements Runnable {
+    private final String checksumOld;
     private final String uuid;
     private final File file;
     private Socket socket;
 
-    public TransferClientReceiver(String uuid, String fileName) {
+    public TransferClientReceiver(String checksumOld,String uuid, String fileName) {
+        this.checksumOld = checksumOld;
         this.uuid = uuid;
         this.file = new File("src/transferredFiles/" + fileName);
         new File("src/transferredFiles/" + fileName);
@@ -39,16 +49,29 @@ public class TransferClientReceiver implements Runnable {
 
             // Start receiving file
             inputStream.transferTo(fileOutputStream);
-            System.out.println("File transfer complete!");
             // Generate checksum
 
             fileOutputStream.close();
+
+            String checksumNew = createChecksum(file);
+
+            if (checksumOld.equals(checksumNew)) {
+                FileTransferCheckReq fileTransferCheckReq = new FileTransferCheckReq("GOOD",uuid);
+                String json = JsonUtils.toJson(fileTransferCheckReq);
+                UserInput.sendCommand(FILET_CHECK_REQ,json);
+
+            } else {
+                FileTransferCheckReq fileTransferCheckReq = new FileTransferCheckReq("BAD",uuid);
+                String json = JsonUtils.toJson(fileTransferCheckReq);
+                UserInput.sendCommand(FILET_CHECK_REQ,json);
+                //delete file
+                file.delete();
+            }
+
             inputStream.close();
             outputStream.close();
             socket.close();
 
-            String checksum = createChecksum(file);
-            System.out.println("Checksum: " + checksum);
         } catch (Exception e) {
             e.printStackTrace();
         }

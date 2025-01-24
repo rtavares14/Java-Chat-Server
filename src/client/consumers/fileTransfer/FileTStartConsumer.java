@@ -23,7 +23,7 @@ public class FileTStartConsumer implements Consumer<String> {
             if (role == 'S') {
                 new Thread(new TransferClientSender(removeRole(uuid),file.getAbsoluteFile())).start();
             } else if (role == 'R') {
-                new Thread(new TransferClientReceiver(removeRole(uuid), file.getName())).start();
+                new Thread(new TransferClientReceiver(resp.checkSum(),removeRole(uuid), file.getName())).start();
             }else {
                 System.err.println("Something is now right");
             }
