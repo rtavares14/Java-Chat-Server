@@ -2,7 +2,7 @@ package server.consumers.fileTransfer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import server.clientInstance.ClientInstance;
-import server.handlers.FileTranfersHelpers.FileTransferRegistry;
+import server.FileTranfersHelpers.FileTransferRegistry;
 import shared.messages.file_transfer.request.FileTransferResp;
 import shared.messages.file_transfer.status.FileTransferCheckReq;
 import shared.messages.file_transfer.status.FileTransferEnd;

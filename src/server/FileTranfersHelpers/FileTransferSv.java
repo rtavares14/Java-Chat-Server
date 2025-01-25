@@ -1,4 +1,4 @@
-package server.handlers.FileTranfersHelpers;
+package server.FileTranfersHelpers;
 
 import server.handlers.FileTransferHandler;
 import shared.utils.messages.MessageHelper;

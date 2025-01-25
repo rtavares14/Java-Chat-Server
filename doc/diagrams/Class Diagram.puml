@@ -34,26 +34,26 @@ RPSHandler --> ClientInstance : contains
 RPSHandler --> ServerLogger : uses
 RPSHandler --> AllMessages : uses
 
-HeartbeatHandler --> ServerLogger : uses
+HeartbeatHandler --> ClientLogger : uses
 HeartbeatHandler --> AllMessages : uses
 
 FileTransferHandler --> ClientInstance : uses
 FileTransferHandler --> FileTransferRegistry : uses
 
 FileTransferTimer --> ClientInstance : contains
+FileTransferTimer <-- FileTransferRegistry : contains
 
 FileTransferSv --> FileTransferHandler : uses
-FileTransferSv --> ClientInstance : uses
 
 FileTransferRegistry --> FileTransferHandler : creates
-FileTransferRegistry --> ClientInstance : contains
 
 ClientInstance --> Server : uses
 ClientInstance --> HeartbeatHandler : uses
-ClientInstance --> ClientLogger : uses
+ClientInstance <-- ClientLogger : uses
 ClientInstance --> ServerLogger : uses
 ClientInstance --> AllMessages: uses
 ClientInstance --> MessageHandler : creates
+ClientInstance --> AllMessages : uses
 
 MessageHandler <-- AllConsumers
 

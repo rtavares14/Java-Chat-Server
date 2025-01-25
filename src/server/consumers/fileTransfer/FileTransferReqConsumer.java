@@ -1,8 +1,8 @@
 package server.consumers.fileTransfer;
 
 import server.clientInstance.ClientInstance;
-import server.handlers.FileTranfersHelpers.FileTransferTimer;
-import server.handlers.FileTranfersHelpers.FileTransferRegistry;
+import server.FileTranfersHelpers.FileTransferTimer;
+import server.FileTranfersHelpers.FileTransferRegistry;
 import server.loggers.ClientLogger;
 import shared.messages.file_transfer.request.FileTransfer;
 import shared.messages.file_transfer.request.FileTransferReq;

@@ -1,6 +1,6 @@
 package server.handlers;
 
-import server.handlers.FileTranfersHelpers.FileTransferRegistry;
+import server.FileTranfersHelpers.FileTransferRegistry;
 import shared.utils.messages.MessageHelper;
 
 import java.io.IOException;

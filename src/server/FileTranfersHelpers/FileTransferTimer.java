@@ -1,4 +1,4 @@
-package server.handlers.FileTranfersHelpers;
+package server.FileTranfersHelpers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import server.clientInstance.ClientInstance;
@@ -62,6 +62,7 @@ public class FileTransferTimer {
                             MessageHelper.printServerMessage(CmdColors.RED, sender, FILET_REJ_RESP, JsonUtils.toJson(responseToSender));
 
                             cancelTransfer();
+                            timer.cancel();
                         } catch (JsonProcessingException e) {
                             throw new RuntimeException(e);
                         } finally {
@@ -69,7 +70,7 @@ public class FileTransferTimer {
                         }
                     }
                 }
-            }, 15000); // 30 seconds timeout
+            }, 15000); //15 seconds timeout
 
         } catch (Exception e) {
             MessageHelper.printColoredMessage(CmdColors.RED, "An error occurred while starting the timer: " + e.getMessage());
@@ -103,7 +104,7 @@ public class FileTransferTimer {
      */
     public void cancelTransfer() {
         FileTransferRegistry.getInstance().removeSession(uuid);
-        isAccepted.set(false);
+        isAccepted.set(true);
 
         MessageHelper.printColoredMessage(RED, "File transfer cancelled, removing session " + uuid);
     }
