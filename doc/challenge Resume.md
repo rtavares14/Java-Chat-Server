@@ -76,20 +76,29 @@ This document outlines the steps I took to solve each level of the challenge, in
 
 ## **Level 6: RSA Decryption**
 
-**Objective**: The server provided an RSA-encrypted message and a private key, asking me to decrypt it.
+**Objective**: Decrypt an RSA-encrypted message using the provided private key and send the result back.
 
 **What I Did**:
-- I was given a private key (in PEM format) and a Base64-encoded encrypted message.
-- I extracted the private key and used it to decrypt the message.
-- To extract the private key, I stored it in a string, then used `KeyFactory` to convert it into a `PrivateKey` object.
-- After decrypting the message, I sent it back to the server.
+- Extracted the private key from the PEM format, decoded it, and converted it into a PrivateKey object.
+- Cleaned and decoded the Base64 ciphertext into raw bytes.
+- Decrypted the message using RSA/ECB/PKCS1Padding and sent the result to the server.
 
 **Where I Struggled**:
-- Initially, I didn’t know how to handle the private key properly. The key was provided in PEM format, so I had to parse it correctly to convert it into a usable `PrivateKey` object.
-- I also had some trouble with the RSA decryption setup, especially with how the message was encoded. It took me a while to get the right padding scheme (`RSA/ECB/PKCS1Padding`) to work.
+- Figuring out how to handle the PEM-formatted private key.
+- Fixing Base64 padding issues in the encrypted message.
+- Identifying the correct RSA decryption mode and padding.
 
+**How I Overcame the Struggles**:
+- Used Java’s KeyFactory and PKCS8EncodedKeySpec to process the private key.
+- Added logic to clean and pad the Base64 ciphertext.
+- Experimented with decryption settings until RSA/ECB/PKCS1Padding worked.
 ---
 
 ## **Conclusion**
 
 Each level introduced a new concept in data encoding and encryption. While there were a few struggles along the way (especially with understanding some of the encodings and encryption methods), I was able to get through each challenge by carefully reading the server messages and adjusting my approach as I learned more.
+
+## **Results**
+In here is the final result of the extra challenge.
+
+![LVL4 Results](extraChallenge/LVL4Results.png)
