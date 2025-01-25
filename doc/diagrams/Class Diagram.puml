@@ -1,0 +1,59 @@
+@startuml
+class Client
+
+class UserInput
+
+class ServerInput
+
+class TransferClientReceiver
+
+class TransferClientSender
+
+class AllConsumers
+
+class MessageHandler
+
+class AllMessages
+
+
+
+Client --> UserInput : has
+Client --> ServerInput : has
+
+UserInput --> AllMessages : uses
+
+Server "1" --> "*" ClientInstance : manages
+
+Server --> FileTransferSv : handles file transfer
+Server --> RPSHandler : manages game logic
+Server --> ClientLogger : logs client activity
+
+RPSHandler --> ClientInstance : uses
+RPSHandler --> ServerLogger : uses
+RPSHandler --> AllMessages : uses
+
+HeartbeatHandler --> ServerLogger : uses
+HeartbeatHandler --> AllMessages : uses
+
+FileTransferHandler --> ClientInstance : uses
+FileTransferHandler --> FileTransferRegistry : uses
+
+FileTransferTimer --> ClientInstance : uses
+FileTransferTimer --> AllMessages : uses
+
+FileTransferSv --> FileTransferHandler : uses
+FileTransferSv --> ClientInstance : uses
+
+FileTransferRegistry --> FileTransferHandler : uses
+FileTransferRegistry --> ClientInstance : uses
+
+ClientInstance --> Server : uses
+ClientInstance --> HeartbeatHandler : uses
+ClientInstance --> ClientLogger : uses
+ClientInstance --> ServerLogger : uses
+ClientInstance --> AllMessages: uses
+ClientInstance --> MessageHandler : uses
+
+MessageHandler <-- AllConsumers
+
+@enduml
